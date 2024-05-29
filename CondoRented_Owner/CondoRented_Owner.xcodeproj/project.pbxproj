@@ -14,11 +14,8 @@
 		423B0C4B2BCFBFD30030AD65 /* CondoRented_OwnerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 423B0C4A2BCFBFD30030AD65 /* CondoRented_OwnerTests.swift */; };
 		423B0C552BCFBFD30030AD65 /* CondoRented_OwnerUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 423B0C542BCFBFD30030AD65 /* CondoRented_OwnerUITests.swift */; };
 		423B0C572BCFBFD30030AD65 /* CondoRented_OwnerUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 423B0C562BCFBFD30030AD65 /* CondoRented_OwnerUITestsLaunchTests.swift */; };
-		423B0C652BCFC1600030AD65 /* TransactionProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 423B0C642BCFC1600030AD65 /* TransactionProtocol.swift */; };
 		423B0C672BCFC1B30030AD65 /* Currency.swift in Sources */ = {isa = PBXBuildFile; fileRef = 423B0C662BCFC1B30030AD65 /* Currency.swift */; };
-		423B0C692BCFC2D00030AD65 /* GenericTransaction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 423B0C682BCFC2D00030AD65 /* GenericTransaction.swift */; };
-		423B0C6B2BCFC51A0030AD65 /* ExpenseTransaction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 423B0C6A2BCFC51A0030AD65 /* ExpenseTransaction.swift */; };
-		423B0C6D2BCFC64B0030AD65 /* PaidTransaction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 423B0C6C2BCFC64B0030AD65 /* PaidTransaction.swift */; };
+		423B0C692BCFC2D00030AD65 /* Transaction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 423B0C682BCFC2D00030AD65 /* Transaction.swift */; };
 		423B0C6F2BCFCAD30030AD65 /* AdminFee.swift in Sources */ = {isa = PBXBuildFile; fileRef = 423B0C6E2BCFCAD30030AD65 /* AdminFee.swift */; };
 		423B0C712BCFCB6F0030AD65 /* Listing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 423B0C702BCFCB6F0030AD65 /* Listing.swift */; };
 		423B0C732BD021280030AD65 /* ModelContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 423B0C722BD021280030AD65 /* ModelContainer.swift */; };
@@ -27,6 +24,28 @@
 		423B0C7C2BD974A00030AD65 /* NewAdminFeeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 423B0C7B2BD974A00030AD65 /* NewAdminFeeView.swift */; };
 		423B0C7E2BE279190030AD65 /* Admin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 423B0C7D2BE279190030AD65 /* Admin.swift */; };
 		423B0D082BE958D70030AD65 /* TransactionSummaryListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 423B0D072BE958D70030AD65 /* TransactionSummaryListView.swift */; };
+		423B0D0A2BE9593D0030AD65 /* TransactionSummaryListMonth.swift in Sources */ = {isa = PBXBuildFile; fileRef = 423B0D092BE9593D0030AD65 /* TransactionSummaryListMonth.swift */; };
+		423B0D0C2BEA29DC0030AD65 /* TransactionHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 423B0D0B2BEA29DC0030AD65 /* TransactionHelper.swift */; };
+		423B0D242BF35C5E0030AD65 /* TransactionSummaryListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 423B0D232BF35C5E0030AD65 /* TransactionSummaryListViewModel.swift */; };
+		423B0D272BF364170030AD65 /* TransactionDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 423B0D262BF364170030AD65 /* TransactionDataSource.swift */; };
+		423B0D2A2BF52E1B0030AD65 /* AddEditTransactionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 423B0D292BF52E1B0030AD65 /* AddEditTransactionView.swift */; };
+		423B0D2C2BF52E270030AD65 /* AddEditTransactionViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 423B0D2B2BF52E270030AD65 /* AddEditTransactionViewModel.swift */; };
+		423B0D312BF535F20030AD65 /* ListingDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 423B0D302BF535F20030AD65 /* ListingDataSource.swift */; };
+		423B0D332BF605DB0030AD65 /* AppDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 423B0D322BF605DB0030AD65 /* AppDataSource.swift */; };
+		423B0D352BF647020030AD65 /* TransactionCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 423B0D342BF647020030AD65 /* TransactionCoordinator.swift */; };
+		423B0D382BFFA55F0030AD65 /* TransactionMonthDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 423B0D372BFFA55F0030AD65 /* TransactionMonthDetailView.swift */; };
+		423B0D3A2BFFB0C10030AD65 /* TransactionMonthDetailViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 423B0D392BFFB0C10030AD65 /* TransactionMonthDetailViewModel.swift */; };
+		423B0D3B2C011FBA0030AD65 /* Admin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 423B0C7D2BE279190030AD65 /* Admin.swift */; };
+		423B0D3C2C011FBA0030AD65 /* Listing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 423B0C702BCFCB6F0030AD65 /* Listing.swift */; };
+		423B0D3D2C011FBA0030AD65 /* Currency.swift in Sources */ = {isa = PBXBuildFile; fileRef = 423B0C662BCFC1B30030AD65 /* Currency.swift */; };
+		423B0D3E2C011FBA0030AD65 /* AdminFee.swift in Sources */ = {isa = PBXBuildFile; fileRef = 423B0C6E2BCFCAD30030AD65 /* AdminFee.swift */; };
+		423B0D3F2C011FBA0030AD65 /* Transaction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 423B0C682BCFC2D00030AD65 /* Transaction.swift */; };
+		423B0D402C011FBA0030AD65 /* ModelContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 423B0C722BD021280030AD65 /* ModelContainer.swift */; };
+		423B0D412C011FD30030AD65 /* AppDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 423B0D322BF605DB0030AD65 /* AppDataSource.swift */; };
+		423B0D422C011FD30030AD65 /* TransactionDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 423B0D262BF364170030AD65 /* TransactionDataSource.swift */; };
+		423B0D432C011FD30030AD65 /* ListingDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 423B0D302BF535F20030AD65 /* ListingDataSource.swift */; };
+		423B0D442C0120090030AD65 /* TransactionHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 423B0D0B2BEA29DC0030AD65 /* TransactionHelper.swift */; };
+		423B0D462C0655C10030AD65 /* MonthTransactionsChartPieView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 423B0D452C0655C10030AD65 /* MonthTransactionsChartPieView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -58,11 +77,8 @@
 		423B0C502BCFBFD30030AD65 /* CondoRented_OwnerUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CondoRented_OwnerUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		423B0C542BCFBFD30030AD65 /* CondoRented_OwnerUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CondoRented_OwnerUITests.swift; sourceTree = "<group>"; };
 		423B0C562BCFBFD30030AD65 /* CondoRented_OwnerUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CondoRented_OwnerUITestsLaunchTests.swift; sourceTree = "<group>"; };
-		423B0C642BCFC1600030AD65 /* TransactionProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionProtocol.swift; sourceTree = "<group>"; };
 		423B0C662BCFC1B30030AD65 /* Currency.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Currency.swift; sourceTree = "<group>"; };
-		423B0C682BCFC2D00030AD65 /* GenericTransaction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenericTransaction.swift; sourceTree = "<group>"; };
-		423B0C6A2BCFC51A0030AD65 /* ExpenseTransaction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpenseTransaction.swift; sourceTree = "<group>"; };
-		423B0C6C2BCFC64B0030AD65 /* PaidTransaction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaidTransaction.swift; sourceTree = "<group>"; };
+		423B0C682BCFC2D00030AD65 /* Transaction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Transaction.swift; sourceTree = "<group>"; };
 		423B0C6E2BCFCAD30030AD65 /* AdminFee.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdminFee.swift; sourceTree = "<group>"; };
 		423B0C702BCFCB6F0030AD65 /* Listing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Listing.swift; sourceTree = "<group>"; };
 		423B0C722BD021280030AD65 /* ModelContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModelContainer.swift; sourceTree = "<group>"; };
@@ -71,6 +87,18 @@
 		423B0C7B2BD974A00030AD65 /* NewAdminFeeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewAdminFeeView.swift; sourceTree = "<group>"; };
 		423B0C7D2BE279190030AD65 /* Admin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Admin.swift; sourceTree = "<group>"; };
 		423B0D072BE958D70030AD65 /* TransactionSummaryListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionSummaryListView.swift; sourceTree = "<group>"; };
+		423B0D092BE9593D0030AD65 /* TransactionSummaryListMonth.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionSummaryListMonth.swift; sourceTree = "<group>"; };
+		423B0D0B2BEA29DC0030AD65 /* TransactionHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionHelper.swift; sourceTree = "<group>"; };
+		423B0D232BF35C5E0030AD65 /* TransactionSummaryListViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionSummaryListViewModel.swift; sourceTree = "<group>"; };
+		423B0D262BF364170030AD65 /* TransactionDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionDataSource.swift; sourceTree = "<group>"; };
+		423B0D292BF52E1B0030AD65 /* AddEditTransactionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddEditTransactionView.swift; sourceTree = "<group>"; };
+		423B0D2B2BF52E270030AD65 /* AddEditTransactionViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddEditTransactionViewModel.swift; sourceTree = "<group>"; };
+		423B0D302BF535F20030AD65 /* ListingDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListingDataSource.swift; sourceTree = "<group>"; };
+		423B0D322BF605DB0030AD65 /* AppDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDataSource.swift; sourceTree = "<group>"; };
+		423B0D342BF647020030AD65 /* TransactionCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionCoordinator.swift; sourceTree = "<group>"; };
+		423B0D372BFFA55F0030AD65 /* TransactionMonthDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionMonthDetailView.swift; sourceTree = "<group>"; };
+		423B0D392BFFB0C10030AD65 /* TransactionMonthDetailViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionMonthDetailViewModel.swift; sourceTree = "<group>"; };
+		423B0D452C0655C10030AD65 /* MonthTransactionsChartPieView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MonthTransactionsChartPieView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -125,6 +153,7 @@
 				423B0C632BCFC02C0030AD65 /* Models */,
 				423B0D062BE9588F0030AD65 /* Transactions */,
 				423B0C762BD18DFF0030AD65 /* Listing */,
+				423B0D0B2BEA29DC0030AD65 /* TransactionHelper.swift */,
 				423B0C3C2BCFBFD30030AD65 /* Assets.xcassets */,
 				423B0C3E2BCFBFD30030AD65 /* CondoRented_Owner.entitlements */,
 				423B0C3F2BCFBFD30030AD65 /* Preview Content */,
@@ -161,10 +190,7 @@
 			isa = PBXGroup;
 			children = (
 				423B0C662BCFC1B30030AD65 /* Currency.swift */,
-				423B0C642BCFC1600030AD65 /* TransactionProtocol.swift */,
-				423B0C682BCFC2D00030AD65 /* GenericTransaction.swift */,
-				423B0C6A2BCFC51A0030AD65 /* ExpenseTransaction.swift */,
-				423B0C6C2BCFC64B0030AD65 /* PaidTransaction.swift */,
+				423B0C682BCFC2D00030AD65 /* Transaction.swift */,
 				423B0C6E2BCFCAD30030AD65 /* AdminFee.swift */,
 				423B0C7D2BE279190030AD65 /* Admin.swift */,
 				423B0C702BCFCB6F0030AD65 /* Listing.swift */,
@@ -187,9 +213,52 @@
 		423B0D062BE9588F0030AD65 /* Transactions */ = {
 			isa = PBXGroup;
 			children = (
-				423B0D072BE958D70030AD65 /* TransactionSummaryListView.swift */,
+				423B0D362BFFA52C0030AD65 /* TransactionMonthDetailView */,
+				423B0D282BF52CC30030AD65 /* AddEditTransaction */,
+				423B0D252BF35C690030AD65 /* TransactionSummaryListView */,
+				423B0D2D2BF5354F0030AD65 /* DataSource */,
+				423B0D342BF647020030AD65 /* TransactionCoordinator.swift */,
 			);
 			path = Transactions;
+			sourceTree = "<group>";
+		};
+		423B0D252BF35C690030AD65 /* TransactionSummaryListView */ = {
+			isa = PBXGroup;
+			children = (
+				423B0D232BF35C5E0030AD65 /* TransactionSummaryListViewModel.swift */,
+				423B0D072BE958D70030AD65 /* TransactionSummaryListView.swift */,
+				423B0D092BE9593D0030AD65 /* TransactionSummaryListMonth.swift */,
+			);
+			path = TransactionSummaryListView;
+			sourceTree = "<group>";
+		};
+		423B0D282BF52CC30030AD65 /* AddEditTransaction */ = {
+			isa = PBXGroup;
+			children = (
+				423B0D2B2BF52E270030AD65 /* AddEditTransactionViewModel.swift */,
+				423B0D292BF52E1B0030AD65 /* AddEditTransactionView.swift */,
+			);
+			path = AddEditTransaction;
+			sourceTree = "<group>";
+		};
+		423B0D2D2BF5354F0030AD65 /* DataSource */ = {
+			isa = PBXGroup;
+			children = (
+				423B0D262BF364170030AD65 /* TransactionDataSource.swift */,
+				423B0D302BF535F20030AD65 /* ListingDataSource.swift */,
+				423B0D322BF605DB0030AD65 /* AppDataSource.swift */,
+			);
+			path = DataSource;
+			sourceTree = "<group>";
+		};
+		423B0D362BFFA52C0030AD65 /* TransactionMonthDetailView */ = {
+			isa = PBXGroup;
+			children = (
+				423B0D392BFFB0C10030AD65 /* TransactionMonthDetailViewModel.swift */,
+				423B0D372BFFA55F0030AD65 /* TransactionMonthDetailView.swift */,
+				423B0D452C0655C10030AD65 /* MonthTransactionsChartPieView.swift */,
+			);
+			path = TransactionMonthDetailView;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -323,20 +392,29 @@
 			buildActionMask = 2147483647;
 			files = (
 				423B0C7C2BD974A00030AD65 /* NewAdminFeeView.swift in Sources */,
-				423B0C652BCFC1600030AD65 /* TransactionProtocol.swift in Sources */,
 				423B0C732BD021280030AD65 /* ModelContainer.swift in Sources */,
 				423B0D082BE958D70030AD65 /* TransactionSummaryListView.swift in Sources */,
+				423B0D312BF535F20030AD65 /* ListingDataSource.swift in Sources */,
 				423B0C6F2BCFCAD30030AD65 /* AdminFee.swift in Sources */,
 				423B0C712BCFCB6F0030AD65 /* Listing.swift in Sources */,
+				423B0D332BF605DB0030AD65 /* AppDataSource.swift in Sources */,
+				423B0D0A2BE9593D0030AD65 /* TransactionSummaryListMonth.swift in Sources */,
+				423B0D462C0655C10030AD65 /* MonthTransactionsChartPieView.swift in Sources */,
 				423B0C672BCFC1B30030AD65 /* Currency.swift in Sources */,
-				423B0C692BCFC2D00030AD65 /* GenericTransaction.swift in Sources */,
+				423B0D272BF364170030AD65 /* TransactionDataSource.swift in Sources */,
+				423B0C692BCFC2D00030AD65 /* Transaction.swift in Sources */,
+				423B0D0C2BEA29DC0030AD65 /* TransactionHelper.swift in Sources */,
+				423B0D242BF35C5E0030AD65 /* TransactionSummaryListViewModel.swift in Sources */,
+				423B0D352BF647020030AD65 /* TransactionCoordinator.swift in Sources */,
+				423B0D3A2BFFB0C10030AD65 /* TransactionMonthDetailViewModel.swift in Sources */,
+				423B0D382BFFA55F0030AD65 /* TransactionMonthDetailView.swift in Sources */,
+				423B0D2C2BF52E270030AD65 /* AddEditTransactionViewModel.swift in Sources */,
 				423B0C392BCFBFD20030AD65 /* ContentView.swift in Sources */,
-				423B0C6D2BCFC64B0030AD65 /* PaidTransaction.swift in Sources */,
 				423B0C372BCFBFD20030AD65 /* CondoRented_OwnerApp.swift in Sources */,
+				423B0D2A2BF52E1B0030AD65 /* AddEditTransactionView.swift in Sources */,
 				423B0C752BD18DF80030AD65 /* AddEditListingView.swift in Sources */,
 				423B0C7A2BD96F370030AD65 /* AdminFeeDetail.swift in Sources */,
 				423B0C7E2BE279190030AD65 /* Admin.swift in Sources */,
-				423B0C6B2BCFC51A0030AD65 /* ExpenseTransaction.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -344,6 +422,16 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				423B0D412C011FD30030AD65 /* AppDataSource.swift in Sources */,
+				423B0D422C011FD30030AD65 /* TransactionDataSource.swift in Sources */,
+				423B0D432C011FD30030AD65 /* ListingDataSource.swift in Sources */,
+				423B0D3B2C011FBA0030AD65 /* Admin.swift in Sources */,
+				423B0D3C2C011FBA0030AD65 /* Listing.swift in Sources */,
+				423B0D3D2C011FBA0030AD65 /* Currency.swift in Sources */,
+				423B0D3E2C011FBA0030AD65 /* AdminFee.swift in Sources */,
+				423B0D3F2C011FBA0030AD65 /* Transaction.swift in Sources */,
+				423B0D442C0120090030AD65 /* TransactionHelper.swift in Sources */,
+				423B0D402C011FBA0030AD65 /* ModelContainer.swift in Sources */,
 				423B0C4B2BCFBFD30030AD65 /* CondoRented_OwnerTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -500,6 +588,7 @@
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = "Condo Owner";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
@@ -538,6 +627,7 @@
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = "Condo Owner";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;

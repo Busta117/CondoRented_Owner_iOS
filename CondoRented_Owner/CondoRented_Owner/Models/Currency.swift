@@ -20,11 +20,18 @@ class Currency {
 }
 
 extension Currency {
-    public var USD: Currency {
-        Currency(id: "USD", microMultiplier: 0.000001)
-    }
     
-    public var COP: Currency {
-        Currency(id: "COP", microMultiplier: 0.000001)
+    static private(set) var all = [Currency]()
+    
+    @MainActor
+    static func loadAll() {
+        let container = ModelContainer.sharedModelContainer
+        let modelContext = container.mainContext
+        let descriptor = FetchDescriptor<Currency>(sortBy: [SortDescriptor(\.id, order: .forward)])
+        do {
+            all = try modelContext.fetch(descriptor)
+        } catch {
+            all = []
+        }
     }
 }

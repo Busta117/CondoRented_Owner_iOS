@@ -1,0 +1,360 @@
+//
+//  TransactionMonthDetailView.swift
+//  CondoRented_Owner
+//
+//  Created by Santiago Bustamante on 23/05/24.
+//
+
+import SwiftUI
+import SwiftData
+
+struct TransactionMonthDetailView: View {
+    
+    @State var viewModel: TransactionMonthDetailViewModel
+    @State private var detailExpanded = false
+    @State private var chartExpanded = true
+    @State private var adminFeeSummaryExpanded = false
+    
+    @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
+    
+    var backButton : some View {
+        Button(action: {
+            self.presentationMode.wrappedValue.dismiss()
+        }) {
+            HStack(spacing: 0) {
+                Image(systemName: "chevron.left")
+                    .font(.title2)
+            }
+        }
+    }
+    
+    var body: some View {
+        List {
+            statsSection
+            summaryMonthView
+            transactionsListSectionView
+        }
+        .background(.clear)
+        .navigationTitle(viewModel.titleMonth)
+        .navigationBarTitleDisplayMode(.large)
+        .navigationBarBackButtonHidden(true)
+        .toolbar(.hidden, for: .tabBar)
+        .toolbar {
+            ToolbarItem(placement: .topBarLeading) {
+                backButton
+            }
+            ToolbarItem(placement: .topBarTrailing) {
+                Button(action: {
+                    viewModel.input(.addNewTapped)
+                }, label: {
+                    Label("Add Item", systemImage: "plus")
+                })
+            }
+        }
+    }
+    
+    private var summaryMonthView: some View {
+        Section(isExpanded: $adminFeeSummaryExpanded) {
+            VStack {
+                ForEach(viewModel.listings) { listing in
+                    VStack {
+                        summaryLine(for: listing)
+                        ForEach(viewModel.expensesPayedByAdmin(for: listing)) { expense in
+                            HStack {
+                                Spacer()
+                                Text(expense.expenseConcept ?? "")
+                                    .font(.body)
+                                    .frame(alignment: .leading)
+                                
+                                Text((expense.amountMicros * expense.currency.microMultiplier), format: .currency(code: expense.currency.id))
+                                    .font(.body)
+                                    .frame(maxWidth: 100, alignment: .trailing)
+                            }
+                            .padding(.bottom, 5)
+                        }
+                    }
+                    
+                }
+                HStack {
+                    Spacer()
+                    Text("TOTAL:")
+                        .font(.headline)
+                        .bold()
+                    
+                    Text(viewModel.totalFeesToPayValue().0, format: .currency(code: viewModel.totalFeesToPayValue().1.id))
+                        .font(.headline)
+                }
+            }
+        } header: {
+            HStack(spacing: 0) {
+                Button {
+                    adminFeeSummaryExpanded.toggle()
+                } label: {
+                    HStack {
+                        Text("Admin fee summary")
+                        Spacer()
+                        Image(systemName: adminFeeSummaryExpanded ? "chevron.up" : "chevron.down")
+                    }
+                    .contentShape(Rectangle())
+                }
+                .buttonStyle(PlainButtonStyle())
+
+            }
+        
+            
+        }
+    }
+    
+    private func summaryLine(for listing: Listing) -> some View {
+        VStack {
+            HStack {
+                Text(listing.title)
+                    .font(.headline)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                Spacer()
+                Text(viewModel.expectingValue(for: listing).0, format: .currency(code: viewModel.expectingValue(for: listing).1.id))
+                    .foregroundStyle(.secondary)
+                    .font(.body)
+            }
+            HStack {
+//                Spacer()
+                
+                //                .frame(maxWidth: 100, alignment: .trailing)
+                Spacer()
+                Text((viewModel.percentFee(for: listing) / 100), format: .percent)
+                    .font(.body)
+//                                .frame(maxWidth: 50, alignment: .trailing)
+                
+                Text(viewModel.feesToPayValue(for: listing).0, format: .currency(code: viewModel.feesToPayValue(for: listing).1.id))
+                    .font(.body)
+                                .frame(maxWidth: 100, alignment: .trailing)
+            }
+        }
+    }
+    
+    private var transactionsListSectionView: some View {
+        Section(isExpanded: $detailExpanded) {
+            transactionsListView
+        } header: {
+            HStack(spacing: 0) {
+                Button {
+                    detailExpanded.toggle()
+                } label: {
+                    HStack {
+                        Text("Month Transactions")
+                        Spacer()
+                        Image(systemName: detailExpanded ? "chevron.up" : "chevron.down")
+                    }
+                    .contentShape(Rectangle())
+                }
+                .buttonStyle(PlainButtonStyle())
+
+            }
+        }
+    }
+    
+    private var transactionsListView: some View {
+        ForEach(viewModel.transactions) { transaction in
+            
+            Button {
+                viewModel.input(.editTransaction(transaction))
+            } label: {
+                transactionsListElement(for: transaction)
+                    .contentShape(Rectangle())
+            }
+            .buttonStyle(PlainButtonStyle())
+            
+        }
+        .onDelete(perform: { indexSet in
+            viewModel.input(.deleteTapped(indexSet))
+        })
+    }
+    
+    private func transactionsListElement(for transaction: Transaction) -> some View {
+        VStack {
+            HStack {
+                Text(transaction.listing.title)
+                    .font(.caption)
+                    .bold()
+                Spacer()
+                Text(transaction.date, format: .dateTime.day().month())
+                    .font(.caption2)
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            
+            HStack {
+                VStack {
+                    Group {
+                        
+                        switch transaction.type {
+                        case .paid:
+                            Text(transaction.type.title)
+                        case .expense:
+                            Text("\(transaction.type.title): ")
+                            +
+                            Text(transaction.expenseConcept ?? "")
+                            
+                            Text(transaction.expensePaidByOwner! ? "(payed by OWNER)" : "(payed by ADMIN)")
+                        case .fixedCost:
+                            Text("\(transaction.type.title): ")
+                            +
+                            Text(transaction.expenseConcept ?? "")
+                        case .utilities:
+                            Text("\(transaction.type.title)")
+                        }
+                        
+                    }
+                    .font(.caption2)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    
+                }
+                
+                Spacer()
+                Text(transaction.amountMicros * transaction.currency.microMultiplier, format: .currency(code: transaction.currency.id))
+                    .font(.body)
+                    .foregroundStyle(transaction.type != .paid ? .red : .green)
+            }
+        }
+    }
+    
+    private var statsSection: some View {
+        Section(isExpanded: $chartExpanded) {
+            VStack {
+                MonthTransactionsChartPieView(transactions: viewModel.transactions)
+                    .scaledToFit()
+                    .frame(width: 200, height: 200)
+                    .frame(maxWidth: .infinity, alignment: .center)
+                
+                MonthDetailSummarySectionView(transactions: viewModel.transactions)
+            }
+        } header: {
+            HStack(spacing: 0) {
+                Button {
+                    chartExpanded.toggle()
+                } label: {
+                    HStack {
+                        Text("Stats")
+                        Spacer()
+                        Image(systemName: chartExpanded ? "chevron.up" : "chevron.down")
+                    }
+                    .contentShape(Rectangle())
+                }
+                .buttonStyle(PlainButtonStyle())
+
+            }
+        }
+        
+    }
+}
+
+struct MonthDetailSummarySectionView: View {
+    private var currency: Currency
+    
+    private var incomeValue: Double
+    private var expensesValue: Double
+    private var feesValue: Double
+    private var balanceValue: Double {
+        (incomeValue - expensesValue - feesValue)
+    }
+    
+    private var expensesByType: [Transaction.TransactionType: [Transaction]]
+    
+    init(transactions: [Transaction]) {
+        (incomeValue, currency) = TransactionHelper.getExpectingValue(for: transactions)
+        (expensesValue, _) = TransactionHelper.getExpensesValue(for: transactions)
+        (feesValue, _) = TransactionHelper.getFeesToPayValue(for: transactions)
+        
+        let onlyExpenses = transactions.filter({ transaction in
+            switch transaction.type {
+            case .expense:
+                return (transaction.expensePaidByOwner ?? false)
+            case .fixedCost, .utilities:
+                return true
+            case .paid:
+                return false
+            }
+        })
+        
+        expensesByType = TransactionHelper.splitByType(transactions: onlyExpenses)
+    }
+    
+    private func expenseValue(for type: Transaction.TransactionType) -> Double {
+        guard let transactions = expensesByType[type] else { return 0 }
+        var retVal: Double = 0
+        for transaction in transactions {
+            retVal += (transaction.amountMicros * transaction.currency.microMultiplier)
+        }
+        return retVal
+    }
+    
+    var body: some View {
+        VStack {
+            HStack {
+                Text("Incomes")
+                    .font(.body)
+                Spacer()
+                Text(incomeValue, format: .currency(code: currency.id))
+                    .font(.body)
+            }
+            HStack {
+                Text("Admin fees")
+                    .font(.body)
+                Spacer()
+                Text(feesValue, format: .currency(code: currency.id))
+                    .font(.body)
+            }
+            HStack {
+                Text("Expenses")
+                    .font(.body)
+                Spacer()
+                Text(expensesValue, format: .currency(code: currency.id))
+                    .font(.body)
+            }
+            VStack(spacing: 0) {
+                ForEach(Array(expensesByType.keys), id: \.self) { expenseType in
+                    HStack {
+                        Spacer()
+                        Text(expenseType.title)
+                        Text(expenseValue(for: expenseType), format: .currency(code: currency.id))
+                    }
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                }
+            }
+            
+            HStack {
+                Text("Balance")
+                    .font(.body)
+                Spacer()
+                Text(balanceValue, format: .currency(code: currency.id))
+                    .font(.body)
+                    .foregroundStyle(balanceValue >= 0 ? .green : .red)
+            }
+            .bold()
+            .padding(.top, 2)
+        }
+    }
+}
+
+#Preview {
+    let model = ModelContainer.sharedInMemoryModelContainer
+    
+    let c = Currency(id: "COP")
+    let l1 = Listing(title: "Distrio Vera", adminFees: [AdminFee(listing: nil, dateStart: .now, percent: 10)])
+    let l2 = Listing(title: "La Riviere", adminFees: [AdminFee(listing: nil, dateStart: .now, percent: 15)])
+    let t1 = Transaction(amountMicros: 2_000_000_000_000, currency: c, listing: l1, type: .paid)
+    let t2 = Transaction(amountMicros: 500_000_000_000, currency: c, listing: l1, type: .paid)
+    let t3 = Transaction(amountMicros: 70_000_000_000, currency: c, listing: l1, type: .expense, expenseConcept: "aseo", expensePaidByOwner: true)
+    let t4 = Transaction(amountMicros: 700_000_000_000, currency: c, listing: l2, type: .paid)
+    let t5 = Transaction(amountMicros: 75_000_000_000, currency: c, listing: l2, type: .expense, expenseConcept: "aseo2 dsf df", expensePaidByOwner: false)
+    model.mainContext.insert(t1)
+    model.mainContext.insert(t2)
+    model.mainContext.insert(t3)
+    model.mainContext.insert(t4)
+    model.mainContext.insert(t5)
+    let tras: [Transaction] = [t1,t2,t3, t4, t5]
+    
+    let ds = AppDataSource(transactionDataSource: TransactionDataSource(modelContainer: model), listingDataSource: ListingDataSource(modelContainer: model))
+    let vm = TransactionMonthDetailViewModel(dataSource: ds, transactions: tras, output: {_ in })
+    return TransactionMonthDetailView(viewModel: vm)
+}

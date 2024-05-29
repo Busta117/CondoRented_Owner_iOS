@@ -8,14 +8,12 @@
 import Foundation
 import SwiftData
 
-extension ModelContainer {
+public extension ModelContainer {
     
     private static var schema: Schema {
         Schema([
             Currency.self,
-            GenericTransaction.self,
-            ExpenseTransaction.self,
-            PaidTransaction.self,
+            Transaction.self,
             AdminFee.self,
             Admin.self,
             Listing.self

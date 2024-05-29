@@ -5,7 +5,9 @@
 //  Created by Santiago Bustamante on 17/04/24.
 //
 
+import CondoRented_Owner
 import XCTest
+import SwiftData
 
 final class CondoRented_OwnerTests: XCTestCase {
 
@@ -17,12 +19,23 @@ final class CondoRented_OwnerTests: XCTestCase {
         // Put teardown code here. This method is called after the invocation of each test method in the class.
     }
 
-    func testExample() throws {
-        // This is an example of a functional test case.
-        // Use XCTAssert and related functions to verify your tests produce the correct results.
-        // Any test you write for XCTest can be annotated as throws and async.
-        // Mark your test throws to produce an unexpected failure when your test encounters an uncaught error.
-        // Mark your test async to allow awaiting for asynchronous code to complete. Check the results with assertions afterwards.
+    @MainActor func testExample() throws {
+        
+//        let model = ModelContainer.sharedInMemoryModelContainer
+//        
+//        let c = Currency(id: "COP1")
+//        let l1 = Listing(title: "Distrio Vera")
+//        let l2 = Listing(title: "La Riviere")
+//        let t1 = Transaction(amountMicros: 2_000_000_000, currency: c, listing: l1, type: .notPaid)
+//        let t2 = Transaction(amountMicros: 500_000_000, currency: c, listing: l1, type: .notPaid)
+//        let t3 = Transaction(amountMicros: 70_000_000, currency: c, listing: l1, type: .expense, expenseConcept: "aseo", expensePaidByOwner: false)
+//        
+//        let tras: [Transaction] = [t1,t2,t3]
+//        
+//        let cosa = TransactionHelper.splitByListing(transactions: tras)
+//        
+//        print(cosa)
+        
     }
 
     func testPerformanceExample() throws {

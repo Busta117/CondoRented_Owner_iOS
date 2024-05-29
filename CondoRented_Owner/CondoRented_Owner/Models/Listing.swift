@@ -9,7 +9,16 @@ import Foundation
 import SwiftData
 
 @Model
-class Listing {
+class Listing: Identifiable, Equatable, Hashable {
+    
+    static func == (lhs: Listing, rhs: Listing) -> Bool {
+        lhs.id == rhs.id
+    }
+    
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
+    }
+    
     @Attribute(.unique) var id: String
     var title: String
     var link: URL?

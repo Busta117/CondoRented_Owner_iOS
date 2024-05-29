@@ -115,9 +115,6 @@ struct AddEditListingView: View {
     }
     
     private func saveAction() {
-        print("busta \(listing.title)")
-        print("busta admin \(listing.adminFees?.first?.admin?.name)")
-        
         do {
             try tempModelContext.save()
             if !path.isEmpty {
@@ -125,7 +122,6 @@ struct AddEditListingView: View {
             }
         } catch {
             print(error)
-            print("busta")
         }
         
 //        let id = listing.id

@@ -14,10 +14,10 @@ class Admin: Identifiable {
     var name: String
     @Relationship(inverse: \AdminFee.admin) var fees: [AdminFee]?
     
-    init(id: String = UUID().uuidString, name: String) {
+    init(id: String = UUID().uuidString, name: String, fees: [AdminFee]? = nil) {
         self.id = id
         self.name = name
-        self.fees = nil
+        self.fees = fees
     }
 }
     
