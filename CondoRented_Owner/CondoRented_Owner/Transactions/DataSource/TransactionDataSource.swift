@@ -17,8 +17,8 @@ protocol TransactionDataSourceProtocol {
 }
 
 final class TransactionDataSource: TransactionDataSourceProtocol {
-    private let modelContainer: ModelContainer
-    private let modelContext: ModelContext
+    private var modelContainer: ModelContainer? = nil
+    private var modelContext: ModelContext? = nil
     private let db: Firestore
 
     @MainActor
@@ -27,8 +27,14 @@ final class TransactionDataSource: TransactionDataSourceProtocol {
         self.modelContext = modelContainer.mainContext
         db = Firestore.firestore()
     }
+    
+    init() {
+        db = Firestore.firestore()
+    }
 
     func add(transaction: Transaction) throws {
+        guard let modelContext = modelContext else { return }
+        
         modelContext.insert(transaction)
         try modelContext.save()
         
@@ -36,16 +42,15 @@ final class TransactionDataSource: TransactionDataSourceProtocol {
     }
 
     func fetchTransactions() -> [Transaction] {
+        guard let modelContext = modelContext else { return [] }
         do {
             let descriptor = FetchDescriptor<Transaction>(sortBy: [SortDescriptor(\.date)])
             let transactions = try modelContext.fetch(descriptor)
             
             //sync with db
-            
-            
-            for transaction in transactions {
-                db.insert(transaction, collection: "Transaction")
-            }
+//            for transaction in transactions {
+//                db.insert(transaction, collection: "Transaction")
+//            }
                 
             
             return transactions
@@ -54,7 +59,20 @@ final class TransactionDataSource: TransactionDataSourceProtocol {
         }
     }
 
+    func firebaseSaveAll() {
+        Task {
+            let ls = fetchTransactions()
+            let db = Firestore.firestore()
+            for l in ls {
+                db.insert(l, collection: "Transaction")
+            }
+        }
+        
+    }
+    
     func remove(transaction: Transaction) throws {
+        guard let modelContext = modelContext else { return }
+        
         modelContext.delete(transaction)
         try modelContext.save()
     }

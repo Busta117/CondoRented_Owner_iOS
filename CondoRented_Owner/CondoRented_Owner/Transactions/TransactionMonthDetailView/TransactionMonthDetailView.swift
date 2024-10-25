@@ -173,7 +173,7 @@ struct TransactionMonthDetailView: View {
     private func transactionsListElement(for transaction: Transaction) -> some View {
         VStack {
             HStack {
-                Text(transaction.listing.title)
+                Text(transaction.listing?.title ?? "id: \(transaction.listingId)")
                     .font(.caption)
                     .bold()
                 Spacer()

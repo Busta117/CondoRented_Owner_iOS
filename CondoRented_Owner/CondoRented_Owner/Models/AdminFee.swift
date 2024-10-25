@@ -13,11 +13,21 @@ import SwiftData
 class AdminFee: CodableAndIdentifiable {
     
     @Attribute(.unique) var id: String
-    var listing: Listing?
     var dateStart: Date
     var dateFinish: Date?
     var percent: Double
-    var admin: Admin?
+    @available(*, deprecated, renamed: "listingId", message: "use listingId instead")
+    var listing: Listing? {
+        didSet {
+            listingId = listing?.id
+        }
+    }
+    @available(*, deprecated, renamed: "adminId", message: "use adminId instead")
+    var admin: Admin? {
+        didSet {
+            adminId = admin?.id
+        }
+    }
     
     var listingId: String?
     var adminId: String?
@@ -36,6 +46,9 @@ class AdminFee: CodableAndIdentifiable {
         self.dateFinish = dateFinish
         self.percent = percent
         self.admin = admin
+        
+        self.adminId = admin?.id
+        self.listingId = listing?.id
     }
     
     init(id: String = UUID().uuidString,
@@ -85,18 +98,29 @@ class AdminFee: CodableAndIdentifiable {
     static func fetchAll(modelContext: ModelContext) -> [AdminFee] {
         do {
             let descriptor = FetchDescriptor<AdminFee>(sortBy: [SortDescriptor(\.id)])
-            let fees = try modelContext.fetch(descriptor)
+            var fees = try modelContext.fetch(descriptor)
             
             //sync with db
-            let db = Firestore.firestore()
-            for fee in fees {
-                db.insert(fee, collection: "AdminFee")
-            }
+            fees = fees.map({ fee in
+                fee.adminId = fee.admin?.id
+                fee.listingId = fee.listing?.id
+                return fee
+            })
             
             return fees
         } catch {
             fatalError(error.localizedDescription)
         }
+    }
+    
+    static func firebaseSaveAll(modelContext: ModelContext) {
+        let fees = fetchAll(modelContext: modelContext)
+        
+        let db = Firestore.firestore()
+        for fee in fees {
+            db.insert(fee, collection: "AdminFee")
+        }
+        
     }
     
 }

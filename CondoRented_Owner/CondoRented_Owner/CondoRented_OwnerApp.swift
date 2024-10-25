@@ -124,7 +124,7 @@ struct CondoRented_OwnerApp: App {
                         .tabItem { Label("Transactions", systemImage: "dollarsign.circle") }
                         .tag(1)
                     
-                    ContentView(container: ModelContainer.sharedModelContainer)
+                    ListingsView(container: ModelContainer.sharedModelContainer)
                         .tabItem { Label("Listing", systemImage: "house.circle") }
                         .tag(2)
                 }

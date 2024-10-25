@@ -35,9 +35,19 @@ class Transaction: CodableAndIdentifiable {
     var amountFormatted: String
     var amountMicros: Double
     var currency: Currency
-    var listing: Listing
     var date: Date
     var type: TransactionType
+    
+    @available(*, deprecated, renamed: "listingId", message: "use id instead")
+    var listing: Listing? {
+        didSet {
+            if let listing = listing {
+                listingId = listing.id
+            }
+        }
+    }
+    
+    var listingId: String
     
     // when is paid
     var paidAmountFormatted: String?
@@ -47,6 +57,7 @@ class Transaction: CodableAndIdentifiable {
     var expenseConcept: String?
     var expensePaidByOwner: Bool?
     
+    @available(*, deprecated, renamed: "init", message: "use init with ids instead")
     init(id: String = UUID().uuidString, amountFormatted: String = "", amountMicros: Double = 0, currency: Currency, listing: Listing, date: Date = .now, type: TransactionType, paidAmountFormatted: String? = nil, paidAmountCurrency: Currency? = nil, expenseConcept: String? = nil, expensePaidByOwner: Bool? = nil) {
         self.id = id
         self.amountFormatted = amountFormatted
@@ -59,6 +70,23 @@ class Transaction: CodableAndIdentifiable {
         self.paidAmountCurrency = paidAmountCurrency
         self.expenseConcept = expenseConcept
         self.expensePaidByOwner = expensePaidByOwner
+        
+        self.listingId = listing.id
+    }
+    
+    init(id: String = UUID().uuidString, amountFormatted: String = "", amountMicros: Double = 0, currency: Currency, listingId: String, date: Date = .now, type: TransactionType, paidAmountFormatted: String? = nil, paidAmountCurrency: Currency? = nil, expenseConcept: String? = nil, expensePaidByOwner: Bool? = nil) {
+        self.id = id
+        self.amountFormatted = amountFormatted
+        self.amountMicros = amountMicros
+        self.currency = currency
+        self.date = date
+        self.type = type
+        self.paidAmountFormatted = paidAmountFormatted
+        self.paidAmountCurrency = paidAmountCurrency
+        self.expenseConcept = expenseConcept
+        self.expensePaidByOwner = expensePaidByOwner
+        
+        self.listingId = listingId
     }
     
     enum CodingKeys: String, CodingKey {
@@ -66,7 +94,7 @@ class Transaction: CodableAndIdentifiable {
         case amountFormatted
         case amountMicros
         case currency
-        case listing
+        case listingId
         case date
         case type
         case paidAmountFormatted
@@ -81,7 +109,7 @@ class Transaction: CodableAndIdentifiable {
         amountFormatted = try container.decode(String.self, forKey: .amountFormatted)
         amountMicros = try container.decode(Double.self, forKey: .amountMicros)
         currency = try container.decode(Currency.self, forKey: .currency)
-        listing = try container.decode(Listing.self, forKey: .listing)
+        listingId = try container.decode(String.self, forKey: .listingId)
         date = try container.decode(Date.self, forKey: .date)
         type = try container.decode(TransactionType.self, forKey: .type)
         paidAmountCurrency = try container.decodeIfPresent(Currency.self, forKey: .paidAmountCurrency)
@@ -96,7 +124,7 @@ class Transaction: CodableAndIdentifiable {
         try container.encode(amountFormatted, forKey: .amountFormatted)
         try container.encode(amountMicros, forKey: .amountMicros)
         try container.encode(currency, forKey: .currency)
-        try container.encode(listing, forKey: .listing)
+        try container.encode(listingId, forKey: .listingId)
         try container.encode(date, forKey: .date)
         try container.encode(type, forKey: .type)
         try container.encodeIfPresent(paidAmountCurrency, forKey: .paidAmountCurrency)

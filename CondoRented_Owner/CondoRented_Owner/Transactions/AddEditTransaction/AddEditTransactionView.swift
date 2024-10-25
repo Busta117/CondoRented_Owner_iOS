@@ -15,13 +15,22 @@ struct AddEditTransactionView: View {
     @FocusState private var textfieldIsFocused: Bool
     
     var body: some View {
-        Form {
-            amountSection
-            currencySection
-            listingSection
-            dateSection
-            typeSection
-            saveButtonSection
+        VStack {
+            if viewModel.loading {
+                VStack {
+                    Text("loading...")
+                    Spacer()
+                }
+            } else {
+                Form {
+                    amountSection
+                    currencySection
+                    listingSection
+                    dateSection
+                    typeSection
+                    saveButtonSection
+                }
+            }
         }
         .toolbar {
             ToolbarItemGroup(placement: .keyboard) {

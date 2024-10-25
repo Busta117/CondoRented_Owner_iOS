@@ -29,6 +29,7 @@ final class AddEditTransactionViewModel {
     
     var allCurrencies = [Currency]()
     
+    var loading: Bool = true
     var amount: Double = 0
     var isAmountCorrect: Bool {
         if amount > 0 {
@@ -37,7 +38,7 @@ final class AddEditTransactionViewModel {
         return false
     }
     
-    var currency: Currency
+    var currency: Currency = Currency(id: "COP")
     var listing: Listing? = nil
     var date: Date = .now
     var type: Transaction.TransactionType? = nil
@@ -50,29 +51,43 @@ final class AddEditTransactionViewModel {
     var expenseConcept: String? = nil
     var expensePaidByOwner: Bool = true
     
-    var allListing = [Listing]()
+    var allListing: [Listing] = []
     
     init(transaction: Transaction? = nil,
          dataSource: AppDataSourceProtocol,
          output: @escaping (Output)->()) {
         self.transaction = transaction
         self.dataSource = dataSource
-        
-        self.currency = Currency.all.first ?? Currency(id: "COP")
         self.output = output
-        allListing = dataSource.listingDataSource.fetchListings()
-        allCurrencies = Currency.all
+        
+        fetchData()
+    }
+    
+    func fetchData() {
+        Task {
+            allListing = await dataSource.listingDataSource.fetchListings()
+            
+            allCurrencies = Currency.all
+            self.currency = Currency.all.first ?? Currency(id: "COP")
+            
+            onDoneLoaded()
+        }
+    }
+    
+    func onDoneLoaded() {
         
         // edit mode
         if let transaction = transaction {
             self.amount = transaction.amountMicros * transaction.currency.microMultiplier
             self.currency = transaction.currency
-            self.listing = transaction.listing
+            self.listing = allListing.first(where: {$0.id == transaction.listingId})
             self.date = transaction.date
             self.type = transaction.type
             self.expenseConcept = transaction.expenseConcept
             self.expensePaidByOwner = transaction.expensePaidByOwner ?? true
         }
+        
+        loading = false
     }
     
     var navigationTitle: String {

@@ -61,12 +61,12 @@ public extension ModelContainer {
     @MainActor
     func sync() {
         let listingDataSource = ListingDataSource(modelContainer: self)
-        _ = listingDataSource.fetchListings()
+        listingDataSource.firebaseSaveAll()
         
         
         let transactionDataSource = TransactionDataSource(modelContainer: self)
-        _ = transactionDataSource.fetchTransactions()
+        transactionDataSource.firebaseSaveAll()
         
-        _ = AdminFee.fetchAll(modelContext: self.mainContext)
+        AdminFee.firebaseSaveAll(modelContext: self.mainContext)
     }
 }

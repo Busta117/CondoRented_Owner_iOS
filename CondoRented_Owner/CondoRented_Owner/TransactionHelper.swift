@@ -24,15 +24,17 @@ struct TransactionHelper: TransactionHelperProtocol {
         return arr.sorted(by: {$0.first!.date > $1.first!.date}) // oldest first
     }
     
-    static func splitByListing(transactions: [Transaction]) -> [Listing: [Transaction]] {
+    static func splitByListing(transactions: [Transaction], listings: [Listing]) -> [Listing: [Transaction]] {
         var ret: [Listing: [Transaction]] = [:]
         for transaction in transactions {
-            if ret[transaction.listing] != nil {
-                ret[transaction.listing]?.append(transaction)
-            } else {
-                ret[transaction.listing] = [transaction]
+            if let listing = listings.first(where: {$0.id == transaction.listingId}) {
+                if ret[listing] != nil {
+                    
+                    ret[listing]?.append(transaction)
+                } else {
+                    ret[listing] = [transaction]
+                }
             }
-            
         }
         return ret
     }
@@ -108,21 +110,21 @@ struct TransactionHelper: TransactionHelperProtocol {
     static func getFeeToPayMicrosValue(for transactions: [Transaction], includesExpenses: Bool) -> Double {
         var sum = 0.0
         
-        for transaction in transactions {
-            switch transaction.type {
-            case .paid:
-                if let adminFee = transaction.listing.adminFees?.first(where: { $0.dateFinish == nil }) {
-                    let percent = adminFee.percent > 1 ? (adminFee.percent / 100) : adminFee.percent
-                    sum += (transaction.amountMicros * percent )
-                }
-            case .expense:
-                if let payedByOwner = transaction.expensePaidByOwner, !payedByOwner, includesExpenses {
-                    sum += transaction.amountMicros
-                }
-            case .fixedCost, .utilities:
-                () // do nothing
-            }
-        }
+//        for transaction in transactions {
+//            switch transaction.type {
+//            case .paid:
+//                if let adminFee = transaction.listing.adminFees?.first(where: { $0.dateFinish == nil }) {
+//                    let percent = adminFee.percent > 1 ? (adminFee.percent / 100) : adminFee.percent
+//                    sum += (transaction.amountMicros * percent )
+//                }
+//            case .expense:
+//                if let payedByOwner = transaction.expensePaidByOwner, !payedByOwner, includesExpenses {
+//                    sum += transaction.amountMicros
+//                }
+//            case .fixedCost, .utilities:
+//                () // do nothing
+//            }
+//        }
         
         return sum
     }

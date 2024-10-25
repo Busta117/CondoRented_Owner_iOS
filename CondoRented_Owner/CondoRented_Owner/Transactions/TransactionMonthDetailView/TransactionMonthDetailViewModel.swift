@@ -26,12 +26,14 @@ final class TransactionMonthDetailViewModel {
     @ObservationIgnored
     private let dataSource: AppDataSourceProtocol
     
-    var transactionsByListing: [Listing:[Transaction]]
+    var transactionsByListing: [Listing: [Transaction]] = [:]
     var transactions: [Transaction]
     var titleMonth: String = ""
     private var output: (Output)->()
     
-    var listings: [Listing] {
+    var allListings: [Listing] = []
+    var listings: [Listing]
+    {
         Array(transactionsByListing.keys).sorted(by: { $0.title < $1.title })
     }
     
@@ -39,8 +41,16 @@ final class TransactionMonthDetailViewModel {
         self.dataSource = dataSource
         self.transactions = transactions
         self.output = output
-        self.transactionsByListing = TransactionHelper.splitByListing(transactions: transactions)
         self.titleMonth = transactions.first?.date.formatted(.dateTime.month(.wide).year()) ?? ""
+        
+        fetchData()
+    }
+    
+    private func fetchData() {
+        Task {
+            self.allListings = await dataSource.listingDataSource.fetchListings()
+            self.transactionsByListing = TransactionHelper.splitByListing(transactions: transactions, listings: self.allListings)
+        }
     }
     
     func input(_ input: Input) {
@@ -52,7 +62,7 @@ final class TransactionMonthDetailViewModel {
                 try? dataSource.transactionDataSource.remove(transaction: tr)
             }
             transactions.remove(atOffsets: indexSet)
-            transactionsByListing = TransactionHelper.splitByListing(transactions: transactions)
+            transactionsByListing = TransactionHelper.splitByListing(transactions: transactions, listings: allListings)
             
         case .addNewTapped:
             output(.addNewTransaction)

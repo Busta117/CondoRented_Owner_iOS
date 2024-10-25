@@ -1,5 +1,5 @@
 //
-//  ContentView.swift
+//  ListingsView.swift
 //  CondoRented_Owner
 //
 //  Created by Santiago Bustamante on 17/04/24.
@@ -8,16 +8,18 @@
 import SwiftUI
 import SwiftData
 
-struct ContentView: View {
+struct ListingsView: View {
     @Environment(\.modelContext) private var modelContext
     @State var container: ModelContainer
-    @Query private var listingList: [Listing]
+    
+    @State var viewModel: ListingsViewModel = ListingsViewModel(dataSource: AppDataSource(transactionDataSource: TransactionDataSource(), listingDataSource: ListingDataSource()))
+    
     @State private var path = NavigationPath()
 
     var body: some View {
         NavigationStack(path: $path) {
             List {
-                ForEach(listingList) { item in
+                ForEach(viewModel.listingList) { item in
                     NavigationLink(value: item) {
                         Image(systemName: "house")
                             .imageScale(.large)
@@ -52,7 +54,7 @@ struct ContentView: View {
     private func deleteItems(offsets: IndexSet) {
         withAnimation {
             for index in offsets {
-                modelContext.delete(listingList[index])
+//                modelContext.delete(viewModel.listingList[index])
             }
         }
     }
@@ -60,6 +62,6 @@ struct ContentView: View {
 
 #Preview {
     let container = ModelContainer.sharedInMemoryModelContainer
-    return ContentView(container: container)
+    return ListingsView(container: container)
         .modelContainer(container)
 }
