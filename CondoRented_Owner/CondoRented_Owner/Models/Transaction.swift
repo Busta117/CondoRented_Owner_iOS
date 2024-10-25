@@ -47,7 +47,8 @@ class Transaction: CodableAndIdentifiable {
         }
     }
     
-    var listingId: String
+    @Transient
+    var listingId: String = ""
     
     // when is paid
     var paidAmountFormatted: String?

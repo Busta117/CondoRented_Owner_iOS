@@ -45,14 +45,13 @@ final class TransactionDataSource: TransactionDataSourceProtocol {
         guard let modelContext = modelContext else { return [] }
         do {
             let descriptor = FetchDescriptor<Transaction>(sortBy: [SortDescriptor(\.date)])
-            let transactions = try modelContext.fetch(descriptor)
+            var transactions = try modelContext.fetch(descriptor)
             
-            //sync with db
-//            for transaction in transactions {
-//                db.insert(transaction, collection: "Transaction")
-//            }
+            transactions = transactions.map({ tran in
+                tran.listingId = tran.listing?.id ?? ""
+                return tran
+            })
                 
-            
             return transactions
         } catch {
             fatalError(error.localizedDescription)
@@ -60,8 +59,8 @@ final class TransactionDataSource: TransactionDataSourceProtocol {
     }
 
     func firebaseSaveAll() {
-        Task {
-            let ls = fetchTransactions()
+        Task.detached { @MainActor in
+            let ls = self.fetchTransactions()
             let db = Firestore.firestore()
             for l in ls {
                 db.insert(l, collection: "Transaction")

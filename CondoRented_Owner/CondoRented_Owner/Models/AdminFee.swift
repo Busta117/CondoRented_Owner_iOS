@@ -29,8 +29,10 @@ class AdminFee: CodableAndIdentifiable {
         }
     }
     
-    var listingId: String?
-    var adminId: String?
+    @Transient
+    var listingId: String? = nil
+    @Transient
+    var adminId: String? = nil
     
     @available(*, deprecated, renamed: "init", message: "use init with ids")
     init(id: String = UUID().uuidString,

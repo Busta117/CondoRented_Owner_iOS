@@ -35,6 +35,7 @@ final class ListingDataSource: ListingDataSourceProtocol {
         do {
             let result  = try await docRef.getDocuments()
             let results = try result.documents.map({ try $0.data(as: Listing.self) })
+            
             return results
             
         } catch {
@@ -47,7 +48,12 @@ final class ListingDataSource: ListingDataSourceProtocol {
     func fetchListingsLocal() async -> [Listing] {
         do {
             let descriptor = FetchDescriptor<Listing>(sortBy: [SortDescriptor(\.title)])
-            let listings = try modelContext?.fetch(descriptor) ?? []
+            var listings = try modelContext?.fetch(descriptor) ?? []
+            
+            listings = listings.map({ listing in
+                listing.adminFeeIds = listing.adminFees?.map({$0.id}) ?? []
+                return listing
+            })
             
             return listings
         } catch {

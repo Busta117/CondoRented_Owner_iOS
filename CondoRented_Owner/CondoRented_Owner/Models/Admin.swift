@@ -20,7 +20,8 @@ class Admin: CodableAndIdentifiable {
         }
     }
     
-    var feeIds: [String]
+    @Transient
+    var feeIds: [String] = []
     
     @available(*, deprecated, renamed: "init", message: "use init with ids")
     init(id: String = UUID().uuidString, name: String, fees: [AdminFee]? = nil) {

@@ -31,7 +31,8 @@ class Listing: CodableAndIdentifiable, Equatable, Hashable {
         }
     }
     
-    var adminFeeIds: [String]
+    @Transient
+    var adminFeeIds: [String] = []
     
     @available(*, deprecated, renamed: "init", message: "use init with ids")
     init(id: String = UUID().uuidString,
