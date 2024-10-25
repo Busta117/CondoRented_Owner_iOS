@@ -7,6 +7,7 @@
 
 import SwiftUI
 import SwiftData
+import FirebaseFirestore
 
 struct NewAdminFeeView: View {
     
@@ -150,6 +151,11 @@ struct NewAdminFeeView: View {
         if !path.isEmpty {
             path.removeLast()
         }
+        
+        let db = Firestore.firestore()
+        db.insert(adminFee, collection: "AdminFee")
+        db.insert(listing, collection: "Listing")
+        
 //        try? tmpContext.save()
 //        print(adminFee.admin?.name)
 //        let id = listing.id

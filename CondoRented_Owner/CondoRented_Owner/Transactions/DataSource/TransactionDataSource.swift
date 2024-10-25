@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import FirebaseFirestore
 import SwiftData
 import SwiftUI
 
@@ -18,22 +19,36 @@ protocol TransactionDataSourceProtocol {
 final class TransactionDataSource: TransactionDataSourceProtocol {
     private let modelContainer: ModelContainer
     private let modelContext: ModelContext
+    private let db: Firestore
 
     @MainActor
     init(modelContainer: ModelContainer) {
         self.modelContainer = modelContainer
         self.modelContext = modelContainer.mainContext
+        db = Firestore.firestore()
     }
 
     func add(transaction: Transaction) throws {
         modelContext.insert(transaction)
         try modelContext.save()
+        
+        db.insert(transaction, collection: "Transaction")
     }
 
     func fetchTransactions() -> [Transaction] {
         do {
             let descriptor = FetchDescriptor<Transaction>(sortBy: [SortDescriptor(\.date)])
-            return try modelContext.fetch(descriptor)
+            let transactions = try modelContext.fetch(descriptor)
+            
+            //sync with db
+            
+            
+            for transaction in transactions {
+                db.insert(transaction, collection: "Transaction")
+            }
+                
+            
+            return transactions
         } catch {
             fatalError(error.localizedDescription)
         }

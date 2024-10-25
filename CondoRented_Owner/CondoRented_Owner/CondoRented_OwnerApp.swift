@@ -7,7 +7,80 @@
 
 import SwiftUI
 import SwiftData
+import FirebaseCore
+import FirebaseFirestore
 
+class AppDelegate: NSObject, UIApplicationDelegate {
+    func application(_ application: UIApplication,
+                     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
+        FirebaseApp.configure()
+        
+        
+        
+        createAdminsIfNeeded()
+        createCurrencyIfNeeded()
+        ModelContainer.sharedModelContainer.sync()
+        
+        return true
+    }
+    
+    @MainActor
+    func createAdminsIfNeeded() {
+        
+        let container = ModelContainer.sharedModelContainer
+        let modelContext = container.mainContext
+        let descriptor = FetchDescriptor<Admin>()
+        
+        do {
+            let existElement = try modelContext.fetch(descriptor)
+            if existElement.count == 0 {
+                let admin = Admin(name: "Jorge Luis")
+                let admin2 = Admin(name: "Santiago Bustamante")
+                modelContext.insert(admin)
+                modelContext.insert(admin2)
+            }
+            
+            let newExistElement = try modelContext.fetch(descriptor)
+            
+            let db = Firestore.firestore()
+            for admin in newExistElement {
+                db.insert(admin, collection: "Admin")
+            }
+            
+            
+        } catch {
+            print(error)
+        }
+    }
+    
+    @MainActor
+    func createCurrencyIfNeeded() {
+        
+        let container = ModelContainer.sharedModelContainer
+        let modelContext = container.mainContext
+        let descriptor = FetchDescriptor<Currency>()
+        
+        do {
+            let existElement = try modelContext.fetch(descriptor)
+            if existElement.count == 0 {
+                let c1 = Currency(id: "COP", microMultiplier: 0.000001)
+                let c2 = Currency(id: "USD", microMultiplier: 0.000001)
+                modelContext.insert(c1)
+                modelContext.insert(c2)
+                
+            }
+        } catch {
+            print(error)
+        }
+        
+        Currency.loadAll()
+        
+        let db = Firestore.firestore()
+        for c in Currency.all {
+            db.insert(c, collection: "Currency")
+        }
+    }
+}
 
 struct TransactionTabbarItemView: View {
     @State private var navigationPath = NavigationPath()
@@ -24,6 +97,8 @@ struct TransactionTabbarItemView: View {
 
 @main
 struct CondoRented_OwnerApp: App {
+    
+    @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
 
 //    private var transactionSummaryListViewModel: TransactionSummaryListViewModel
 //    private var transactionCoordinator = TransactionCoordinator()
@@ -36,8 +111,8 @@ struct CondoRented_OwnerApp: App {
 //        let transactionVM = TransactionSummaryListViewModel(dataSource: dataSource, coordinator: coordinator)
 //        transactionSummaryListViewModel = transactionVM
         
-        createAdminsIfNeeded()
-        createCurrencyIfNeeded()
+//        createAdminsIfNeeded()
+//        createCurrencyIfNeeded()
     }
     
     var body: some Scene {
@@ -60,47 +135,4 @@ struct CondoRented_OwnerApp: App {
         .modelContainer(ModelContainer.sharedModelContainer)
         
     }
-    
-    @MainActor 
-    func createAdminsIfNeeded() {
-        
-        let container = ModelContainer.sharedModelContainer
-        let modelContext = container.mainContext
-        let descriptor = FetchDescriptor<Admin>()
-        
-        do {
-            let existElement = try modelContext.fetch(descriptor)
-            if existElement.count == 0 {
-                let admin = Admin(name: "Jorge Luis")
-                let admin2 = Admin(name: "Santiago Bustamante")
-                modelContext.insert(admin)
-                modelContext.insert(admin2)
-            }    
-        } catch {
-            print(error)
-        }
-    }
-    
-    @MainActor 
-    func createCurrencyIfNeeded() {
-        
-        let container = ModelContainer.sharedModelContainer
-        let modelContext = container.mainContext
-        let descriptor = FetchDescriptor<Currency>()
-        
-        do {
-            let existElement = try modelContext.fetch(descriptor)
-            if existElement.count == 0 {
-                let c1 = Currency(id: "COP", microMultiplier: 0.000001)
-                let c2 = Currency(id: "USD", microMultiplier: 0.000001)
-                modelContext.insert(c1)
-                modelContext.insert(c2)
-            }
-        } catch {
-            print(error)
-        }
-        
-        Currency.loadAll()
-    }
-    
 }

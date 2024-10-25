@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import FirebaseFirestore
 import SwiftData
 
 struct AddEditListingView: View {
@@ -120,6 +121,10 @@ struct AddEditListingView: View {
             if !path.isEmpty {
                 path.removeLast()
             }
+            
+            let db = Firestore.firestore()
+            db.insert(listing, collection: "Listing")
+            
         } catch {
             print(error)
         }
