@@ -18,7 +18,15 @@ struct AddEditTransactionView: View {
         VStack {
             if viewModel.loading {
                 VStack {
-                    Text("loading...")
+                    ZStack {
+                        Color.black.opacity(0.3)
+                            .frame(width: 100, height: 100)
+                            .clipShape(RoundedRectangle(cornerRadius: 10))
+                        ProgressView()
+                            .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                            .scaleEffect(2)
+                            .padding()
+                    }
                     Spacer()
                 }
             } else {
@@ -168,10 +176,7 @@ struct AddEditTransactionView: View {
     container.mainContext.insert(l1)
     container.mainContext.insert(l2)
     
-    
-    let transactionDataSource = TransactionDataSource(modelContainer: container)
-    let listingDataSource = ListingDataSource(modelContainer: container)
-    let appDataSource = AppDataSource(transactionDataSource: transactionDataSource, listingDataSource: listingDataSource)
+    let appDataSource = AppDataSource.defaultDataSource
     
     return AddEditTransactionView(viewModel: AddEditTransactionViewModel(dataSource: appDataSource, output: { _ in }))
 }

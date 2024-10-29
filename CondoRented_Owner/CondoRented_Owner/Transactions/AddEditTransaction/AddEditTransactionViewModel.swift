@@ -109,6 +109,7 @@ final class AddEditTransactionViewModel {
     func input(_ input: Input) {
         switch input {
         case .saveTapped:
+            loading = true
             guard let listing = listing, let type = type else {
                 return
             }
@@ -121,7 +122,7 @@ final class AddEditTransactionViewModel {
             let newTransaction = Transaction(id: transaction?.id ?? UUID().uuidString, amountFormatted: "",
                                              amountMicros: microAmount,
                                              currency: currency,
-                                             listing: listing,
+                                             listingId: listing.id,
                                              date: date,
                                              type: type,
                                              paidAmountFormatted: nil,
@@ -129,13 +130,11 @@ final class AddEditTransactionViewModel {
                                              expenseConcept: expenseConcept,
                                              expensePaidByOwner: expensePaidByOwner)
             
-            do {
-                try dataSource.transactionDataSource.add(transaction: newTransaction)
+            Task {
+                await dataSource.transactionDataSource.add(transaction: newTransaction)
+                loading = false
                 output(.back)
-            } catch {
-              print(error)
             }
-            
         }
     }
 }

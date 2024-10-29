@@ -10,16 +10,31 @@ import Foundation
 protocol AppDataSourceProtocol {
     var transactionDataSource: TransactionDataSourceProtocol { get }
     var listingDataSource: ListingDataSourceProtocol { get }
+    var adminDataSource: AdminDataSourceProtocol { get }
+    var adminFeeDataSource: AdminFeeDataSourceProtocol { get }
 }
 
 final class AppDataSource: AppDataSourceProtocol {
     let transactionDataSource: TransactionDataSourceProtocol
     let listingDataSource: ListingDataSourceProtocol
+    let adminDataSource: AdminDataSourceProtocol
+    let adminFeeDataSource: AdminFeeDataSourceProtocol
     
     init(transactionDataSource: TransactionDataSourceProtocol, 
-         listingDataSource: ListingDataSourceProtocol) {
+         listingDataSource: ListingDataSourceProtocol,
+         adminDataSource: AdminDataSourceProtocol,
+         adminFeeDataSource: AdminFeeDataSourceProtocol) {
         
         self.transactionDataSource = transactionDataSource
         self.listingDataSource = listingDataSource
+        self.adminDataSource = adminDataSource
+        self.adminFeeDataSource = adminFeeDataSource
     }
+    
+    static var defaultDataSource: AppDataSource = {
+        return AppDataSource(transactionDataSource: TransactionDataSource(),
+                             listingDataSource: ListingDataSource(),
+                             adminDataSource: AdminDataSource(),
+                             adminFeeDataSource: AdminFeeDataSource())
+    }()
 }

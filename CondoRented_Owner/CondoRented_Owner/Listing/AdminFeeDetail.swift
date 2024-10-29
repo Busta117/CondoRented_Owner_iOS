@@ -11,6 +11,7 @@ import SwiftData
 struct AdminFeeDetail: View {
     
     @State var adminFee: AdminFee
+    @State var admin: Admin?
     var isActive: Bool {
         (adminFee.dateFinish == nil)
     }
@@ -23,7 +24,7 @@ struct AdminFeeDetail: View {
                         .font(.caption)
                         .foregroundStyle(.green)
                 }
-                Text(adminFee.admin?.name ?? "-")
+                Text(admin?.name ?? "-")
                     .font(.headline)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
@@ -47,6 +48,6 @@ struct AdminFeeDetail: View {
     let container = ModelContainer.sharedInMemoryModelContainer
     let adminFee = AdminFee(id: "", listing: nil, dateStart: .now, percent: 15, admin: Admin(name: "pepe perez"))
     container.mainContext.insert(adminFee)
-    return AdminFeeDetail(adminFee: adminFee)
+    return AdminFeeDetail(adminFee: adminFee, admin: Admin(name: "", feeIds: [adminFee.id]))
         .modelContainer(container)
 }

@@ -10,6 +10,8 @@ import SwiftData
 
 @Model
 class Currency: CodableAndIdentifiable {
+    private(set) var collectionId = "Currency"
+    
     @Attribute(.unique) var id: String
     var microMultiplier: Double
     

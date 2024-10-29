@@ -12,9 +12,11 @@ struct MonthTransactionsChartPieView: View {
     
     private var transactions: [Transaction] = []
     private var chartData: [ChartDataSource]
+    private var adminFees: [AdminFee]
     
-    init(transactions: [Transaction]) {
+    init(transactions: [Transaction], adminFees: [AdminFee]) {
         self.transactions = transactions
+        self.adminFees = adminFees
         
         var tmp: [ChartDataSource] = [.init(transactionType: .expenses, value: 0),
                                       .init(transactionType: .incomes, value: 0)]
@@ -31,7 +33,7 @@ struct MonthTransactionsChartPieView: View {
                 tmp[0].value += transaction.amountMicros
             }
         }
-        let fees: (Double, Currency) = TransactionHelper.getFeesToPayValue(for: transactions, includesExpenses: false)
+        let fees: (Double, Currency) = TransactionHelper.getFeesToPayValue(for: transactions, includesExpenses: false, adminFees: adminFees)
         if fees.0 > 0 {
             tmp.append(ChartDataSource(transactionType: .fees, value: (fees.0 / fees.1.microMultiplier)))
         }
@@ -78,5 +80,5 @@ private class ChartDataSource: Identifiable {
 }
 
 #Preview {
-    return MonthTransactionsChartPieView(transactions: [])
+    return MonthTransactionsChartPieView(transactions: [], adminFees: [])
 }

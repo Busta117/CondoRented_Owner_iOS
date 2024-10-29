@@ -10,16 +10,24 @@ import FirebaseFirestore
 import SwiftData
 
 protocol CodableAndIdentifiable: Codable {
+    var collectionId: String { get }
     var id: String { get set }
 }
 extension Firestore {
-    func insert<T>(_ object: T, collection: String) where T: CodableAndIdentifiable {
-        Task.detached { @MainActor in
-            do {
-                try self.collection(collection).document(object.id).setData(from: object)
-            } catch {
-                print("Error adding document: \(error)")
-            }
+    
+    func insert<T>(_ object: T) async where T: CodableAndIdentifiable {
+        do {
+            try self.collection(object.collectionId).document(object.id).setData(from: object)
+        } catch {
+            print("Error adding document: \(error)")
+        }
+    }
+    
+    func delete<T>(_ object: T) async where T: CodableAndIdentifiable {
+        do {
+            try await self.collection(object.collectionId).document(object.id).delete()
+        } catch {
+            print("Error adding document: \(error)")
         }
     }
 }
@@ -60,11 +68,13 @@ public extension ModelContainer {
     
     @MainActor
     func sync() {
-        let listingDataSource = ListingDataSource(modelContainer: self)
+        return
+        return
+        let listingDataSource = ListingDataSource()
         listingDataSource.firebaseSaveAll()
         
         
-        let transactionDataSource = TransactionDataSource(modelContainer: self)
+        let transactionDataSource = TransactionDataSource()
         transactionDataSource.firebaseSaveAll()
         
         AdminFee.firebaseSaveAll(modelContext: self.mainContext)

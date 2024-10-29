@@ -11,49 +11,32 @@ import SwiftData
 
 struct AddEditListingView: View {
     
-    @Environment(\.modelContext) private var modelContext
-    @State private var container: ModelContainer
+//    @Environment(\.modelContext) private var modelContext
+//    @State private var container: ModelContainer
+//    private var tempModelContext: ModelContext
     
-    private var tempModelContext: ModelContext
+    @State var viewModel: AddEditListingViewModel
     @Binding var path: NavigationPath
-    @State var listing: Listing
     
-    init(path: Binding<NavigationPath>, container: ModelContainer, listing: Listing) {
+    init(path: Binding<NavigationPath>, viewModel: AddEditListingViewModel) {
         
         self._path = path
-        self.container = container
-        self.tempModelContext = ModelContext(container)
-        self.tempModelContext.autosaveEnabled = false
-        
-        let id = listing.id
-        let descriptor = FetchDescriptor<Listing>(predicate: #Predicate {$0.id == id})
-        do {
-            let existElement = try tempModelContext.fetch(descriptor)
-            if let listingTmp = existElement.first {
-                self.listing = listingTmp
-            } else {
-                self.listing = listing
-            }
-        } catch {
-            self.listing = listing
-        }
-        
-        self.tempModelContext.insert(self.listing)
+        self.viewModel = viewModel
     }
     
     var body: some View {
         Form {
             Section {
-                TextField("", text: $listing.title)
+                TextField("", text: $viewModel.listing.title)
             } header: {
                 Text("Listing Name")
             }
             
             Section {
-                if let adminFees = listing.adminFees, adminFees.count > 0 {
+                if viewModel.adminFees.count > 0 {
                     List {
-                        ForEach(adminFees) { item in
-                            AdminFeeDetail(adminFee: item)
+                        ForEach(viewModel.adminFees) { item in
+                            AdminFeeDetail(adminFee: item, admin: viewModel.admin(forId: item.adminId))
                         }
                     }
                 }
@@ -99,7 +82,7 @@ struct AddEditListingView: View {
             }
         }
         .navigationDestination(for: AdminFee.self) { adminFee in
-            NewAdminFeeView(tmpContext: tempModelContext, path: $path, listing: listing)
+//            NewAdminFeeView(tmpContext: tempModelContext, path: $path, listing: listing)
         }
         .navigationTitle("Listing")
         .navigationBarTitleDisplayMode(.inline)
@@ -112,22 +95,22 @@ struct AddEditListingView: View {
 //        tempModelContext.insert(adminFee)
 //        listing.adminFees?.append(adminFee)
                                 
-        path.append(AdminFee(listing: listing, dateStart: .now, percent: 15, admin: Admin(name: "")))
+//        path.append(AdminFee(listing: listing, dateStart: .now, percent: 15, admin: Admin(name: "")))
     }
     
     private func saveAction() {
-        do {
-            try tempModelContext.save()
-            if !path.isEmpty {
-                path.removeLast()
-            }
-            
-            let db = Firestore.firestore()
-            db.insert(listing, collection: "Listing")
-            
-        } catch {
-            print(error)
-        }
+//        do {
+//            try tempModelContext.save()
+//            if !path.isEmpty {
+//                path.removeLast()
+//            }
+//            
+//            let db = Firestore.firestore()
+//            db.insert(listing, collection: "Listing")
+//            
+//        } catch {
+//            print(error)
+//        }
         
 //        let id = listing.id
 //        let descriptor = FetchDescriptor<Listing>(predicate: #Predicate {$0.id == id})
@@ -149,10 +132,10 @@ struct AddEditListingView: View {
     }
 }
 
-#Preview {
-    let container = ModelContainer.sharedInMemoryModelContainer
-    let example = Listing(id: "1", title: "title here")
-    return AddEditListingView(path: .constant(NavigationPath()), container: container, listing: example)
-        .modelContainer(container)
-        .modelContext(container.mainContext)
-}
+//#Preview {
+//    let container = ModelContainer.sharedInMemoryModelContainer
+//    let example = Listing(id: "1", title: "title here")
+//    return AddEditListingView(path: .constant(NavigationPath()), container: container, listing: example)
+//        .modelContainer(container)
+//        .modelContext(container.mainContext)
+//}

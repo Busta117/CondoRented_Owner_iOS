@@ -11,7 +11,7 @@ import Foundation
 final class ListingsViewModel {
     
     @ObservationIgnored
-    private let dataSource: AppDataSourceProtocol
+    let dataSource: AppDataSourceProtocol
     
     var listingList: [Listing] = []
     

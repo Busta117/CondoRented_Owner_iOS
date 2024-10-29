@@ -34,8 +34,8 @@ class AppDelegate: NSObject, UIApplicationDelegate {
         do {
             let existElement = try modelContext.fetch(descriptor)
             if existElement.count == 0 {
-                let admin = Admin(name: "Jorge Luis")
-                let admin2 = Admin(name: "Santiago Bustamante")
+                let admin = Admin(name: "Jorge Luis", feeIds: [])
+                let admin2 = Admin(name: "Santiago Bustamante", feeIds: [])
                 modelContext.insert(admin)
                 modelContext.insert(admin2)
             }
@@ -43,8 +43,10 @@ class AppDelegate: NSObject, UIApplicationDelegate {
             let newExistElement = try modelContext.fetch(descriptor)
             
             let db = Firestore.firestore()
-            for admin in newExistElement {
-                db.insert(admin, collection: "Admin")
+            Task {
+                for admin in newExistElement {
+                    await db.insert(admin)
+                }
             }
             
             
@@ -76,8 +78,10 @@ class AppDelegate: NSObject, UIApplicationDelegate {
         Currency.loadAll()
         
         let db = Firestore.firestore()
-        for c in Currency.all {
-            db.insert(c, collection: "Currency")
+        Task {
+            for c in Currency.all {
+                await db.insert(c)
+            }
         }
     }
 }

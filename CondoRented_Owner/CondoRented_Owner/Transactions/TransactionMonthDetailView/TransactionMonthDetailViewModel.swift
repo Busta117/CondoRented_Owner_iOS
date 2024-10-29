@@ -8,6 +8,7 @@
 import Foundation
 import SwiftUI
 import SwiftData
+import Combine
 
 @Observable
 final class TransactionMonthDetailViewModel {
@@ -25,13 +26,17 @@ final class TransactionMonthDetailViewModel {
     
     @ObservationIgnored
     private let dataSource: AppDataSourceProtocol
+    @ObservationIgnored
+    private var cancellables = Set<AnyCancellable>()
     
     var transactionsByListing: [Listing: [Transaction]] = [:]
     var transactions: [Transaction]
     var titleMonth: String = ""
+    var isLoading = false
     private var output: (Output)->()
     
     var allListings: [Listing] = []
+    var allAdminFees: [AdminFee] = []
     var listings: [Listing]
     {
         Array(transactionsByListing.keys).sorted(by: { $0.title < $1.title })
@@ -39,18 +44,38 @@ final class TransactionMonthDetailViewModel {
     
     init(dataSource: AppDataSourceProtocol, transactions: [Transaction], output: @escaping (Output)->()) {
         self.dataSource = dataSource
-        self.transactions = transactions
+        self.transactions = transactions.sorted(by: {$0.date < $1.date})
         self.output = output
         self.titleMonth = transactions.first?.date.formatted(.dateTime.month(.wide).year()) ?? ""
         
+        registerListeners()
         fetchData()
     }
     
-    private func fetchData() {
+    private func fetchData(silence: Bool = false) {
+        if !silence {
+            isLoading = true
+        }
         Task {
             self.allListings = await dataSource.listingDataSource.fetchListings()
+            self.allAdminFees = await dataSource.adminFeeDataSource.fetchAll()
             self.transactionsByListing = TransactionHelper.splitByListing(transactions: transactions, listings: self.allListings)
+            isLoading = false
         }
+    }
+    
+    private func registerListeners() {
+        dataSource.transactionDataSource.actionSubject.sink { [weak self] action in
+            switch action {
+            case .added(let transaction):
+                self?.fetchData(silence: true)
+            case .removed:
+                self?.fetchData(silence: true)
+            case .none:
+                ()
+            }
+        }
+        .store(in: &cancellables)
     }
     
     func input(_ input: Input) {
@@ -58,17 +83,24 @@ final class TransactionMonthDetailViewModel {
         case .deleteTapped(let indexSet):
             
             let transToDelete = indexSet.map { transactions[$0] }
-            transToDelete.forEach { tr in
-                try? dataSource.transactionDataSource.remove(transaction: tr)
+            Task {
+                for tr in transToDelete {
+                    await dataSource.transactionDataSource.remove(transaction: tr)
+                }
+                
+                transactions.remove(atOffsets: indexSet)
+                transactionsByListing = TransactionHelper.splitByListing(transactions: transactions, listings: allListings)
             }
-            transactions.remove(atOffsets: indexSet)
-            transactionsByListing = TransactionHelper.splitByListing(transactions: transactions, listings: allListings)
             
         case .addNewTapped:
             output(.addNewTransaction)
         case .editTransaction(let transaction):
             output(.editTransaction(transaction))
         }
+    }
+    
+    func listing(forId id: String) -> Listing? {
+        allListings.first(where: {$0.id == id})
     }
     
     func expectingValue(for listing: Listing) -> (Double, Currency) {
@@ -81,7 +113,7 @@ final class TransactionMonthDetailViewModel {
     }
     
     func feesToPayValue(for listing: Listing) -> (Double, Currency) {
-        let value = TransactionHelper.getFeesToPayValue(for: transactionsByListing[listing] ?? [], includesExpenses: false)
+        let value = TransactionHelper.getFeesToPayValue(for: transactionsByListing[listing] ?? [], includesExpenses: false, adminFees: allAdminFees)
         return (value.0, value.1)
     }
     
@@ -91,7 +123,7 @@ final class TransactionMonthDetailViewModel {
     }
     
     func totalFeesToPayValue() -> (Double, Currency) {
-        let value = TransactionHelper.getFeesToPayValue(for: transactions, includesExpenses: true)
+        let value = TransactionHelper.getFeesToPayValue(for: transactions, includesExpenses: true, adminFees: allAdminFees)
         return (value.0, value.1)
     }
     

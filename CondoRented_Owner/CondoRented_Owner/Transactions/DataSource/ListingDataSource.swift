@@ -14,16 +14,8 @@ protocol ListingDataSourceProtocol {
 }
 
 final class ListingDataSource: ListingDataSourceProtocol {
-    private var modelContainer: ModelContainer?
-    private var modelContext: ModelContext?
-    private let db: Firestore
     
-    @MainActor
-    init(modelContainer: ModelContainer) {
-        self.modelContainer = modelContainer
-        self.modelContext = modelContainer.mainContext
-        db = Firestore.firestore()
-    }
+    private let db: Firestore
     
     init() {
         db = Firestore.firestore()
@@ -45,7 +37,11 @@ final class ListingDataSource: ListingDataSourceProtocol {
     }
     
     
+    @MainActor
     func fetchListingsLocal() async -> [Listing] {
+        var modelContainer: ModelContainer? = ModelContainer.sharedModelContainer
+        var modelContext: ModelContext? = modelContainer?.mainContext
+        
         do {
             let descriptor = FetchDescriptor<Listing>(sortBy: [SortDescriptor(\.title)])
             var listings = try modelContext?.fetch(descriptor) ?? []
@@ -66,7 +62,7 @@ final class ListingDataSource: ListingDataSourceProtocol {
             let ls = await fetchListingsLocal()
             let db = Firestore.firestore()
             for l in ls {
-                db.insert(l, collection: "Listing")
+                await db.insert(l)
             }
         }
     }

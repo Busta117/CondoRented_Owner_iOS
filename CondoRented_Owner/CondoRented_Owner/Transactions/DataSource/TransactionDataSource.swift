@@ -9,39 +9,58 @@ import Foundation
 import FirebaseFirestore
 import SwiftData
 import SwiftUI
+import Combine
+
+enum TransactionAction {
+    case added(Transaction)
+    case removed(Transaction)
+}
 
 protocol TransactionDataSourceProtocol {
-    func fetchTransactions() -> [Transaction]
-    func add(transaction: Transaction) throws
-    func remove(transaction: Transaction) throws
+    var actionSubject: CurrentValueSubject<TransactionAction?, Never> { get }
+    func fetchTransactions() async -> [Transaction]
+    func add(transaction: Transaction) async
+    func remove(transaction: Transaction) async
 }
 
 final class TransactionDataSource: TransactionDataSourceProtocol {
-    private var modelContainer: ModelContainer? = nil
-    private var modelContext: ModelContext? = nil
+    let actionSubject = CurrentValueSubject<TransactionAction?, Never>(nil)
+    
     private let db: Firestore
-
-    @MainActor
-    init(modelContainer: ModelContainer) {
-        self.modelContainer = modelContainer
-        self.modelContext = modelContainer.mainContext
-        db = Firestore.firestore()
-    }
     
     init() {
         db = Firestore.firestore()
     }
 
-    func add(transaction: Transaction) throws {
-        guard let modelContext = modelContext else { return }
+    func add(transaction: Transaction) async {
+        await db.insert(transaction)
+        actionSubject.send(.added(transaction))
+    }
+    
+    func remove(transaction: Transaction) async {
+        await db.delete(transaction)
+        actionSubject.send(.removed(transaction))
+    }
+    
+    func fetchTransactions() async -> [Transaction] {
+        let docRef = db.collection("Transaction")
         
-        modelContext.insert(transaction)
-        try modelContext.save()
-        
-        db.insert(transaction, collection: "Transaction")
+        do {
+            let result  = try await docRef.getDocuments()
+            let results = try result.documents.map({ try $0.data(as: Transaction.self) })
+            
+            return results
+            
+        } catch {
+            print(error)
+            return []
+        }
     }
 
-    func fetchTransactions() -> [Transaction] {
+    @MainActor
+    func fetchTransactionsLocal() -> [Transaction] {
+        var modelContainer: ModelContainer? = ModelContainer.sharedModelContainer
+        var modelContext: ModelContext? = modelContainer?.mainContext
         guard let modelContext = modelContext else { return [] }
         do {
             let descriptor = FetchDescriptor<Transaction>(sortBy: [SortDescriptor(\.date)])
@@ -60,19 +79,12 @@ final class TransactionDataSource: TransactionDataSourceProtocol {
 
     func firebaseSaveAll() {
         Task.detached { @MainActor in
-            let ls = self.fetchTransactions()
+            let ls = self.fetchTransactionsLocal()
             let db = Firestore.firestore()
             for l in ls {
-                db.insert(l, collection: "Transaction")
+                await db.insert(l)
             }
         }
         
-    }
-    
-    func remove(transaction: Transaction) throws {
-        guard let modelContext = modelContext else { return }
-        
-        modelContext.delete(transaction)
-        try modelContext.save()
     }
 }

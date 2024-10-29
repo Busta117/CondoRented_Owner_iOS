@@ -10,6 +10,7 @@ import SwiftData
 
 @Model
 class Listing: CodableAndIdentifiable, Equatable, Hashable {
+    private(set) var collectionId = "Listing"
     
     static func == (lhs: Listing, rhs: Listing) -> Bool {
         lhs.id == rhs.id

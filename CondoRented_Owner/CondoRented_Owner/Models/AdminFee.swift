@@ -11,6 +11,7 @@ import SwiftData
 
 @Model
 class AdminFee: CodableAndIdentifiable {
+    private(set) var collectionId = "AdminFee"
     
     @Attribute(.unique) var id: String
     var dateStart: Date
@@ -30,9 +31,9 @@ class AdminFee: CodableAndIdentifiable {
     }
     
     @Transient
-    var listingId: String? = nil
+    var listingId: String = ""
     @Transient
-    var adminId: String? = nil
+    var adminId: String = ""
     
     @available(*, deprecated, renamed: "init", message: "use init with ids")
     init(id: String = UUID().uuidString,
@@ -49,16 +50,16 @@ class AdminFee: CodableAndIdentifiable {
         self.percent = percent
         self.admin = admin
         
-        self.adminId = admin?.id
-        self.listingId = listing?.id
+        self.adminId = admin?.id ?? ""
+        self.listingId = listing?.id ?? ""
     }
     
     init(id: String = UUID().uuidString,
-         listingId: String?,
+         listingId: String,
          dateStart: Date,
          dateFinish: Date? = nil,
          percent: Double,
-         adminId: String? = nil) {
+         adminId: String = "") {
         
         self.id = id
         self.listingId = listingId
@@ -83,8 +84,8 @@ class AdminFee: CodableAndIdentifiable {
         dateStart = try container.decode(Date.self, forKey: .dateStart)
         dateFinish = try container.decodeIfPresent(Date.self, forKey: .dateFinish)
         percent = try container.decode(Double.self, forKey: .percent)
-        adminId = try container.decodeIfPresent(String.self, forKey: .adminId)
-        listingId = try container.decodeIfPresent(String.self, forKey: .listingId)
+        adminId = try container.decodeIfPresent(String.self, forKey: .adminId) ?? ""
+        listingId = try container.decodeIfPresent(String.self, forKey: .listingId) ?? ""
     }
     
     func encode(to encoder: Encoder) throws {
@@ -97,15 +98,15 @@ class AdminFee: CodableAndIdentifiable {
         try container.encodeIfPresent(listingId, forKey: .listingId)
     }
     
-    static func fetchAll(modelContext: ModelContext) -> [AdminFee] {
+    static func fetchAllLocal(modelContext: ModelContext) -> [AdminFee] {
         do {
             let descriptor = FetchDescriptor<AdminFee>(sortBy: [SortDescriptor(\.id)])
             var fees = try modelContext.fetch(descriptor)
             
             //sync with db
             fees = fees.map({ fee in
-                fee.adminId = fee.admin?.id
-                fee.listingId = fee.listing?.id
+                fee.adminId = fee.admin?.id ?? ""
+                fee.listingId = fee.listing?.id ?? ""
                 return fee
             })
             
@@ -116,11 +117,14 @@ class AdminFee: CodableAndIdentifiable {
     }
     
     static func firebaseSaveAll(modelContext: ModelContext) {
-        let fees = fetchAll(modelContext: modelContext)
+        let fees = fetchAllLocal(modelContext: modelContext)
         
         let db = Firestore.firestore()
-        for fee in fees {
-            db.insert(fee, collection: "AdminFee")
+        
+        Task.detached { @MainActor in
+            for fee in fees {
+                await db.insert(fee)
+            }
         }
         
     }

@@ -12,8 +12,10 @@ import SwiftData
 
 @Model
 class Admin: CodableAndIdentifiable {
+    private(set) var collectionId = "Admin"
     @Attribute(.unique) var id: String
     var name: String
+    
     @Relationship(inverse: \AdminFee.admin) var fees: [AdminFee]? {
         didSet{
             feeIds = fees?.map({$0.id}) ?? []

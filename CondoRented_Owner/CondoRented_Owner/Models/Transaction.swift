@@ -10,6 +10,7 @@ import SwiftData
 
 @Model
 class Transaction: CodableAndIdentifiable {
+    private(set) var collectionId = "Transaction"
     
     enum TransactionType: Codable, CaseIterable, Hashable {
         case paid

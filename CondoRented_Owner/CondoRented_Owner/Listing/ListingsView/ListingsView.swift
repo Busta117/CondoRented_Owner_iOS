@@ -12,7 +12,7 @@ struct ListingsView: View {
     @Environment(\.modelContext) private var modelContext
     @State var container: ModelContainer
     
-    @State var viewModel: ListingsViewModel = ListingsViewModel(dataSource: AppDataSource(transactionDataSource: TransactionDataSource(), listingDataSource: ListingDataSource()))
+    @State var viewModel: ListingsViewModel = ListingsViewModel(dataSource: AppDataSource.defaultDataSource)
     
     @State private var path = NavigationPath()
 
@@ -34,7 +34,8 @@ struct ListingsView: View {
             }
             .navigationTitle("Listing")
             .navigationDestination(for: Listing.self) { listing in
-                AddEditListingView(path: $path, container: container, listing: listing)
+                let vm = AddEditListingViewModel(dataSource: viewModel.dataSource, listing: listing)
+                AddEditListingView(path: $path, viewModel: vm)
             }
             .toolbar {
                 Button(action: addItem) {

@@ -29,10 +29,28 @@ struct TransactionMonthDetailView: View {
     }
     
     var body: some View {
-        List {
-            statsSection
-            summaryMonthView
-            transactionsListSectionView
+        ZStack {
+            if !viewModel.isLoading {
+                List {
+                    statsSection
+                    summaryMonthView
+                    transactionsListSectionView
+                }
+                
+            } else {
+                VStack {
+                    ZStack {
+                        Color.black.opacity(0.3)
+                            .frame(width: 100, height: 100)
+                            .clipShape(RoundedRectangle(cornerRadius: 10))
+                        ProgressView()
+                            .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                            .scaleEffect(2)
+                            .padding()
+                    }
+                    Spacer()
+                }
+            }
         }
         .background(.clear)
         .navigationTitle(viewModel.titleMonth)
@@ -51,6 +69,7 @@ struct TransactionMonthDetailView: View {
                 })
             }
         }
+            
     }
     
     private var summaryMonthView: some View {
@@ -173,7 +192,7 @@ struct TransactionMonthDetailView: View {
     private func transactionsListElement(for transaction: Transaction) -> some View {
         VStack {
             HStack {
-                Text(transaction.listing?.title ?? "id: \(transaction.listingId)")
+                Text(viewModel.listing(forId: transaction.listingId)?.title ?? "-")
                     .font(.caption)
                     .bold()
                 Spacer()
@@ -220,12 +239,12 @@ struct TransactionMonthDetailView: View {
     private var statsSection: some View {
         Section(isExpanded: $chartExpanded) {
             VStack {
-                MonthTransactionsChartPieView(transactions: viewModel.transactions)
+                MonthTransactionsChartPieView(transactions: viewModel.transactions, adminFees: viewModel.allAdminFees)
                     .scaledToFit()
                     .frame(width: 200, height: 200)
                     .frame(maxWidth: .infinity, alignment: .center)
                 
-                MonthDetailSummarySectionView(transactions: viewModel.transactions)
+                MonthDetailSummarySectionView(transactions: viewModel.transactions, adminFees: viewModel.allAdminFees)
             }
         } header: {
             HStack(spacing: 0) {
@@ -259,10 +278,10 @@ struct MonthDetailSummarySectionView: View {
     
     private var expensesByType: [Transaction.TransactionType: [Transaction]]
     
-    init(transactions: [Transaction]) {
+    init(transactions: [Transaction], adminFees: [AdminFee]) {
         (incomeValue, currency) = TransactionHelper.getExpectingValue(for: transactions)
         (expensesValue, _) = TransactionHelper.getExpensesValue(for: transactions)
-        (feesValue, _) = TransactionHelper.getFeesToPayValue(for: transactions)
+        (feesValue, _) = TransactionHelper.getFeesToPayValue(for: transactions, adminFees: adminFees)
         
         let onlyExpenses = transactions.filter({ transaction in
             switch transaction.type {
@@ -354,7 +373,7 @@ struct MonthDetailSummarySectionView: View {
     model.mainContext.insert(t5)
     let tras: [Transaction] = [t1,t2,t3, t4, t5]
     
-    let ds = AppDataSource(transactionDataSource: TransactionDataSource(modelContainer: model), listingDataSource: ListingDataSource(modelContainer: model))
+    let ds = AppDataSource.defaultDataSource
     let vm = TransactionMonthDetailViewModel(dataSource: ds, transactions: tras, output: {_ in })
     return TransactionMonthDetailView(viewModel: vm)
 }

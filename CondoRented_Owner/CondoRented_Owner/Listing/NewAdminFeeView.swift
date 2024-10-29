@@ -153,8 +153,10 @@ struct NewAdminFeeView: View {
         }
         
         let db = Firestore.firestore()
-        db.insert(adminFee, collection: "AdminFee")
-        db.insert(listing, collection: "Listing")
+        Task {
+            await db.insert(adminFee)
+            await db.insert(listing)
+        }
         
 //        try? tmpContext.save()
 //        print(adminFee.admin?.name)

@@ -33,7 +33,7 @@ struct TransactionSummaryListMonth: View {
         (wonValue - spendValue - feesValue)
     }
     
-    init(transactions: [Transaction]) {
+    init(transactions: [Transaction], adminFees: [AdminFee]) {
         self.transactions = transactions
         
         // month type
@@ -62,7 +62,7 @@ struct TransactionSummaryListMonth: View {
         
         (spendValue, spendCurrency) = TransactionHelper.getExpensesValue(for: transactions)
         
-        (feesValue, feesCurrency) = TransactionHelper.getFeesToPayValue(for: transactions)
+        (feesValue, feesCurrency) = TransactionHelper.getFeesToPayValue(for: transactions, adminFees: adminFees)
     }
     
     private var monthTitle: String {
@@ -151,15 +151,15 @@ struct TransactionSummaryListMonth: View {
     }
 }
 
-#Preview {
-    let container = ModelContainer.sharedInMemoryModelContainer
-    let listing = Listing(id: "1", title: "Distrito Vera",adminFees: [AdminFee(listing: nil, dateStart: .now, percent: 10)])
-    
-    let t1 = Transaction(amountMicros: 2000000000000, currency: Currency(id: "COP"), listing: listing, date: .now, type: .paid)
-    let t2 = Transaction(amountMicros: 1000000000000, currency: Currency(id: "COP"), listing: listing, type: .expense)
-    container.mainContext.insert(listing)
-    container.mainContext.insert(t1)
-    container.mainContext.insert(t2)
-    
-    return TransactionSummaryListMonth(transactions: [t1,t2])
-}
+//#Preview {
+//    let container = ModelContainer.sharedInMemoryModelContainer
+//    let listing = Listing(id: "1", title: "Distrito Vera",adminFees: [AdminFee(listing: nil, dateStart: .now, percent: 10)])
+//    
+//    let t1 = Transaction(amountMicros: 2000000000000, currency: Currency(id: "COP"), listing: listing, date: .now, type: .paid)
+//    let t2 = Transaction(amountMicros: 1000000000000, currency: Currency(id: "COP"), listing: listing, type: .expense)
+//    container.mainContext.insert(listing)
+//    container.mainContext.insert(t1)
+//    container.mainContext.insert(t2)
+//    
+//    return TransactionSummaryListMonth(transactions: [t1,t2])
+//}

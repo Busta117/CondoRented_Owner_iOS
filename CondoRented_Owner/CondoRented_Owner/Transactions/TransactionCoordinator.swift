@@ -72,8 +72,7 @@ final class TransactionCoordinator: Hashable {
     @MainActor
     private func summaryList() -> some View {
         let modelContainer = ModelContainer.sharedModelContainer
-        let dataSource = AppDataSource(transactionDataSource: TransactionDataSource(modelContainer: modelContainer),
-                                       listingDataSource: ListingDataSource(modelContainer: modelContainer))
+        let dataSource = AppDataSource.defaultDataSource
         let vm = TransactionSummaryListViewModel(dataSource: dataSource,
                                                  output:
                 .init(
@@ -90,8 +89,7 @@ final class TransactionCoordinator: Hashable {
     @MainActor
     private func addEditView(transaction: Transaction?) -> some View {
         let modelContainer = ModelContainer.sharedModelContainer
-        let dataSource = AppDataSource(transactionDataSource: TransactionDataSource(modelContainer: modelContainer),
-                                       listingDataSource: ListingDataSource(modelContainer: modelContainer))
+        let dataSource = AppDataSource.defaultDataSource
         let vm = AddEditTransactionViewModel(transaction: transaction, dataSource: dataSource) { output in
             switch output {
             case .back:
@@ -104,8 +102,7 @@ final class TransactionCoordinator: Hashable {
     @MainActor
     private func monthDetailView(with transactions: [Transaction]) -> some View {
         let modelContainer = ModelContainer.sharedModelContainer
-        let dataSource = AppDataSource(transactionDataSource: TransactionDataSource(modelContainer: modelContainer),
-                                       listingDataSource: ListingDataSource(modelContainer: modelContainer))
+        let dataSource = AppDataSource.defaultDataSource
         
         let vm = TransactionMonthDetailViewModel(dataSource: dataSource, transactions: transactions) { output in
             switch output {
