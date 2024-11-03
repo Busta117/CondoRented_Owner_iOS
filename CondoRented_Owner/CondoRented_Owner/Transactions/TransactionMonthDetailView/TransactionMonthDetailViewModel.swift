@@ -109,7 +109,7 @@ final class TransactionMonthDetailViewModel {
     }
     
     func percentFee(for listing: Listing) -> Double {
-        return listing.adminFees?.filter({ $0.dateFinish == nil }).first?.percent ?? 0
+        return allAdminFees.filter({$0.listingId == listing.id && $0.dateFinish == nil}).first?.percent ?? 0
     }
     
     func feesToPayValue(for listing: Listing) -> (Double, Currency) {

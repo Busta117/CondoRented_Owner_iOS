@@ -25,6 +25,7 @@ class Listing: CodableAndIdentifiable, Equatable, Hashable {
     var link: URL?
     var airbnbId: String?
     
+    @available(*, deprecated, renamed: "remove", message: "remove")
     @Relationship(deleteRule: .cascade)
     var adminFees: [AdminFee]? = [] {
         didSet {

@@ -136,17 +136,12 @@ struct TransactionMonthDetailView: View {
                     .font(.body)
             }
             HStack {
-//                Spacer()
-                
-                //                .frame(maxWidth: 100, alignment: .trailing)
                 Spacer()
                 Text((viewModel.percentFee(for: listing) / 100), format: .percent)
                     .font(.body)
-//                                .frame(maxWidth: 50, alignment: .trailing)
-                
                 Text(viewModel.feesToPayValue(for: listing).0, format: .currency(code: viewModel.feesToPayValue(for: listing).1.id))
                     .font(.body)
-                                .frame(maxWidth: 100, alignment: .trailing)
+                    .frame(maxWidth: 100, alignment: .trailing)
             }
         }
     }
