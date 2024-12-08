@@ -7,7 +7,7 @@
 
 import Foundation
 import FirebaseFirestore
-import SwiftData
+
 import SwiftUI
 import Combine
 
@@ -55,36 +55,5 @@ final class TransactionDataSource: TransactionDataSourceProtocol {
             print(error)
             return []
         }
-    }
-
-    @MainActor
-    func fetchTransactionsLocal() -> [Transaction] {
-        var modelContainer: ModelContainer? = ModelContainer.sharedModelContainer
-        var modelContext: ModelContext? = modelContainer?.mainContext
-        guard let modelContext = modelContext else { return [] }
-        do {
-            let descriptor = FetchDescriptor<Transaction>(sortBy: [SortDescriptor(\.date)])
-            var transactions = try modelContext.fetch(descriptor)
-            
-            transactions = transactions.map({ tran in
-                tran.listingId = tran.listing?.id ?? ""
-                return tran
-            })
-                
-            return transactions
-        } catch {
-            fatalError(error.localizedDescription)
-        }
-    }
-
-    func firebaseSaveAll() {
-        Task.detached { @MainActor in
-            let ls = self.fetchTransactionsLocal()
-            let db = Firestore.firestore()
-            for l in ls {
-                await db.insert(l)
-            }
-        }
-        
     }
 }

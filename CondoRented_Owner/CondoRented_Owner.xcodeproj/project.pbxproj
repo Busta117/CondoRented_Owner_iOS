@@ -18,7 +18,6 @@
 		423B0C692BCFC2D00030AD65 /* Transaction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 423B0C682BCFC2D00030AD65 /* Transaction.swift */; };
 		423B0C6F2BCFCAD30030AD65 /* AdminFee.swift in Sources */ = {isa = PBXBuildFile; fileRef = 423B0C6E2BCFCAD30030AD65 /* AdminFee.swift */; };
 		423B0C712BCFCB6F0030AD65 /* Listing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 423B0C702BCFCB6F0030AD65 /* Listing.swift */; };
-		423B0C732BD021280030AD65 /* ModelContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 423B0C722BD021280030AD65 /* ModelContainer.swift */; };
 		423B0C752BD18DF80030AD65 /* AddEditListingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 423B0C742BD18DF80030AD65 /* AddEditListingView.swift */; };
 		423B0C7A2BD96F370030AD65 /* AdminFeeDetail.swift in Sources */ = {isa = PBXBuildFile; fileRef = 423B0C792BD96F370030AD65 /* AdminFeeDetail.swift */; };
 		423B0C7C2BD974A00030AD65 /* NewAdminFeeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 423B0C7B2BD974A00030AD65 /* NewAdminFeeView.swift */; };
@@ -40,7 +39,6 @@
 		423B0D3D2C011FBA0030AD65 /* Currency.swift in Sources */ = {isa = PBXBuildFile; fileRef = 423B0C662BCFC1B30030AD65 /* Currency.swift */; };
 		423B0D3E2C011FBA0030AD65 /* AdminFee.swift in Sources */ = {isa = PBXBuildFile; fileRef = 423B0C6E2BCFCAD30030AD65 /* AdminFee.swift */; };
 		423B0D3F2C011FBA0030AD65 /* Transaction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 423B0C682BCFC2D00030AD65 /* Transaction.swift */; };
-		423B0D402C011FBA0030AD65 /* ModelContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 423B0C722BD021280030AD65 /* ModelContainer.swift */; };
 		423B0D412C011FD30030AD65 /* AppDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 423B0D322BF605DB0030AD65 /* AppDataSource.swift */; };
 		423B0D422C011FD30030AD65 /* TransactionDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 423B0D262BF364170030AD65 /* TransactionDataSource.swift */; };
 		423B0D432C011FD30030AD65 /* ListingDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 423B0D302BF535F20030AD65 /* ListingDataSource.swift */; };
@@ -61,6 +59,12 @@
 		42BBCE432CCC211900A74B9A /* AdminDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42BBCE412CCC211900A74B9A /* AdminDataSource.swift */; };
 		42BBCE452CCC22B700A74B9A /* AdminFeeDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42BBCE442CCC22B700A74B9A /* AdminFeeDataSource.swift */; };
 		42BBCE462CCC22B700A74B9A /* AdminFeeDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42BBCE442CCC22B700A74B9A /* AdminFeeDataSource.swift */; };
+		42C9C9AE2CFB95190006FA84 /* CodableAndIdentifiable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42C9C9AD2CFB95190006FA84 /* CodableAndIdentifiable.swift */; };
+		42C9C9AF2CFB95190006FA84 /* CodableAndIdentifiable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42C9C9AD2CFB95190006FA84 /* CodableAndIdentifiable.swift */; };
+		42C9C9B72CFB96970006FA84 /* Firestore+functions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42C9C9B62CFB96970006FA84 /* Firestore+functions.swift */; };
+		42C9C9B82CFB96970006FA84 /* Firestore+functions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42C9C9B62CFB96970006FA84 /* Firestore+functions.swift */; };
+		42C9C9BA2CFBBC0A0006FA84 /* TransactionType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42C9C9B92CFBBC0A0006FA84 /* TransactionType.swift */; };
+		42C9C9BB2CFBBC0A0006FA84 /* TransactionType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42C9C9B92CFBBC0A0006FA84 /* TransactionType.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -96,7 +100,6 @@
 		423B0C682BCFC2D00030AD65 /* Transaction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Transaction.swift; sourceTree = "<group>"; };
 		423B0C6E2BCFCAD30030AD65 /* AdminFee.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdminFee.swift; sourceTree = "<group>"; };
 		423B0C702BCFCB6F0030AD65 /* Listing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Listing.swift; sourceTree = "<group>"; };
-		423B0C722BD021280030AD65 /* ModelContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModelContainer.swift; sourceTree = "<group>"; };
 		423B0C742BD18DF80030AD65 /* AddEditListingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddEditListingView.swift; sourceTree = "<group>"; };
 		423B0C792BD96F370030AD65 /* AdminFeeDetail.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdminFeeDetail.swift; sourceTree = "<group>"; };
 		423B0C7B2BD974A00030AD65 /* NewAdminFeeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewAdminFeeView.swift; sourceTree = "<group>"; };
@@ -119,6 +122,9 @@
 		42BBCE3E2CCC189400A74B9A /* AddEditListingViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddEditListingViewModel.swift; sourceTree = "<group>"; };
 		42BBCE412CCC211900A74B9A /* AdminDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdminDataSource.swift; sourceTree = "<group>"; };
 		42BBCE442CCC22B700A74B9A /* AdminFeeDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdminFeeDataSource.swift; sourceTree = "<group>"; };
+		42C9C9AD2CFB95190006FA84 /* CodableAndIdentifiable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CodableAndIdentifiable.swift; sourceTree = "<group>"; };
+		42C9C9B62CFB96970006FA84 /* Firestore+functions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Firestore+functions.swift"; sourceTree = "<group>"; };
+		42C9C9B92CFBBC0A0006FA84 /* TransactionType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionType.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -179,6 +185,7 @@
 			children = (
 				428482022C32B362006336A1 /* GoogleService-Info.plist */,
 				423B0C362BCFBFD20030AD65 /* CondoRented_OwnerApp.swift */,
+				423B0D2D2BF5354F0030AD65 /* DataSource */,
 				423B0C632BCFC02C0030AD65 /* Models */,
 				423B0D062BE9588F0030AD65 /* Transactions */,
 				423B0C762BD18DFF0030AD65 /* Listing */,
@@ -218,12 +225,13 @@
 		423B0C632BCFC02C0030AD65 /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				42C9C9AD2CFB95190006FA84 /* CodableAndIdentifiable.swift */,
 				423B0C662BCFC1B30030AD65 /* Currency.swift */,
 				423B0C682BCFC2D00030AD65 /* Transaction.swift */,
+				42C9C9B92CFBBC0A0006FA84 /* TransactionType.swift */,
 				423B0C6E2BCFCAD30030AD65 /* AdminFee.swift */,
 				423B0C7D2BE279190030AD65 /* Admin.swift */,
 				423B0C702BCFCB6F0030AD65 /* Listing.swift */,
-				423B0C722BD021280030AD65 /* ModelContainer.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -245,7 +253,6 @@
 				423B0D362BFFA52C0030AD65 /* TransactionMonthDetailView */,
 				423B0D282BF52CC30030AD65 /* AddEditTransaction */,
 				423B0D252BF35C690030AD65 /* TransactionSummaryListView */,
-				423B0D2D2BF5354F0030AD65 /* DataSource */,
 				423B0D342BF647020030AD65 /* TransactionCoordinator.swift */,
 			);
 			path = Transactions;
@@ -278,6 +285,7 @@
 				42BBCE412CCC211900A74B9A /* AdminDataSource.swift */,
 				42BBCE442CCC22B700A74B9A /* AdminFeeDataSource.swift */,
 				423B0D322BF605DB0030AD65 /* AppDataSource.swift */,
+				42C9C9B62CFB96970006FA84 /* Firestore+functions.swift */,
 			);
 			path = DataSource;
 			sourceTree = "<group>";
@@ -455,7 +463,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				423B0C7C2BD974A00030AD65 /* NewAdminFeeView.swift in Sources */,
-				423B0C732BD021280030AD65 /* ModelContainer.swift in Sources */,
 				423B0D082BE958D70030AD65 /* TransactionSummaryListView.swift in Sources */,
 				423B0D312BF535F20030AD65 /* ListingDataSource.swift in Sources */,
 				423B0C6F2BCFCAD30030AD65 /* AdminFee.swift in Sources */,
@@ -463,6 +470,7 @@
 				423B0D332BF605DB0030AD65 /* AppDataSource.swift in Sources */,
 				42BBCE3F2CCC189400A74B9A /* AddEditListingViewModel.swift in Sources */,
 				423B0D0A2BE9593D0030AD65 /* TransactionSummaryListMonth.swift in Sources */,
+				42C9C9AF2CFB95190006FA84 /* CodableAndIdentifiable.swift in Sources */,
 				423B0D462C0655C10030AD65 /* MonthTransactionsChartPieView.swift in Sources */,
 				423B0C672BCFC1B30030AD65 /* Currency.swift in Sources */,
 				423B0D272BF364170030AD65 /* TransactionDataSource.swift in Sources */,
@@ -470,6 +478,7 @@
 				42BBCE422CCC211900A74B9A /* AdminDataSource.swift in Sources */,
 				423B0D0C2BEA29DC0030AD65 /* TransactionHelper.swift in Sources */,
 				423B0D242BF35C5E0030AD65 /* TransactionSummaryListViewModel.swift in Sources */,
+				42C9C9BB2CFBBC0A0006FA84 /* TransactionType.swift in Sources */,
 				42BBCE452CCC22B700A74B9A /* AdminFeeDataSource.swift in Sources */,
 				423B0D352BF647020030AD65 /* TransactionCoordinator.swift in Sources */,
 				42BBCE3C2CCB937A00A74B9A /* ListingsViewModel.swift in Sources */,
@@ -482,6 +491,7 @@
 				423B0C752BD18DF80030AD65 /* AddEditListingView.swift in Sources */,
 				423B0C7A2BD96F370030AD65 /* AdminFeeDetail.swift in Sources */,
 				423B0C7E2BE279190030AD65 /* Admin.swift in Sources */,
+				42C9C9B72CFB96970006FA84 /* Firestore+functions.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -490,17 +500,19 @@
 			buildActionMask = 2147483647;
 			files = (
 				423B0D412C011FD30030AD65 /* AppDataSource.swift in Sources */,
+				42C9C9BA2CFBBC0A0006FA84 /* TransactionType.swift in Sources */,
 				423B0D422C011FD30030AD65 /* TransactionDataSource.swift in Sources */,
 				423B0D432C011FD30030AD65 /* ListingDataSource.swift in Sources */,
 				423B0D3B2C011FBA0030AD65 /* Admin.swift in Sources */,
 				423B0D3C2C011FBA0030AD65 /* Listing.swift in Sources */,
+				42C9C9B82CFB96970006FA84 /* Firestore+functions.swift in Sources */,
 				423B0D3D2C011FBA0030AD65 /* Currency.swift in Sources */,
+				42C9C9AE2CFB95190006FA84 /* CodableAndIdentifiable.swift in Sources */,
 				423B0D3E2C011FBA0030AD65 /* AdminFee.swift in Sources */,
 				42BBCE432CCC211900A74B9A /* AdminDataSource.swift in Sources */,
 				42BBCE462CCC22B700A74B9A /* AdminFeeDataSource.swift in Sources */,
 				423B0D3F2C011FBA0030AD65 /* Transaction.swift in Sources */,
 				423B0D442C0120090030AD65 /* TransactionHelper.swift in Sources */,
-				423B0D402C011FBA0030AD65 /* ModelContainer.swift in Sources */,
 				423B0C4B2BCFBFD30030AD65 /* CondoRented_OwnerTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -656,7 +668,7 @@
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_ASSET_PATHS = "\"CondoRented_Owner/Preview Content\"";
 				DEVELOPMENT_TEAM = A5U6A6CPN6;
-				ENABLE_DEBUG_DYLIB = NO;
+				ENABLE_DEBUG_DYLIB = YES;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;

@@ -7,7 +7,7 @@
 
 import CondoRented_Owner
 import XCTest
-import SwiftData
+
 
 final class CondoRented_OwnerTests: XCTestCase {
 

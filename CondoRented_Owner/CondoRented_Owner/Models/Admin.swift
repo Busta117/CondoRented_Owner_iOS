@@ -8,31 +8,11 @@
 import Foundation
 import FirebaseFirestore
 
-import SwiftData
-
-@Model
-class Admin: CodableAndIdentifiable {
+struct Admin: CodableAndIdentifiable, Hashable {
     private(set) var collectionId = "Admin"
-    @Attribute(.unique) var id: String
+    var id: String
     var name: String
-    
-    @Relationship(inverse: \AdminFee.admin) var fees: [AdminFee]? {
-        didSet{
-            feeIds = fees?.map({$0.id}) ?? []
-        }
-    }
-    
-    @Transient
     var feeIds: [String] = []
-    
-    @available(*, deprecated, renamed: "init", message: "use init with ids")
-    init(id: String = UUID().uuidString, name: String, fees: [AdminFee]? = nil) {
-        self.id = id
-        self.name = name
-        self.fees = fees
-        
-        feeIds = fees?.map({$0.id}) ?? []
-    }
     
     init(id: String = UUID().uuidString, name: String, feeIds: [String]) {
         self.id = id
@@ -46,7 +26,7 @@ class Admin: CodableAndIdentifiable {
         case feeIds
     }
     
-    required init(from decoder: Decoder) throws {
+    init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         id = try container.decode(String.self, forKey: .id)
         name = try container.decode(String.self, forKey: .name)

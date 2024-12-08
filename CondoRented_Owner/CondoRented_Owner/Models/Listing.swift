@@ -6,9 +6,7 @@
 //
 
 import Foundation
-import SwiftData
 
-@Model
 class Listing: CodableAndIdentifiable, Equatable, Hashable {
     private(set) var collectionId = "Listing"
     
@@ -20,42 +18,17 @@ class Listing: CodableAndIdentifiable, Equatable, Hashable {
         hasher.combine(id)
     }
     
-    @Attribute(.unique) var id: String
+    var id: String
     var title: String
     var link: URL?
     var airbnbId: String?
     
-    @available(*, deprecated, renamed: "remove", message: "remove")
-    @Relationship(deleteRule: .cascade)
-    var adminFees: [AdminFee]? = [] {
-        didSet {
-            adminFeeIds = adminFees?.map(\.id) ?? []
-        }
-    }
-    
-    @Transient
     var adminFeeIds: [String] = []
     
-    @available(*, deprecated, renamed: "init", message: "use init with ids")
     init(id: String = UUID().uuidString,
          title: String,
          link: URL? = nil,
-         adminFees: [AdminFee]? = [],
-         airbnbId: String? = nil) {
-        
-        self.id = id
-        self.title = title
-        self.link = link
-        self.adminFees = adminFees
-        self.airbnbId = airbnbId
-        
-        adminFeeIds = adminFees?.map(\.id) ?? []
-    }
-    
-    init(id: String = UUID().uuidString,
-         title: String,
-         link: URL? = nil,
-         adminFeeIds: [String],
+         adminFeeIds: [String] = [],
          airbnbId: String? = nil) {
         
         self.id = id

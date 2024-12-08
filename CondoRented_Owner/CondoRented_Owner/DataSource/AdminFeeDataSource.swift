@@ -7,7 +7,7 @@
 
 import Foundation
 import FirebaseFirestore
-import SwiftData
+
 
 protocol AdminFeeDataSourceProtocol {
     func fetchAll() async -> [AdminFee]

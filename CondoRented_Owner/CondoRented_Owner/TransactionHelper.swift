@@ -39,14 +39,35 @@ struct TransactionHelper: TransactionHelperProtocol {
         return ret
     }
     
-    static func splitByType(transactions: [Transaction]) -> [Transaction.TransactionType: [Transaction]] {
-        var ret: [Transaction.TransactionType: [Transaction]] = [:]
+    // TODO: busta fix this
+    static func splitByType(transactions: [Transaction]) -> [TransactionType: [Transaction]] {
+        var ret: [TransactionType: [Transaction]] = [:]
+        
+        var types = TransactionType.allCases
+        
         for transaction in transactions {
-            if ret[transaction.type] != nil {
-                ret[transaction.type]?.append(transaction)
-            } else {
-                ret[transaction.type] = [transaction]
+            var added = false
+            for type in types {
+                if transaction.type == type {
+                    added = true
+                        if ret[transaction.type] != nil {
+                            ret[transaction.type]?.append(transaction)
+                        } else {
+                            ret[transaction.type] = [transaction]
+                        }
+                        break
+                }
             }
+            if !added {
+                ret[TransactionType.other] = [transaction]
+            }
+            
+            
+//            if ret[transaction.type] != nil {
+//                ret[transaction.type]?.append(transaction)
+//            } else {
+//                ret[transaction.type] = [transaction]
+//            }
             
         }
         return ret
@@ -64,9 +85,9 @@ struct TransactionHelper: TransactionHelperProtocol {
         
         for transaction in transactions {
             switch transaction.type {
-            case .paid:
+            case .income:
                 sum += transaction.amountMicros
-            case .expense, .utilities, .fixedCost:
+            case .expense:
                 () // do nothing
             }
         }
@@ -87,12 +108,12 @@ struct TransactionHelper: TransactionHelperProtocol {
         for transaction in transactions {
             switch transaction.type {
             case .expense:
-                if let paidByOwner = transaction.expensePaidByOwner, paidByOwner {
+                if let paidByOwner = transaction.expensePaidByOwner, !paidByOwner {
+                    () // do nothing
+                } else {
                     sum += transaction.amountMicros
                 }
-            case .utilities, .fixedCost:
-                sum += transaction.amountMicros
-            case .paid:
+            case .income:
                 () // do nothing
             }
         }
@@ -112,7 +133,7 @@ struct TransactionHelper: TransactionHelperProtocol {
         
         for transaction in transactions {
             switch transaction.type {
-            case .paid:
+            case .income:
                 
                 if let adminFee = adminFees.first(where: { $0.listingId == transaction.listingId && $0.dateFinish == nil }) {
                     let percent = adminFee.percent > 1 ? (adminFee.percent / 100) : adminFee.percent
@@ -122,8 +143,6 @@ struct TransactionHelper: TransactionHelperProtocol {
                 if let payedByOwner = transaction.expensePaidByOwner, !payedByOwner, includesExpenses {
                     sum += transaction.amountMicros
                 }
-            case .fixedCost, .utilities:
-                () // do nothing
             }
         }
         

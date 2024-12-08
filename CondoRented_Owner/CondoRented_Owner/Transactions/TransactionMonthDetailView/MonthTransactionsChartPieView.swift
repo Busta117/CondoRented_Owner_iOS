@@ -23,13 +23,9 @@ struct MonthTransactionsChartPieView: View {
         
         for transaction in transactions {
             switch transaction.type {
-            case .paid:
+            case .income:
                 tmp[1].value += transaction.amountMicros
             case .expense:
-                tmp[0].value += transaction.amountMicros
-            case .utilities:
-                tmp[0].value += transaction.amountMicros
-            case .fixedCost:
                 tmp[0].value += transaction.amountMicros
             }
         }

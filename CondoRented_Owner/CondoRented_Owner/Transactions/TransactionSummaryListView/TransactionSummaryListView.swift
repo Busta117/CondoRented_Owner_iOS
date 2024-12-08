@@ -6,16 +6,37 @@
 //
 
 import SwiftUI
-import SwiftData
+
 
 struct TransactionSummaryListView: View {
     
     @State var viewModel: TransactionSummaryListViewModel
     @State private var backButtonText: Bool = true
+    @State var isGlobalSummaryExpanded = false
     
     var body: some View {
         ZStack {
             List {
+                Section(isExpanded: $isGlobalSummaryExpanded) {
+                    globalSummary
+                } header: {
+                    HStack(spacing: 0) {
+                        Button {
+                            isGlobalSummaryExpanded.toggle()
+                        } label: {
+                            HStack {
+                                Text("Global summary")
+                                Spacer()
+                                Image(systemName: isGlobalSummaryExpanded ? "chevron.up" : "chevron.down")
+                            }
+                            .contentShape(Rectangle())
+                        }
+                        .buttonStyle(PlainButtonStyle())
+
+                    }
+                }
+
+                
                 ForEach(viewModel.transactionPerMonth, id:\.self) { transactions in
                     Section {
                         Button(action: {
@@ -60,6 +81,11 @@ struct TransactionSummaryListView: View {
             }
         }
     }
+    
+    var globalSummary: some View {
+        EmptyView()
+    }
+    
 }
 
 //#Preview {

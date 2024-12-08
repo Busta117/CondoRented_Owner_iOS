@@ -7,7 +7,6 @@
 
 import Foundation
 import SwiftUI
-import SwiftData
 
 enum TransactionPage {
     case summaryList
@@ -71,7 +70,6 @@ final class TransactionCoordinator: Hashable {
  
     @MainActor
     private func summaryList() -> some View {
-        let modelContainer = ModelContainer.sharedModelContainer
         let dataSource = AppDataSource.defaultDataSource
         let vm = TransactionSummaryListViewModel(dataSource: dataSource,
                                                  output:
@@ -88,7 +86,6 @@ final class TransactionCoordinator: Hashable {
     
     @MainActor
     private func addEditView(transaction: Transaction?) -> some View {
-        let modelContainer = ModelContainer.sharedModelContainer
         let dataSource = AppDataSource.defaultDataSource
         let vm = AddEditTransactionViewModel(transaction: transaction, dataSource: dataSource) { output in
             switch output {
@@ -101,7 +98,6 @@ final class TransactionCoordinator: Hashable {
     
     @MainActor
     private func monthDetailView(with transactions: [Transaction]) -> some View {
-        let modelContainer = ModelContainer.sharedModelContainer
         let dataSource = AppDataSource.defaultDataSource
         
         let vm = TransactionMonthDetailViewModel(dataSource: dataSource, transactions: transactions) { output in

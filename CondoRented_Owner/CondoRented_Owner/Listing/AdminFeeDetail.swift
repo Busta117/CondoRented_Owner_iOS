@@ -6,7 +6,7 @@
 //
 
 import SwiftUI
-import SwiftData
+
 
 struct AdminFeeDetail: View {
     
@@ -44,10 +44,10 @@ struct AdminFeeDetail: View {
     }
 }
 
-#Preview {
-    let container = ModelContainer.sharedInMemoryModelContainer
-    let adminFee = AdminFee(id: "", listing: nil, dateStart: .now, percent: 15, admin: Admin(name: "pepe perez"))
-    container.mainContext.insert(adminFee)
-    return AdminFeeDetail(adminFee: adminFee, admin: Admin(name: "", feeIds: [adminFee.id]))
-        .modelContainer(container)
-}
+//#Preview {
+//    let container = ModelContainer.sharedInMemoryModelContainer
+//    let adminFee = AdminFee(id: "", listing: nil, dateStart: .now, percent: 15, admin: Admin(name: "pepe perez"))
+//    container.mainContext.insert(adminFee)
+//    return AdminFeeDetail(adminFee: adminFee, admin: Admin(name: "", feeIds: [adminFee.id]))
+//        .modelContainer(container)
+//}

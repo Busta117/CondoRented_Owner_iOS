@@ -6,25 +6,21 @@
 //
 
 import SwiftUI
-import SwiftData
 import FirebaseFirestore
 
 struct NewAdminFeeView: View {
     
-    @State private var tmpContext: ModelContext
     @Binding var path: NavigationPath
     @State private var listing: Listing
     @State private var adminFee: AdminFee
     @State private var selectedAdmin: Admin? = nil
     @State private var endDate: Date = .now
-    @Query private var admins: [Admin]
+    private var admins: [Admin] = []
     
-    init(tmpContext: ModelContext, path: Binding<NavigationPath>, listing: Listing) {
+    init(path: Binding<NavigationPath>, listing: Listing) {
         self._path = path
-        self.tmpContext = tmpContext
         self.listing = listing
-        self.adminFee = AdminFee(listing: nil, dateStart: .now, percent: 15)
-        tmpContext.insert(self.adminFee)
+        self.adminFee = AdminFee(listingId: listing.id ,dateStart: .now, percent: 15)
     }
     
     private var saveButtonDisabled: Bool {
@@ -93,7 +89,7 @@ struct NewAdminFeeView: View {
                 
                 Section {
                     Picker(selection: $selectedAdmin) {
-                        if adminFee.admin == nil {
+                        if adminFee.adminId.isEmpty {
                             Text("Select Admin")
                                 .tag(nil as Admin?)
                         }
@@ -124,30 +120,11 @@ struct NewAdminFeeView: View {
             }
         }
         .navigationBarTitleDisplayMode(.inline)
-        .onChange(of: selectedAdmin) { oldValue, newValue in
-            if let newValue = newValue {
-                let id = newValue.id
-                
-                let descriptor = FetchDescriptor<Admin>(predicate: #Predicate {$0.id == id})
-                do {
-                    let existElement = try tmpContext.fetch(descriptor)
-                    if let value = existElement.first {
-                        adminFee.admin = value
-                    }
-                } catch {
-                    print("busta error: \(error)")
-                }
-                
-//                adminFee.admin = newValue
-            }
-        }
-        
-        
     }
     
     func saveAction() {
         
-        listing.adminFees?.append(adminFee)
+        listing.adminFeeIds.append(adminFee.id)
         if !path.isEmpty {
             path.removeLast()
         }
@@ -180,17 +157,17 @@ struct NewAdminFeeView: View {
         
     }
 }
-
-#Preview {
-    let container = ModelContainer.sharedInMemoryModelContainer
-    let admin = Admin(name: "Pedro")
-    let admin2 = Admin(name: "juanito")
-    container.mainContext.insert(admin)
-    container.mainContext.insert(admin2)
-    
-    return NewAdminFeeView(tmpContext: container.mainContext, path: .constant(NavigationPath()), listing: Listing(title: "Distrito Vera"))
-        .modelContainer(container)
-}
+//
+//#Preview {
+//    let container = ModelContainer.sharedInMemoryModelContainer
+//    let admin = Admin(name: "Pedro")
+//    let admin2 = Admin(name: "juanito")
+//    container.mainContext.insert(admin)
+//    container.mainContext.insert(admin2)
+//    
+//    return NewAdminFeeView(tmpContext: container.mainContext, path: .constant(NavigationPath()), listing: Listing(title: "Distrito Vera"))
+//        .modelContainer(container)
+//}
 
 
 struct DatePickerOptional: View {

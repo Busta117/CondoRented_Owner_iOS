@@ -6,7 +6,7 @@
 //
 
 import SwiftUI
-import SwiftData
+
 
 struct AddEditTransactionView: View {
     
@@ -32,7 +32,7 @@ struct AddEditTransactionView: View {
             } else {
                 Form {
                     amountSection
-                    currencySection
+//                    currencySection
                     listingSection
                     dateSection
                     typeSection
@@ -71,6 +71,7 @@ struct AddEditTransactionView: View {
         }
     }
     
+    @ViewBuilder
     private var currencySection: some View {
         Section {
             Picker(selection: $viewModel.currency) {
@@ -120,11 +121,11 @@ struct AddEditTransactionView: View {
             Picker(selection: $viewModel.type) {
                 if viewModel.type == nil {
                     Text("Select a type")
-                        .tag(nil as Transaction.TransactionType?)
+                        .tag(nil as TransactionType?)
                 }
-                ForEach(Transaction.TransactionType.allCases, id: \.self) { type in
+                ForEach(TransactionType.allCases, id: \.self) { type in
                     Text(type.title)
-                        .tag(type as Transaction.TransactionType?)
+                        .tag(type as TransactionType?)
                 }
             } label: {
                 EmptyView()
@@ -139,16 +140,20 @@ struct AddEditTransactionView: View {
     
     @ViewBuilder
     private var expenseType: some View {
-        if viewModel.type == .expense || viewModel.type == .fixedCost {
-            TextField("Write a concept", text: Binding(get: {viewModel.expenseConcept ?? ""}, set: { viewModel.expenseConcept = ($0.isEmpty ? nil : $0) }))
-                .focused($textfieldIsFocused)
-        }
-        if viewModel.type == .expense {
+        if let type = viewModel.type, type.isOther {
+            TextField(
+                "Write a concept",
+                text: Binding(
+                    get: { viewModel.expenseConcept ?? "" },
+                    set: { viewModel.expenseConcept = $0.isEmpty ? nil : $0 }
+                )
+            )
+            .focused($textfieldIsFocused)
+            
             Toggle(isOn: $viewModel.expensePaidByOwner) {
                 Text("Paid by Owner?")
             }
         }
-        
     }
     
     private var saveButtonSection: some View {
@@ -168,15 +173,15 @@ struct AddEditTransactionView: View {
     }
 }
 
-#Preview {
-    let container = ModelContainer.sharedInMemoryModelContainer
-    
-    let l1 = Listing(title: "Distrito Vera")
-    let l2 = Listing(title: "La Riviere")
-    container.mainContext.insert(l1)
-    container.mainContext.insert(l2)
-    
-    let appDataSource = AppDataSource.defaultDataSource
-    
-    return AddEditTransactionView(viewModel: AddEditTransactionViewModel(dataSource: appDataSource, output: { _ in }))
-}
+//#Preview {
+//    let container = ModelContainer.sharedInMemoryModelContainer
+//    
+//    let l1 = Listing(title: "Distrito Vera")
+//    let l2 = Listing(title: "La Riviere")
+//    container.mainContext.insert(l1)
+//    container.mainContext.insert(l2)
+//    
+//    let appDataSource = AppDataSource.defaultDataSource
+//    
+//    return AddEditTransactionView(viewModel: AddEditTransactionViewModel(dataSource: appDataSource, output: { _ in }))
+//}

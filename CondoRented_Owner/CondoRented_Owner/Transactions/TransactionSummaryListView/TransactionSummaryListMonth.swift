@@ -6,7 +6,7 @@
 //
 
 import SwiftUI
-import SwiftData
+
 
 
 struct TransactionSummaryListMonth: View {

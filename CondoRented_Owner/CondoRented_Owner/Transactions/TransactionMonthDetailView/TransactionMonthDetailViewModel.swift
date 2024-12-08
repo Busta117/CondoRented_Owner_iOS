@@ -7,7 +7,7 @@
 
 import Foundation
 import SwiftUI
-import SwiftData
+
 import Combine
 
 @Observable
@@ -119,7 +119,12 @@ final class TransactionMonthDetailViewModel {
     
     func expensesPayedByAdmin(for listing: Listing) -> [Transaction] {
         guard let byList = transactionsByListing[listing] else { return [] }
-        return byList.filter({ $0.type == .expense && $0.expensePaidByOwner != nil && !$0.expensePaidByOwner! })
+        return byList.filter({
+            if case .expense = $0.type, $0.expensePaidByOwner != nil, !$0.expensePaidByOwner! {
+                return true
+            }
+            return false
+        })
     }
     
     func totalFeesToPayValue() -> (Double, Currency) {

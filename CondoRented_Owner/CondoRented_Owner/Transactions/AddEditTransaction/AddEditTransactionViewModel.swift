@@ -7,7 +7,7 @@
 
 import Foundation
 import SwiftUI
-import SwiftData
+
 
 @Observable
 final class AddEditTransactionViewModel {
@@ -41,7 +41,7 @@ final class AddEditTransactionViewModel {
     var currency: Currency = Currency(id: "COP")
     var listing: Listing? = nil
     var date: Date = .now
-    var type: Transaction.TransactionType? = nil
+    var type: TransactionType? = nil
     
     // when is paid
     var paidAmountFormatted: String? = nil
@@ -116,8 +116,21 @@ final class AddEditTransactionViewModel {
             
             let microAmount = amount / currency.microMultiplier
             
-            let expenseConcept = (type == .expense || type == .fixedCost) ? (expenseConcept ?? "other") : nil
-            let expensePaidByOwner = (type == .expense) ? expensePaidByOwner : nil
+            let expenseConceptFixed: String? = {
+                return switch type {
+                case .expense(let title):
+                    type.isOther ? expenseConcept : title
+                default:
+                    nil
+                }
+            }()
+            
+            let expensePaidByOwnerFixed: Bool? = {
+                if case .expense = type {
+                    return expensePaidByOwner
+                }
+                return nil
+            }()
             
             let newTransaction = Transaction(id: transaction?.id ?? UUID().uuidString, amountFormatted: "",
                                              amountMicros: microAmount,
@@ -127,8 +140,8 @@ final class AddEditTransactionViewModel {
                                              type: type,
                                              paidAmountFormatted: nil,
                                              paidAmountCurrency: nil,
-                                             expenseConcept: expenseConcept,
-                                             expensePaidByOwner: expensePaidByOwner)
+                                             expenseConcept: expenseConceptFixed,
+                                             expensePaidByOwner: expensePaidByOwnerFixed)
             
             Task {
                 await dataSource.transactionDataSource.add(transaction: newTransaction)

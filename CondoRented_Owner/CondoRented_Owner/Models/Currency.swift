@@ -6,13 +6,11 @@
 //
 
 import Foundation
-import SwiftData
 
-@Model
-class Currency: CodableAndIdentifiable {
+struct Currency: CodableAndIdentifiable, Hashable {
     private(set) var collectionId = "Currency"
     
-    @Attribute(.unique) var id: String
+    var id: String
     var microMultiplier: Double
     
     init(id: String, microMultiplier: Double? = 0.000001) {
@@ -25,7 +23,7 @@ class Currency: CodableAndIdentifiable {
         case microMultiplier
     }
     
-    required init(from decoder: Decoder) throws {
+    init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         id = try container.decode(String.self, forKey: .id)
         microMultiplier = try container.decode(Double.self, forKey: .microMultiplier)
@@ -40,17 +38,6 @@ class Currency: CodableAndIdentifiable {
 
 extension Currency {
     
-    static private(set) var all = [Currency]()
+    static private(set) var all = [Currency(id: "COP"), Currency(id: "USD")]
     
-    @MainActor
-    static func loadAll() {
-        let container = ModelContainer.sharedModelContainer
-        let modelContext = container.mainContext
-        let descriptor = FetchDescriptor<Currency>(sortBy: [SortDescriptor(\.id, order: .forward)])
-        do {
-            all = try modelContext.fetch(descriptor)
-        } catch {
-            all = []
-        }
-    }
 }

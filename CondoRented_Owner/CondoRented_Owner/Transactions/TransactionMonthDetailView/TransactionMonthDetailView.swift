@@ -6,7 +6,7 @@
 //
 
 import SwiftUI
-import SwiftData
+
 
 struct TransactionMonthDetailView: View {
     
@@ -201,20 +201,13 @@ struct TransactionMonthDetailView: View {
                     Group {
                         
                         switch transaction.type {
-                        case .paid:
+                        case .income:
                             Text(transaction.type.title)
                         case .expense:
-                            Text("\(transaction.type.title): ")
-                            +
-                            Text(transaction.expenseConcept ?? "")
-                            
-                            Text(transaction.expensePaidByOwner! ? "(payed by OWNER)" : "(payed by ADMIN)")
-                        case .fixedCost:
-                            Text("\(transaction.type.title): ")
-                            +
-                            Text(transaction.expenseConcept ?? "")
-                        case .utilities:
-                            Text("\(transaction.type.title)")
+                            Text("\(transaction.type.titleWithType)")
+                            if let expensePaidByOwner = transaction.expensePaidByOwner {
+                                Text(expensePaidByOwner ? "(payed by OWNER)" : "(payed by ADMIN)")
+                            }
                         }
                         
                     }
@@ -226,7 +219,7 @@ struct TransactionMonthDetailView: View {
                 Spacer()
                 Text(transaction.amountMicros * transaction.currency.microMultiplier, format: .currency(code: transaction.currency.id))
                     .font(.body)
-                    .foregroundStyle(transaction.type != .paid ? .red : .green)
+                    .foregroundStyle(transaction.type == .income ? .green : .red)
             }
         }
     }
@@ -271,7 +264,7 @@ struct MonthDetailSummarySectionView: View {
         (incomeValue - expensesValue - feesValue)
     }
     
-    private var expensesByType: [Transaction.TransactionType: [Transaction]]
+//    private var expensesByType: [TransactionType: [Transaction]]
     
     init(transactions: [Transaction], adminFees: [AdminFee]) {
         (incomeValue, currency) = TransactionHelper.getExpectingValue(for: transactions)
@@ -281,25 +274,25 @@ struct MonthDetailSummarySectionView: View {
         let onlyExpenses = transactions.filter({ transaction in
             switch transaction.type {
             case .expense:
-                return (transaction.expensePaidByOwner ?? false)
-            case .fixedCost, .utilities:
-                return true
-            case .paid:
+                return (transaction.type.isOther ? (transaction.expensePaidByOwner ?? false) : true)
+            case .income:
                 return false
             }
         })
         
-        expensesByType = TransactionHelper.splitByType(transactions: onlyExpenses)
+        // TODO: busta fix this
+//        expensesByType = TransactionHelper.splitByType(transactions: onlyExpenses)
+//        expensesByType = [:]
     }
     
-    private func expenseValue(for type: Transaction.TransactionType) -> Double {
-        guard let transactions = expensesByType[type] else { return 0 }
-        var retVal: Double = 0
-        for transaction in transactions {
-            retVal += (transaction.amountMicros * transaction.currency.microMultiplier)
-        }
-        return retVal
-    }
+//    private func expenseValue(for type: TransactionType) -> Double {
+//        guard let transactions = expensesByType[type] else { return 0 }
+//        var retVal: Double = 0
+//        for transaction in transactions {
+//            retVal += (transaction.amountMicros * transaction.currency.microMultiplier)
+//        }
+//        return retVal
+//    }
     
     var body: some View {
         VStack {
@@ -324,17 +317,17 @@ struct MonthDetailSummarySectionView: View {
                 Text(expensesValue, format: .currency(code: currency.id))
                     .font(.body)
             }
-            VStack(spacing: 0) {
-                ForEach(Array(expensesByType.keys), id: \.self) { expenseType in
-                    HStack {
-                        Spacer()
-                        Text(expenseType.title)
-                        Text(expenseValue(for: expenseType), format: .currency(code: currency.id))
-                    }
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-                }
-            }
+//            VStack(spacing: 0) {
+//                ForEach(Array(expensesByType.keys), id: \.self) { expenseType in
+//                    HStack {
+//                        Spacer()
+//                        Text(expenseType.title)
+//                        Text(expenseValue(for: expenseType), format: .currency(code: currency.id))
+//                    }
+//                    .font(.caption)
+//                    .foregroundStyle(.secondary)
+//                }
+//            }
             
             HStack {
                 Text("Balance")
@@ -350,25 +343,19 @@ struct MonthDetailSummarySectionView: View {
     }
 }
 
-#Preview {
-    let model = ModelContainer.sharedInMemoryModelContainer
-    
-    let c = Currency(id: "COP")
-    let l1 = Listing(title: "Distrio Vera", adminFees: [AdminFee(listing: nil, dateStart: .now, percent: 10)])
-    let l2 = Listing(title: "La Riviere", adminFees: [AdminFee(listing: nil, dateStart: .now, percent: 15)])
-    let t1 = Transaction(amountMicros: 2_000_000_000_000, currency: c, listing: l1, type: .paid)
-    let t2 = Transaction(amountMicros: 500_000_000_000, currency: c, listing: l1, type: .paid)
-    let t3 = Transaction(amountMicros: 70_000_000_000, currency: c, listing: l1, type: .expense, expenseConcept: "aseo", expensePaidByOwner: true)
-    let t4 = Transaction(amountMicros: 700_000_000_000, currency: c, listing: l2, type: .paid)
-    let t5 = Transaction(amountMicros: 75_000_000_000, currency: c, listing: l2, type: .expense, expenseConcept: "aseo2 dsf df", expensePaidByOwner: false)
-    model.mainContext.insert(t1)
-    model.mainContext.insert(t2)
-    model.mainContext.insert(t3)
-    model.mainContext.insert(t4)
-    model.mainContext.insert(t5)
-    let tras: [Transaction] = [t1,t2,t3, t4, t5]
-    
-    let ds = AppDataSource.defaultDataSource
-    let vm = TransactionMonthDetailViewModel(dataSource: ds, transactions: tras, output: {_ in })
-    return TransactionMonthDetailView(viewModel: vm)
-}
+//#Preview {
+//    
+//    let c = Currency(id: "COP")
+//    let l1 = Listing(title: "Distrio Vera", adminFees: [AdminFee(listing: nil, dateStart: .now, percent: 10)])
+//    let l2 = Listing(title: "La Riviere", adminFees: [AdminFee(listing: nil, dateStart: .now, percent: 15)])
+//    let t1 = Transaction(amountMicros: 2_000_000_000_000, currency: c, listing: l1, type: .paid)
+//    let t2 = Transaction(amountMicros: 500_000_000_000, currency: c, listing: l1, type: .paid)
+//    let t3 = Transaction(amountMicros: 70_000_000_000, currency: c, listing: l1, type: .expense, expenseConcept: "aseo", expensePaidByOwner: true)
+//    let t4 = Transaction(amountMicros: 700_000_000_000, currency: c, listing: l2, type: .paid)
+//    let t5 = Transaction(amountMicros: 75_000_000_000, currency: c, listing: l2, type: .expense, expenseConcept: "aseo2 dsf df", expensePaidByOwner: false)
+//    let tras: [Transaction] = [t1,t2,t3, t4, t5]
+//    
+//    let ds = AppDataSource.defaultDataSource
+//    let vm = TransactionMonthDetailViewModel(dataSource: ds, transactions: tras, output: {_ in })
+//    TransactionMonthDetailView(viewModel: vm)
+//}

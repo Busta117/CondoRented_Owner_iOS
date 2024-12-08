@@ -6,11 +6,8 @@
 //
 
 import SwiftUI
-import SwiftData
 
 struct ListingsView: View {
-    @Environment(\.modelContext) private var modelContext
-    @State var container: ModelContainer
     
     @State var viewModel: ListingsViewModel = ListingsViewModel(dataSource: AppDataSource.defaultDataSource)
     
@@ -61,8 +58,8 @@ struct ListingsView: View {
     }
 }
 
-#Preview {
-    let container = ModelContainer.sharedInMemoryModelContainer
-    return ListingsView(container: container)
-        .modelContainer(container)
-}
+//#Preview {
+//    let container = ModelContainer.sharedInMemoryModelContainer
+//    return ListingsView(container: container)
+//        .modelContainer(container)
+//}

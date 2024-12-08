@@ -7,7 +7,7 @@
 
 import Foundation
 import FirebaseFirestore
-import SwiftData
+
 
 protocol AdminDataSourceProtocol {
     func fetchAll() async -> [Admin]

@@ -6,7 +6,7 @@
 //
 
 import SwiftUI
-import SwiftData
+
 import FirebaseCore
 import FirebaseFirestore
 
@@ -19,64 +19,39 @@ class AppDelegate: NSObject, UIApplicationDelegate {
         
         createAdminsIfNeeded()
         createCurrencyIfNeeded()
-        ModelContainer.sharedModelContainer.sync()
         
         return true
     }
     
     @MainActor
     func createAdminsIfNeeded() {
-        
-        let container = ModelContainer.sharedModelContainer
-        let modelContext = container.mainContext
-        let descriptor = FetchDescriptor<Admin>()
-        
-        do {
-            let existElement = try modelContext.fetch(descriptor)
-            if existElement.count == 0 {
-                let admin = Admin(name: "Jorge Luis", feeIds: [])
-                let admin2 = Admin(name: "Santiago Bustamante", feeIds: [])
-                modelContext.insert(admin)
-                modelContext.insert(admin2)
-            }
-            
-            let newExistElement = try modelContext.fetch(descriptor)
-            
-            let db = Firestore.firestore()
-            Task {
-                for admin in newExistElement {
-                    await db.insert(admin)
-                }
-            }
-            
-            
-        } catch {
-            print(error)
-        }
+      
+//        do {
+//            let existElement = try modelContext.fetch(descriptor)
+//            if existElement.count == 0 {
+//                let admin = Admin(name: "Jorge Luis", feeIds: [])
+//                let admin2 = Admin(name: "Santiago Bustamante", feeIds: [])
+//                modelContext.insert(admin)
+//                modelContext.insert(admin2)
+//            }
+//            
+//            let newExistElement = try modelContext.fetch(descriptor)
+//            
+//            let db = Firestore.firestore()
+//            Task {
+//                for admin in newExistElement {
+//                    await db.insert(admin)
+//                }
+//            }
+//            
+//            
+//        } catch {
+//            print(error)
+//        }
     }
     
     @MainActor
     func createCurrencyIfNeeded() {
-        
-        let container = ModelContainer.sharedModelContainer
-        let modelContext = container.mainContext
-        let descriptor = FetchDescriptor<Currency>()
-        
-        do {
-            let existElement = try modelContext.fetch(descriptor)
-            if existElement.count == 0 {
-                let c1 = Currency(id: "COP", microMultiplier: 0.000001)
-                let c2 = Currency(id: "USD", microMultiplier: 0.000001)
-                modelContext.insert(c1)
-                modelContext.insert(c2)
-                
-            }
-        } catch {
-            print(error)
-        }
-        
-        Currency.loadAll()
-        
         let db = Firestore.firestore()
         Task {
             for c in Currency.all {
@@ -128,7 +103,7 @@ struct CondoRented_OwnerApp: App {
                         .tabItem { Label("Transactions", systemImage: "dollarsign.circle") }
                         .tag(1)
                     
-                    ListingsView(container: ModelContainer.sharedModelContainer)
+                    ListingsView()
                         .tabItem { Label("Listing", systemImage: "house.circle") }
                         .tag(2)
                 }
@@ -136,7 +111,5 @@ struct CondoRented_OwnerApp: App {
                 .toolbarBackground(.visible, for: .tabBar)
             }
         }
-        .modelContainer(ModelContainer.sharedModelContainer)
-        
     }
 }
