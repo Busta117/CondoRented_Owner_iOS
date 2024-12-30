@@ -10,30 +10,25 @@ import FirebaseFirestore
 
 struct NewAdminFeeView: View {
     
-    @Binding var path: NavigationPath
-    @State private var listing: Listing
-    @State private var adminFee: AdminFee
-    @State private var selectedAdmin: Admin? = nil
-    @State private var endDate: Date = .now
-    private var admins: [Admin] = []
+    @State var viewModel: NewAdminFeeViewModel
+    @State private var showingNewAdminAlert: Bool = false
+    @State var newAdminName: String = ""
     
-    init(path: Binding<NavigationPath>, listing: Listing) {
-        self._path = path
-        self.listing = listing
-        self.adminFee = AdminFee(listingId: listing.id ,dateStart: .now, percent: 15)
-    }
-    
-    private var saveButtonDisabled: Bool {
-        selectedAdmin == nil
+    init(viewModel: NewAdminFeeViewModel) {
+        self.viewModel = viewModel
     }
     
     var body: some View {
         VStack(alignment: .leading) {
+            NavigatorBar(title: "")
+                .navigatorBackButton(title: "") {
+                    viewModel.output(.backDidSelect)
+                }
             HStack {
                 VStack(alignment: .leading) {
-                    Text("Adding new admin fee to")
+                    Text(viewModel.isEditing ? "Editing admin fee of" : "Adding new admin fee to")
                         .font(.headline)
-                    Text(listing.title)
+                    Text(viewModel.listing.title)
                         .font(.largeTitle)
                         .bold()
                 }
@@ -48,7 +43,7 @@ struct NewAdminFeeView: View {
                             .font(.title2)
                         HStack {
                             Button(action: {
-                                adminFee.percent = max(0, adminFee.percent - 1)
+                                viewModel.adminFee.percent = max(0, viewModel.adminFee.percent - 1)
                             }, label: {
                                 Text("-")
                                     .foregroundStyle(Color.primary)
@@ -58,7 +53,7 @@ struct NewAdminFeeView: View {
                             .buttonStyle(BorderedButtonStyle())
                             
                             HStack(spacing: 0) {
-                                Text("\(adminFee.percent, specifier: "%.0f")")
+                                Text("\(viewModel.adminFee.percent, specifier: "%.0f")")
                                     .font(.largeTitle)
                                 
                                 Text("%")
@@ -67,7 +62,7 @@ struct NewAdminFeeView: View {
                             }
                             .frame(minWidth: 80)
                             Button(action: {
-                                adminFee.percent = min(100, adminFee.percent + 1)
+                                viewModel.adminFee.percent = min(100, viewModel.adminFee.percent + 1)
                             }, label: {
                                 Text("+")
                                     .foregroundStyle(Color.primary)
@@ -81,25 +76,36 @@ struct NewAdminFeeView: View {
                 }
                 
                 Section {
-                    DatePicker(selection: $adminFee.dateStart, displayedComponents: [.date]) {
+                    DatePicker(selection: $viewModel.adminFee.dateStart, displayedComponents: [.date]) {
                         Text("Start Date")
                     }
-                    DatePickerOptional("End Date", prompt: "add date", selection: $adminFee.dateFinish)
+                    DatePickerOptional("End Date", prompt: "add date", selection: $viewModel.adminFee.dateFinish)
                 }
                 
                 Section {
-                    Picker(selection: $selectedAdmin) {
-                        if adminFee.adminId.isEmpty {
+                    Picker(selection: $viewModel.selectedAdmin) {
+                        if viewModel.adminFee.adminId.isEmpty {
                             Text("Select Admin")
                                 .tag(nil as Admin?)
                         }
                         
-                        ForEach(admins, id:\.self) {
+                        ForEach(viewModel.admins, id:\.self) {
                             Text($0.name)
                                 .tag($0 as Admin?)
                         }
                     } label: {
                         Text("Admin")
+                    }
+                } header: {
+                    HStack {
+                        Spacer()
+                        Button(action: {
+                            showingNewAdminAlert.toggle()
+                        }, label: {
+                            Text("add new")
+                                .font(.caption)
+                                .bold()
+                        })
                     }
                 }
                 
@@ -114,47 +120,27 @@ struct NewAdminFeeView: View {
                             Spacer()
                         }
                     })
-                    .disabled(saveButtonDisabled)
+                    .disabled(viewModel.saveButtonDisabled)
                 }
                 
             }
         }
         .navigationBarTitleDisplayMode(.inline)
+        .alert("Create new Admin!", isPresented: $showingNewAdminAlert) {
+            TextField(text: $newAdminName) {}
+            Button("Cancel") {
+                // nothing
+            }
+            Button("Create") {
+                viewModel.createNewAdmin(name: newAdminName)
+            }
+        } message: {
+            Text("Enter admin name")
+        }
     }
     
     func saveAction() {
-        
-        listing.adminFeeIds.append(adminFee.id)
-        if !path.isEmpty {
-            path.removeLast()
-        }
-        
-        let db = Firestore.firestore()
-        Task {
-            await db.insert(adminFee)
-            await db.insert(listing)
-        }
-        
-//        try? tmpContext.save()
-//        print(adminFee.admin?.name)
-//        let id = listing.id
-//        let descriptor = FetchDescriptor<Listing>(predicate: #Predicate {$0.id == id})
-//        
-//        do {
-//            let existElement = try modelContext.fetch(descriptor)
-//            if let listing = existElement.first {
-//                listing.title = self.listing.title
-//                try? modelContext.save()
-//            } else {
-//                modelContext.insert(listing)
-//            }
-//        } catch {
-//            modelContext.insert(listing)
-//        }
-//        if !path.isEmpty {
-//            path.removeLast()
-//        }
-        
+        viewModel.save()
     }
 }
 //
@@ -175,13 +161,18 @@ struct DatePickerOptional: View {
     let label: String
     let prompt: String
     @Binding var date: Date?
-    @State private var hidenDate: Date = Date()
+    @State private var hiddenDate: Date
     @State private var showDate: Bool = false
     
     init(_ label: String, prompt: String, selection: Binding<Date?>) {
         self.label = label
         self.prompt = prompt
         self._date = selection
+        if let existingDate = selection.wrappedValue {
+            hiddenDate = existingDate
+        } else {
+            hiddenDate = Date()
+        }
     }
     
     var body: some View {
@@ -202,18 +193,18 @@ struct DatePickerOptional: View {
                     }
                     DatePicker(
                         label,
-                        selection: $hidenDate,
+                        selection: $hiddenDate,
                         displayedComponents: [.date]
                     )
                     .labelsHidden()
-                    .onChange(of: hidenDate) { (_, newValue) in
+                    .onChange(of: hiddenDate) { (_, newValue) in
                         date = newValue
                     }
                     
                 } else {
                     Button {
                         showDate = true
-                        date = hidenDate
+                        date = hiddenDate
                     } label: {
                         Text(prompt)
                             .multilineTextAlignment(.center)
@@ -226,6 +217,11 @@ struct DatePickerOptional: View {
                     )
                     .multilineTextAlignment(.trailing)
                 }
+            }
+        }
+        .onAppear {
+            if _date.wrappedValue != nil {
+                showDate = true
             }
         }
     }

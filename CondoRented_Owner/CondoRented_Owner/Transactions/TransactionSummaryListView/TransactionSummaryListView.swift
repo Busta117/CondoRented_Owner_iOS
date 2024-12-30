@@ -82,11 +82,55 @@ struct TransactionSummaryListView: View {
         }
     }
     
+    
+    // MARK: - Global Summary
+    
+    @ViewBuilder
     var globalSummary: some View {
-        EmptyView()
+        /*
+         + 3 tabs (all the time, past year, last 3 months)
+         - gloabal balance: all months balance added
+         - total admin fees paid
+         - small chart per listing with: imcome, expenses, fees
+         */
+        
+        Picker("", selection: $viewModel.summarySelectedTab) {
+            Text("All").tag(0)
+            Text("Past year").tag(1)
+            Text("Last 3 months").tag(2)
+        }
+        .pickerStyle(SegmentedPickerStyle())
+        
+        // Tab Content
+        Group {
+            switch viewModel.summarySelectedTab {
+            case 0:
+                globalBalanceGeneral(months: 10000)
+            case 1:
+                let currentMonth = Calendar.current.component(.month, from: Date())
+                globalBalanceGeneral(months: currentMonth)
+            case 2:
+                globalBalanceGeneral(months: 3)
+            default:
+                EmptyView()
+            }
+        }
+    }
+    
+    func globalBalanceGeneral(months: Int) -> some View {
+        HStack {
+            Text("Balance")
+                .font(.body)
+            Spacer()
+            Text(viewModel.gloabalBalance(monthsAgo: months), format: .currency(code: "COP"))
+                .font(.body)
+                .bold()
+//                .foregroundStyle(monthBalanceValue >= 0 ? .green : .red)
+        }
     }
     
 }
+
 
 //#Preview {
 //    let container = ModelContainer.sharedInMemoryModelContainer

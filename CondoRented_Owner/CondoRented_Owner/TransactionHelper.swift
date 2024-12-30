@@ -135,7 +135,9 @@ struct TransactionHelper: TransactionHelperProtocol {
             switch transaction.type {
             case .income:
                 
-                if let adminFee = adminFees.first(where: { $0.listingId == transaction.listingId && $0.dateFinish == nil }) {
+                if let adminFee = adminFees.first(where: {
+                    $0.listingId == transaction.listingId && transaction.date >= $0.dateStart && transaction.date <= ($0.dateFinish ?? Date())
+                }) {
                     let percent = adminFee.percent > 1 ? (adminFee.percent / 100) : adminFee.percent
                     sum += (transaction.amountMicros * percent )
                 }

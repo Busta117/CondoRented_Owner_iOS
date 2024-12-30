@@ -10,18 +10,25 @@ import Foundation
 @Observable
 final class AddEditListingViewModel {
     
+    enum Output {
+        case backDidSelect
+        case addNewAdminFeeDidSelect
+        case editAdminFeeDidSelect(AdminFee)
+    }
+    
     @ObservationIgnored
     private let dataSource: AppDataSourceProtocol
+    @ObservationIgnored
+    var output: (Output) -> Void
     
     var listing: Listing
     var adminFees: [AdminFee] = []
     var admins: [Admin] = []
     
-    init (dataSource: AppDataSourceProtocol, listing: Listing) {
+    init (dataSource: AppDataSourceProtocol, listing: Listing, output: @escaping (Output) -> Void) {
         self.listing = listing
         self.dataSource = dataSource
-        
-        fetchData()
+        self.output = output
     }
     
     func admin(forId id: String) -> Admin? {
@@ -30,10 +37,14 @@ final class AddEditListingViewModel {
         return admin
     }
     
+    func onAppear() {
+        fetchData()
+    }
+    
     private func fetchData() {
         Task {
             self.admins = await dataSource.adminDataSource.fetchAll()
-            self.adminFees = await dataSource.adminFeeDataSource.fetch(forListingId: listing.id)
+            self.adminFees = await dataSource.adminFeeDataSource.fetch(forListingId: listing.id).sorted(by: { $0.dateStart > $1.dateStart })
         }
     }
 }

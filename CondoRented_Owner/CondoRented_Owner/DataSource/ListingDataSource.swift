@@ -11,6 +11,7 @@ import FirebaseFirestore
 
 protocol ListingDataSourceProtocol {
     func fetchListings() async -> [Listing]
+    func save(_ listing: Listing) async
 }
 
 final class ListingDataSource: ListingDataSourceProtocol {
@@ -34,6 +35,10 @@ final class ListingDataSource: ListingDataSourceProtocol {
             print(error)
             return []
         }
+    }
+    
+    func save(_ listing: Listing) async {
+        await db.insert(listing)
     }
     
 }

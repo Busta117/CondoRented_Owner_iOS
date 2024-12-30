@@ -18,7 +18,8 @@ enum TransactionType: Codable, CaseIterable, Hashable {
         [.income,
          .expense(title: "Internet"),
          .expense(title: "Mortgage"),
-         .expense(title: "Condo Admin"),
+         .expense(title: "Utilities"),
+         .expense(title: "Co-Ownership Fees"),
          other]
     }
     

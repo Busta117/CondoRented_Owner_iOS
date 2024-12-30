@@ -12,6 +12,7 @@ import FirebaseFirestore
 protocol AdminDataSourceProtocol {
     func fetchAll() async -> [Admin]
     func fetch(id: String) async -> Admin?
+    func save(_ admin: Admin) async
 }
 
 final class AdminDataSource: AdminDataSourceProtocol {
@@ -46,6 +47,10 @@ final class AdminDataSource: AdminDataSourceProtocol {
             print(error)
             return nil
         }
+    }
+    
+    func save(_ admin: Admin) async {
+        await db.insert(admin)
     }
 
 }

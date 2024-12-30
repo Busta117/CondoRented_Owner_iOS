@@ -204,9 +204,9 @@ struct TransactionMonthDetailView: View {
                         case .income:
                             Text(transaction.type.title)
                         case .expense:
-                            Text("\(transaction.type.titleWithType)")
-                            if let expensePaidByOwner = transaction.expensePaidByOwner {
-                                Text(expensePaidByOwner ? "(payed by OWNER)" : "(payed by ADMIN)")
+                            Text("\(transaction.type.title)")
+                            if let expensePaidByOwner = transaction.expensePaidByOwner, !expensePaidByOwner {
+                                Text("(payed by ADMIN)")
                             }
                         }
                         

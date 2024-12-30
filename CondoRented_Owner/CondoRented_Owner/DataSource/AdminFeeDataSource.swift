@@ -13,6 +13,7 @@ protocol AdminFeeDataSourceProtocol {
     func fetchAll() async -> [AdminFee]
     func fetch(id: String) async -> AdminFee?
     func fetch(forListingId listingId: String) async -> [AdminFee]
+    func save(_ adminFee: AdminFee) async
 }
 
 final class AdminFeeDataSource: AdminFeeDataSourceProtocol {
@@ -51,6 +52,10 @@ final class AdminFeeDataSource: AdminFeeDataSourceProtocol {
     func fetch(forListingId listingId: String) async -> [AdminFee] {
         let all = await fetchAll()
         return all.filter({$0.listingId == listingId})
+    }
+    
+    func save(_ adminFee: AdminFee) async {
+        await db.insert(adminFee)
     }
 
 }

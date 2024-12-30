@@ -103,7 +103,7 @@ struct CondoRented_OwnerApp: App {
                         .tabItem { Label("Transactions", systemImage: "dollarsign.circle") }
                         .tag(1)
                     
-                    ListingsView()
+                    ListingMainView()
                         .tabItem { Label("Listing", systemImage: "house.circle") }
                         .tag(2)
                 }

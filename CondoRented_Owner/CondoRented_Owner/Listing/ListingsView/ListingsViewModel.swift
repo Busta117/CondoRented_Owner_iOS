@@ -10,14 +10,20 @@ import Foundation
 @Observable
 final class ListingsViewModel {
     
+    enum Output {
+        case detail(listing: Listing)
+    }
+    
     @ObservationIgnored
     let dataSource: AppDataSourceProtocol
+    @ObservationIgnored
+    var output: (Output)->()
     
     var listingList: [Listing] = []
     
-    init (dataSource: AppDataSource) {
+    init (dataSource: AppDataSource, output: @escaping (Output)->()) {
         self.dataSource = dataSource
-        
+        self.output = output
         fetchData()
     }
     

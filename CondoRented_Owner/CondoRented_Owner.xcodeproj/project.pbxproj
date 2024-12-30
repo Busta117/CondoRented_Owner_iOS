@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		4211FB7A2D20F8BF00A7D5FE /* NewAdminFeeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4211FB792D20F8BF00A7D5FE /* NewAdminFeeViewModel.swift */; };
 		423B0C372BCFBFD20030AD65 /* CondoRented_OwnerApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 423B0C362BCFBFD20030AD65 /* CondoRented_OwnerApp.swift */; };
 		423B0C392BCFBFD20030AD65 /* ListingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 423B0C382BCFBFD20030AD65 /* ListingsView.swift */; };
 		423B0C3D2BCFBFD30030AD65 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 423B0C3C2BCFBFD30030AD65 /* Assets.xcassets */; };
@@ -20,7 +21,6 @@
 		423B0C712BCFCB6F0030AD65 /* Listing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 423B0C702BCFCB6F0030AD65 /* Listing.swift */; };
 		423B0C752BD18DF80030AD65 /* AddEditListingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 423B0C742BD18DF80030AD65 /* AddEditListingView.swift */; };
 		423B0C7A2BD96F370030AD65 /* AdminFeeDetail.swift in Sources */ = {isa = PBXBuildFile; fileRef = 423B0C792BD96F370030AD65 /* AdminFeeDetail.swift */; };
-		423B0C7C2BD974A00030AD65 /* NewAdminFeeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 423B0C7B2BD974A00030AD65 /* NewAdminFeeView.swift */; };
 		423B0C7E2BE279190030AD65 /* Admin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 423B0C7D2BE279190030AD65 /* Admin.swift */; };
 		423B0D082BE958D70030AD65 /* TransactionSummaryListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 423B0D072BE958D70030AD65 /* TransactionSummaryListView.swift */; };
 		423B0D0A2BE9593D0030AD65 /* TransactionSummaryListMonth.swift in Sources */ = {isa = PBXBuildFile; fileRef = 423B0D092BE9593D0030AD65 /* TransactionSummaryListMonth.swift */; };
@@ -53,6 +53,14 @@
 		428481FF2C32B18C006336A1 /* FirebaseFirestoreCombine-Community in Frameworks */ = {isa = PBXBuildFile; productRef = 428481FE2C32B18C006336A1 /* FirebaseFirestoreCombine-Community */; };
 		428482012C32B18C006336A1 /* FirebaseFirestoreSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 428482002C32B18C006336A1 /* FirebaseFirestoreSwift */; };
 		428482032C32B362006336A1 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 428482022C32B362006336A1 /* GoogleService-Info.plist */; };
+		4296907A2D15DA8600E0E6ED /* ListingCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 429690792D15DA8600E0E6ED /* ListingCoordinator.swift */; };
+		4296907C2D15DB3300E0E6ED /* NavigatorRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4296907B2D15DB3300E0E6ED /* NavigatorRouter.swift */; };
+		4296907E2D15DBD600E0E6ED /* ListingRoute.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4296907D2D15DBD600E0E6ED /* ListingRoute.swift */; };
+		429690812D161A4A00E0E6ED /* NavigatorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 429690802D161A4A00E0E6ED /* NavigatorView.swift */; };
+		429690832D161CAA00E0E6ED /* ListingMainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 429690822D161CA000E0E6ED /* ListingMainView.swift */; };
+		429690852D16208000E0E6ED /* OnLoadModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 429690842D16208000E0E6ED /* OnLoadModifier.swift */; };
+		429690872D16219800E0E6ED /* NavigatorBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 429690862D16219800E0E6ED /* NavigatorBar.swift */; };
+		42B084D12D20F6D000867FC9 /* NewAdminFeeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42B084CF2D20F6D000867FC9 /* NewAdminFeeView.swift */; };
 		42BBCE3C2CCB937A00A74B9A /* ListingsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42BBCE3B2CCB937A00A74B9A /* ListingsViewModel.swift */; };
 		42BBCE3F2CCC189400A74B9A /* AddEditListingViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42BBCE3E2CCC189400A74B9A /* AddEditListingViewModel.swift */; };
 		42BBCE422CCC211900A74B9A /* AdminDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42BBCE412CCC211900A74B9A /* AdminDataSource.swift */; };
@@ -85,6 +93,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		4211FB792D20F8BF00A7D5FE /* NewAdminFeeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewAdminFeeViewModel.swift; sourceTree = "<group>"; };
 		423B0C332BCFBFD10030AD65 /* CondoRented_Owner.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CondoRented_Owner.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		423B0C362BCFBFD20030AD65 /* CondoRented_OwnerApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CondoRented_OwnerApp.swift; sourceTree = "<group>"; };
 		423B0C382BCFBFD20030AD65 /* ListingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListingsView.swift; sourceTree = "<group>"; };
@@ -102,7 +111,6 @@
 		423B0C702BCFCB6F0030AD65 /* Listing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Listing.swift; sourceTree = "<group>"; };
 		423B0C742BD18DF80030AD65 /* AddEditListingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddEditListingView.swift; sourceTree = "<group>"; };
 		423B0C792BD96F370030AD65 /* AdminFeeDetail.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdminFeeDetail.swift; sourceTree = "<group>"; };
-		423B0C7B2BD974A00030AD65 /* NewAdminFeeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewAdminFeeView.swift; sourceTree = "<group>"; };
 		423B0C7D2BE279190030AD65 /* Admin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Admin.swift; sourceTree = "<group>"; };
 		423B0D072BE958D70030AD65 /* TransactionSummaryListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionSummaryListView.swift; sourceTree = "<group>"; };
 		423B0D092BE9593D0030AD65 /* TransactionSummaryListMonth.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionSummaryListMonth.swift; sourceTree = "<group>"; };
@@ -118,6 +126,14 @@
 		423B0D392BFFB0C10030AD65 /* TransactionMonthDetailViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionMonthDetailViewModel.swift; sourceTree = "<group>"; };
 		423B0D452C0655C10030AD65 /* MonthTransactionsChartPieView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MonthTransactionsChartPieView.swift; sourceTree = "<group>"; };
 		428482022C32B362006336A1 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		429690792D15DA8600E0E6ED /* ListingCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListingCoordinator.swift; sourceTree = "<group>"; };
+		4296907B2D15DB3300E0E6ED /* NavigatorRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigatorRouter.swift; sourceTree = "<group>"; };
+		4296907D2D15DBD600E0E6ED /* ListingRoute.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListingRoute.swift; sourceTree = "<group>"; };
+		429690802D161A4A00E0E6ED /* NavigatorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigatorView.swift; sourceTree = "<group>"; };
+		429690822D161CA000E0E6ED /* ListingMainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListingMainView.swift; sourceTree = "<group>"; };
+		429690842D16208000E0E6ED /* OnLoadModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnLoadModifier.swift; sourceTree = "<group>"; };
+		429690862D16219800E0E6ED /* NavigatorBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigatorBar.swift; sourceTree = "<group>"; };
+		42B084CF2D20F6D000867FC9 /* NewAdminFeeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewAdminFeeView.swift; sourceTree = "<group>"; };
 		42BBCE3B2CCB937A00A74B9A /* ListingsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListingsViewModel.swift; sourceTree = "<group>"; };
 		42BBCE3E2CCC189400A74B9A /* AddEditListingViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddEditListingViewModel.swift; sourceTree = "<group>"; };
 		42BBCE412CCC211900A74B9A /* AdminDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdminDataSource.swift; sourceTree = "<group>"; };
@@ -185,6 +201,7 @@
 			children = (
 				428482022C32B362006336A1 /* GoogleService-Info.plist */,
 				423B0C362BCFBFD20030AD65 /* CondoRented_OwnerApp.swift */,
+				4296907F2D15DBED00E0E6ED /* Common */,
 				423B0D2D2BF5354F0030AD65 /* DataSource */,
 				423B0C632BCFC02C0030AD65 /* Models */,
 				423B0D062BE9588F0030AD65 /* Transactions */,
@@ -239,10 +256,11 @@
 		423B0C762BD18DFF0030AD65 /* Listing */ = {
 			isa = PBXGroup;
 			children = (
+				429690782D15DA7100E0E6ED /* Coordinator */,
 				42BBCE3D2CCC187D00A74B9A /* ListingsView */,
 				42BBCE402CCC189C00A74B9A /* AddEditListingView */,
 				423B0C792BD96F370030AD65 /* AdminFeeDetail.swift */,
-				423B0C7B2BD974A00030AD65 /* NewAdminFeeView.swift */,
+				42B084D02D20F6D000867FC9 /* NewAdminFeeView */,
 			);
 			path = Listing;
 			sourceTree = "<group>";
@@ -298,6 +316,36 @@
 				423B0D452C0655C10030AD65 /* MonthTransactionsChartPieView.swift */,
 			);
 			path = TransactionMonthDetailView;
+			sourceTree = "<group>";
+		};
+		429690782D15DA7100E0E6ED /* Coordinator */ = {
+			isa = PBXGroup;
+			children = (
+				429690822D161CA000E0E6ED /* ListingMainView.swift */,
+				429690792D15DA8600E0E6ED /* ListingCoordinator.swift */,
+				4296907D2D15DBD600E0E6ED /* ListingRoute.swift */,
+			);
+			path = Coordinator;
+			sourceTree = "<group>";
+		};
+		4296907F2D15DBED00E0E6ED /* Common */ = {
+			isa = PBXGroup;
+			children = (
+				429690862D16219800E0E6ED /* NavigatorBar.swift */,
+				429690842D16208000E0E6ED /* OnLoadModifier.swift */,
+				4296907B2D15DB3300E0E6ED /* NavigatorRouter.swift */,
+				429690802D161A4A00E0E6ED /* NavigatorView.swift */,
+			);
+			path = Common;
+			sourceTree = "<group>";
+		};
+		42B084D02D20F6D000867FC9 /* NewAdminFeeView */ = {
+			isa = PBXGroup;
+			children = (
+				42B084CF2D20F6D000867FC9 /* NewAdminFeeView.swift */,
+				4211FB792D20F8BF00A7D5FE /* NewAdminFeeViewModel.swift */,
+			);
+			path = NewAdminFeeView;
 			sourceTree = "<group>";
 		};
 		42BBCE3D2CCC187D00A74B9A /* ListingsView */ = {
@@ -462,20 +510,26 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				423B0C7C2BD974A00030AD65 /* NewAdminFeeView.swift in Sources */,
 				423B0D082BE958D70030AD65 /* TransactionSummaryListView.swift in Sources */,
+				429690812D161A4A00E0E6ED /* NavigatorView.swift in Sources */,
+				4296907A2D15DA8600E0E6ED /* ListingCoordinator.swift in Sources */,
 				423B0D312BF535F20030AD65 /* ListingDataSource.swift in Sources */,
 				423B0C6F2BCFCAD30030AD65 /* AdminFee.swift in Sources */,
 				423B0C712BCFCB6F0030AD65 /* Listing.swift in Sources */,
 				423B0D332BF605DB0030AD65 /* AppDataSource.swift in Sources */,
 				42BBCE3F2CCC189400A74B9A /* AddEditListingViewModel.swift in Sources */,
+				4211FB7A2D20F8BF00A7D5FE /* NewAdminFeeViewModel.swift in Sources */,
 				423B0D0A2BE9593D0030AD65 /* TransactionSummaryListMonth.swift in Sources */,
 				42C9C9AF2CFB95190006FA84 /* CodableAndIdentifiable.swift in Sources */,
+				429690852D16208000E0E6ED /* OnLoadModifier.swift in Sources */,
 				423B0D462C0655C10030AD65 /* MonthTransactionsChartPieView.swift in Sources */,
 				423B0C672BCFC1B30030AD65 /* Currency.swift in Sources */,
 				423B0D272BF364170030AD65 /* TransactionDataSource.swift in Sources */,
 				423B0C692BCFC2D00030AD65 /* Transaction.swift in Sources */,
 				42BBCE422CCC211900A74B9A /* AdminDataSource.swift in Sources */,
+				4296907E2D15DBD600E0E6ED /* ListingRoute.swift in Sources */,
+				429690832D161CAA00E0E6ED /* ListingMainView.swift in Sources */,
+				4296907C2D15DB3300E0E6ED /* NavigatorRouter.swift in Sources */,
 				423B0D0C2BEA29DC0030AD65 /* TransactionHelper.swift in Sources */,
 				423B0D242BF35C5E0030AD65 /* TransactionSummaryListViewModel.swift in Sources */,
 				42C9C9BB2CFBBC0A0006FA84 /* TransactionType.swift in Sources */,
@@ -488,7 +542,9 @@
 				423B0C392BCFBFD20030AD65 /* ListingsView.swift in Sources */,
 				423B0C372BCFBFD20030AD65 /* CondoRented_OwnerApp.swift in Sources */,
 				423B0D2A2BF52E1B0030AD65 /* AddEditTransactionView.swift in Sources */,
+				42B084D12D20F6D000867FC9 /* NewAdminFeeView.swift in Sources */,
 				423B0C752BD18DF80030AD65 /* AddEditListingView.swift in Sources */,
+				429690872D16219800E0E6ED /* NavigatorBar.swift in Sources */,
 				423B0C7A2BD96F370030AD65 /* AdminFeeDetail.swift in Sources */,
 				423B0C7E2BE279190030AD65 /* Admin.swift in Sources */,
 				42C9C9B72CFB96970006FA84 /* Firestore+functions.swift in Sources */,
