@@ -18,4 +18,6 @@ enum ListingRoute: RouteProtocol {
     case list
     case detail(listing: Listing)
     case createOrEditAdminFee(listing: Listing, adminFee: AdminFee?)
+    case transactionList(listingId: String)
+    case transactionMonthDetail(transactions: [Transaction], ListingId: String)
 }

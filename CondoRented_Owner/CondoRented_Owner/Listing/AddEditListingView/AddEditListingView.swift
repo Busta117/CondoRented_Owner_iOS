@@ -11,7 +11,7 @@ import FirebaseFirestore
 
 struct AddEditListingView: View {
     
-    @State var viewModel: AddEditListingViewModel
+    @Bindable var viewModel: AddEditListingViewModel
     
     init(viewModel: AddEditListingViewModel) {
         self.viewModel = viewModel
@@ -28,6 +28,21 @@ struct AddEditListingView: View {
                     TextField("", text: $viewModel.listing.title)
                 } header: {
                     Text("Listing Name")
+                }
+                
+                Section {
+                    Button(action: {
+                        seeTransactionsAction()
+                    }, label: {
+                        HStack {
+                            Text("See Transactions")
+                            Spacer()
+                            Label("", systemImage: "chevron.right")
+                        }
+                        .font(.body)
+                        .contentShape(Rectangle())
+                    })
+                    .buttonStyle(.plain)
                 }
                 
                 Section {
@@ -80,8 +95,6 @@ struct AddEditListingView: View {
                                 .font(.headline)
                             Spacer()
                         }
-                        
-                        
                     })
                 }
             }
@@ -94,6 +107,10 @@ struct AddEditListingView: View {
     
     private func addNewAdminFee() {
         viewModel.output(.addNewAdminFeeDidSelect)
+    }
+    
+    private func seeTransactionsAction() {
+        viewModel.output(.seeTransactionsDidSelect)
     }
     
     private func saveAction() {

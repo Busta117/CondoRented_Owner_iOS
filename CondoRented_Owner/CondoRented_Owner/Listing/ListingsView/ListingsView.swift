@@ -9,7 +9,7 @@ import SwiftUI
 
 struct ListingsView: View {
     
-    @State var viewModel: ListingsViewModel
+    @Bindable var viewModel: ListingsViewModel
     
     @State private var scrollOffset: CGFloat = 0
     
@@ -32,7 +32,7 @@ struct ListingsView: View {
                 List {
                     ForEach(viewModel.listingList) { item in
                         Button {
-                            viewModel.output(.detail(listing: item))
+                            viewModel.didSelectListing(item)
                         } label: {
                             HStack(alignment: .center) {
                                 Image(systemName: "house")

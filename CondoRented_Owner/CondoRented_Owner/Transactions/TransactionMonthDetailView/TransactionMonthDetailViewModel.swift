@@ -7,7 +7,6 @@
 
 import Foundation
 import SwiftUI
-
 import Combine
 
 @Observable
@@ -28,115 +27,158 @@ final class TransactionMonthDetailViewModel {
     private let dataSource: AppDataSourceProtocol
     @ObservationIgnored
     private var cancellables = Set<AnyCancellable>()
-    
+    @ObservationIgnored
+    private let output: (Output) -> Void
+    @ObservationIgnored
+    private let transactionDateMonthReference: Date
+    @ObservationIgnored
+    var selectedListingId: String?
+
     var transactionsByListing: [Listing: [Transaction]] = [:]
-    var transactions: [Transaction]
+    var transactions: [Transaction] = []
     var titleMonth: String = ""
-    var isLoading = false
-    private var output: (Output)->()
-    
+
     var allListings: [Listing] = []
     var allAdminFees: [AdminFee] = []
-    var listings: [Listing]
-    {
-        Array(transactionsByListing.keys).sorted(by: { $0.title < $1.title })
+
+    var listings: [Listing] {
+        Array(transactionsByListing.keys).sorted { $0.title < $1.title }
     }
-    
-    init(dataSource: AppDataSourceProtocol, transactions: [Transaction], output: @escaping (Output)->()) {
+    var selectedListing: Listing? {
+        allListings.first { $0.id == selectedListingId }
+    }
+
+    init(dataSource: AppDataSourceProtocol, transactions: [Transaction], selectedListingId: String? = nil, output: @escaping (Output) -> Void) {
         self.dataSource = dataSource
-        self.transactions = transactions.sorted(by: {$0.date < $1.date})
         self.output = output
+        self.transactionDateMonthReference = transactions.first?.date ?? .now
         self.titleMonth = transactions.first?.date.formatted(.dateTime.month(.wide).year()) ?? ""
         
+        self.transactions = dataSource.transactionDataSource.transactions
+            .filter { Calendar.current.isDate($0.date, equalTo: self.transactionDateMonthReference, toGranularity: .month) }
+            .sorted { $0.date < $1.date }
+        
+        if let selectedListingId = selectedListingId {
+            self.selectedListingId = selectedListingId
+            self.transactions = self.transactions.filter { $0.listingId == selectedListingId }
+        }
+
         registerListeners()
-        fetchData()
+        fetchInitialData()
     }
-    
-    private func fetchData(silence: Bool = false) {
-        if !silence {
-            isLoading = true
-        }
+
+    private func fetchInitialData() {
         Task {
-            self.allListings = await dataSource.listingDataSource.fetchListings()
-            self.allAdminFees = await dataSource.adminFeeDataSource.fetchAll()
-            self.transactionsByListing = TransactionHelper.splitByListing(transactions: transactions, listings: self.allListings)
-            isLoading = false
+            await dataSource.listingDataSource.fetchListings()
+            await dataSource.adminFeeDataSource.fetchAll()
         }
     }
-    
+
+    private func updateTransactionsByListing() {
+        transactionsByListing = TransactionHelper.splitByListing(transactions: transactions, listings: allListings)
+    }
+
     private func registerListeners() {
-        dataSource.transactionDataSource.actionSubject.sink { [weak self] action in
-            switch action {
-            case .added(let transaction):
-                self?.fetchData(silence: true)
-            case .removed:
-                self?.fetchData(silence: true)
-            case .none:
-                ()
-            }
-        }
-        .store(in: &cancellables)
-    }
-    
-    func input(_ input: Input) {
-        switch input {
-        case .deleteTapped(let indexSet):
-            
-            let transToDelete = indexSet.map { transactions[$0] }
-            Task {
-                for tr in transToDelete {
-                    await dataSource.transactionDataSource.remove(transaction: tr)
+        
+        dataSource.transactionDataSource.transactionsPublisher
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] transactions in
+                guard let self else { return }
+                var filtered = transactions
+                    .filter { Calendar.current.isDate($0.date, equalTo: self.transactionDateMonthReference, toGranularity: .month) }
+                    .sorted { $0.date < $1.date }
+                
+                if let selectedListingId {
+                    filtered = filtered.filter { $0.listingId == selectedListingId }
                 }
                 
-                transactions.remove(atOffsets: indexSet)
-                transactionsByListing = TransactionHelper.splitByListing(transactions: transactions, listings: allListings)
+                self.transactions = filtered
+                self.updateTransactionsByListing()
             }
-            
+            .store(in: &cancellables)
+        
+        // Reactivo a cambios en listings
+        dataSource.listingDataSource.listingsPublisher
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] listings in
+                self?.allListings = listings
+                self?.updateTransactionsByListing()
+            }
+            .store(in: &cancellables)
+
+        // Reactivo a cambios en admin fees
+        dataSource.adminFeeDataSource.adminFeesPublisher
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] fees in
+                self?.allAdminFees = fees
+            }
+            .store(in: &cancellables)
+    }
+
+    func input(_ input: Input) {
+        switch input {
         case .addNewTapped:
             output(.addNewTransaction)
+
         case .editTransaction(let transaction):
             output(.editTransaction(transaction))
-        }
-    }
-    
-    func listing(forId id: String) -> Listing? {
-        allListings.first(where: {$0.id == id})
-    }
-    
-    func expectingValue(for listing: Listing) -> (Double, Currency) {
-        let value = TransactionHelper.getExpectingValue(for: transactionsByListing[listing] ?? [])
-        return (value.0, value.1)
-    }
-    
-    func percentFee(for listing: Listing) -> Double {
-        var feesForThisMonth = [AdminFee]()
-        
-        for transaction in transactions {
-            if let fee = allAdminFees.first(where: {$0.listingId == listing.id && $0.dateStart <= transaction.date && ($0.dateFinish ?? Date()) >= transaction.date}) {
-                feesForThisMonth.append(fee)
+
+        case .deleteTapped(let indexSet):
+            let toDelete = indexSet.map { transactions[$0] }
+            Task {
+                for transaction in toDelete {
+                    await dataSource.transactionDataSource.remove(transaction: transaction)
+                }
+                transactions.remove(atOffsets: indexSet)
+                updateTransactionsByListing()
             }
         }
-        return feesForThisMonth.first?.percent ?? 0
     }
-    
+
+    func listing(forId id: String) -> Listing? {
+        allListings.first { $0.id == id }
+    }
+
+    func expectingValue(for listing: Listing) -> (Double, Currency) {
+        TransactionHelper.getExpectingValue(for: transactionsByListing[listing] ?? [])
+    }
+
+    func percentFee(for listing: Listing) -> Double {
+        let relevantFees = transactions.compactMap { transaction in
+            allAdminFees.first {
+                $0.listingId == listing.id &&
+                $0.dateStart <= transaction.date &&
+                ($0.dateFinish ?? .distantFuture) >= transaction.date
+            }
+        }
+        return relevantFees.first?.percent ?? 0
+    }
+
     func feesToPayValue(for listing: Listing) -> (Double, Currency) {
-        let value = TransactionHelper.getFeesToPayValue(for: transactionsByListing[listing] ?? [], includesExpenses: false, adminFees: allAdminFees)
-        return (value.0, value.1)
+        TransactionHelper.getFeesToPayValue(
+            for: transactionsByListing[listing] ?? [],
+            includesExpenses: false,
+            adminFees: allAdminFees
+        )
     }
-    
+
     func expensesPayedByAdmin(for listing: Listing) -> [Transaction] {
-        guard let byList = transactionsByListing[listing] else { return [] }
-        return byList.filter({
-            if case .expense = $0.type, $0.expensePaidByOwner != nil, !$0.expensePaidByOwner! {
+        guard let byListing = transactionsByListing[listing] else { return [] }
+        return byListing.filter {
+            if case .expense = $0.type,
+               let paidByOwner = $0.expensePaidByOwner,
+               !paidByOwner {
                 return true
             }
             return false
-        })
+        }
     }
-    
+
     func totalFeesToPayValue() -> (Double, Currency) {
-        let value = TransactionHelper.getFeesToPayValue(for: transactions, includesExpenses: true, adminFees: allAdminFees)
-        return (value.0, value.1)
+        TransactionHelper.getFeesToPayValue(
+            for: transactions,
+            includesExpenses: true,
+            adminFees: allAdminFees
+        )
     }
-    
 }

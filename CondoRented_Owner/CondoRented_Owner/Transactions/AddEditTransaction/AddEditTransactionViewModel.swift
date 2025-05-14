@@ -7,7 +7,7 @@
 
 import Foundation
 import SwiftUI
-
+import Combine
 
 @Observable
 final class AddEditTransactionViewModel {
@@ -25,128 +25,140 @@ final class AddEditTransactionViewModel {
     @ObservationIgnored
     var transaction: Transaction?
     @ObservationIgnored
-    var output: (Output)->()
+    var output: (Output) -> Void
+    @ObservationIgnored
+    private var cancellables = Set<AnyCancellable>()
     
-    var allCurrencies = [Currency]()
-    
+    var allCurrencies: [Currency] = []
+    var allListing: [Listing] = []
+
     var loading: Bool = true
-    var amount: Double = 0
-    var isAmountCorrect: Bool {
-        if amount > 0 {
-            return true
-        }
-        return false
-    }
     
+    var amount: Double = 0
     var currency: Currency = Currency(id: "COP")
     var listing: Listing? = nil
     var date: Date = .now
     var type: TransactionType? = nil
-    
-    // when is paid
+
     var paidAmountFormatted: String? = nil
     var paidAmountCurrency: Currency? = nil
-    
-    // when is expense
     var expenseConcept: String? = nil
     var expensePaidByOwner: Bool = true
-    
-    var allListing: [Listing] = []
-    
+
     init(transaction: Transaction? = nil,
          dataSource: AppDataSourceProtocol,
-         output: @escaping (Output)->()) {
+         output: @escaping (Output) -> Void) {
         self.transaction = transaction
         self.dataSource = dataSource
         self.output = output
         
-        fetchData()
+        registerListeners()
+        fetchInitialData()
     }
     
-    func fetchData() {
+    private func fetchInitialData() {
         Task {
-            allListing = await dataSource.listingDataSource.fetchListings()
-            
-            allCurrencies = Currency.all
-            self.currency = Currency.all.first ?? Currency(id: "COP")
-            
-            onDoneLoaded()
+            await dataSource.listingDataSource.fetchListings()
+            await MainActor.run {
+                self.allCurrencies = Currency.all
+                self.currency = Currency.all.first ?? Currency(id: "COP")
+                self.onDoneLoaded()
+            }
         }
     }
-    
-    func onDoneLoaded() {
-        
-        // edit mode
-        if let transaction = transaction {
-            self.amount = transaction.amountMicros * transaction.currency.microMultiplier
-            self.currency = transaction.currency
-            self.listing = allListing.first(where: {$0.id == transaction.listingId})
-            self.date = transaction.date
-            self.type = transaction.type
-            self.expenseConcept = transaction.expenseConcept
-            self.expensePaidByOwner = transaction.expensePaidByOwner ?? true
+
+    private func registerListeners() {
+        dataSource.listingDataSource.listingsPublisher
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] listings in
+                guard let self else { return }
+                self.allListing = listings
+                if self.transaction != nil {
+                    self.onDoneLoaded() // Actualiza si ya estabas editando
+                }
+            }
+            .store(in: &cancellables)
+    }
+
+    private func onDoneLoaded() {
+        guard let transaction = transaction else {
+            loading = false
+            return
         }
-        
-        loading = false
+
+        self.amount = transaction.amountMicros * transaction.currency.microMultiplier
+        self.currency = transaction.currency
+        self.listing = allListing.first(where: { $0.id == transaction.listingId })
+        self.date = transaction.date
+        self.type = transaction.type
+        self.expenseConcept = transaction.expenseConcept
+        self.expensePaidByOwner = transaction.expensePaidByOwner ?? true
+        self.loading = false
     }
     
     var navigationTitle: String {
-        if transaction == nil {
-            return "New transaction"
-        }
-        return "Edit transaction"
+        transaction == nil ? "New transaction" : "Edit transaction"
+    }
+    
+    var isAmountCorrect: Bool {
+        amount > 0
     }
     
     var canSave: Bool {
-        if isAmountCorrect &&
-            listing != nil &&
-            type != nil {
-            return true
-        }
-        return false
+        isAmountCorrect && listing != nil && type != nil
     }
     
     func input(_ input: Input) {
         switch input {
         case .saveTapped:
-            loading = true
-            guard let listing = listing, let type = type else {
-                return
+            saveTransaction()
+        }
+    }
+    
+    private func saveTransaction() {
+        loading = true
+        
+        guard let listing = listing, let type = type else {
+            return
+        }
+        
+        let microAmount = amount / currency.microMultiplier
+        
+        let expenseConceptFixed: String? = {
+            return switch type {
+            case .expense(let title):
+                type.isOther ? expenseConcept : title
+            default:
+                nil
             }
-            
-            let microAmount = amount / currency.microMultiplier
-            
-            let expenseConceptFixed: String? = {
-                return switch type {
-                case .expense(let title):
-                    type.isOther ? expenseConcept : title
-                default:
-                    nil
-                }
-            }()
-            
-            let expensePaidByOwnerFixed: Bool? = {
-                if case .expense = type {
-                    return expensePaidByOwner
-                }
-                return nil
-            }()
-            
-            let newTransaction = Transaction(id: transaction?.id ?? UUID().uuidString, amountFormatted: "",
-                                             amountMicros: microAmount,
-                                             currency: currency,
-                                             listingId: listing.id,
-                                             date: date,
-                                             type: type,
-                                             paidAmountFormatted: nil,
-                                             paidAmountCurrency: nil,
-                                             expenseConcept: expenseConceptFixed,
-                                             expensePaidByOwner: expensePaidByOwnerFixed)
-            
-            Task {
-                await dataSource.transactionDataSource.add(transaction: newTransaction)
-                loading = false
-                output(.back)
+        }()
+        
+        let expensePaidByOwnerFixed: Bool? = {
+            if case .expense = type {
+                return expensePaidByOwner
+            }
+            return nil
+        }()
+        
+        let newTransaction = Transaction(
+            id: transaction?.id ?? UUID().uuidString,
+            amountFormatted: "",
+            amountMicros: microAmount,
+            currency: currency,
+            listingId: listing.id,
+            date: date,
+            type: type,
+            paidAmountFormatted: nil,
+            paidAmountCurrency: nil,
+            expenseConcept: expenseConceptFixed,
+            expensePaidByOwner: expensePaidByOwnerFixed
+        )
+        
+        Task {
+            await dataSource.transactionDataSource.add(transaction: newTransaction)
+            await MainActor.run {
+                self.loading = false
+                self.output(.back)
             }
         }
     }

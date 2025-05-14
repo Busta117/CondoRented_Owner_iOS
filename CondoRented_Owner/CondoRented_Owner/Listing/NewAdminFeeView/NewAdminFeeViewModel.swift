@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import Combine
 
 @Observable
 final class NewAdminFeeViewModel {
@@ -20,6 +21,8 @@ final class NewAdminFeeViewModel {
     var output: (Output) -> Void
     @ObservationIgnored
     private(set) var isEditing: Bool = false
+    @ObservationIgnored
+    private var cancellables = Set<AnyCancellable>()
     
     private(set) var listing: Listing
     private(set) var admins: [Admin] = []
@@ -42,24 +45,36 @@ final class NewAdminFeeViewModel {
         self.adminFee = adminFee ?? AdminFee(listingId: listing.id ,dateStart: .now, percent: 15)
         self.output = output
         
-        fetchData()
+        registerListeners()
+        fetchInitialAdmins()
     }
     
-    private func fetchData() {
+    private func fetchInitialAdmins() {
         Task {
-            self.admins = await dataSource.adminDataSource.fetchAll()
-            if let current = self.admins.first(where: { $0.id == self.adminFee.adminId }) {
-                self.selectedAdmin = current
-            }
-            
+            await dataSource.adminDataSource.fetchAll()
         }
+    }
+    
+    private func registerListeners() {
+        dataSource.adminDataSource.adminsPublisher
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] admins in
+                guard let self = self else { return }
+                self.admins = admins
+                if self.selectedAdmin == nil,
+                   let current = admins.first(where: { $0.id == self.adminFee.adminId }) {
+                    self.selectedAdmin = current
+                }
+            }
+            .store(in: &cancellables)
     }
     
     func save() {
+        guard let selectedAdmin = selectedAdmin else { return }
+
         if !isEditing {
             listing.adminFeeIds.append(adminFee.id)
         }
-        guard let selectedAdmin = selectedAdmin else { return }
         adminFee.adminId = selectedAdmin.id
         
         Task {
@@ -75,7 +90,7 @@ final class NewAdminFeeViewModel {
         let newAdmin = Admin(name: name, feeIds: [])
         Task {
             await dataSource.adminDataSource.save(newAdmin)
-            fetchData()
+            // Ya no necesitas volver a llamar a fetchData(); el listener lo hará por ti
         }
     }
 }

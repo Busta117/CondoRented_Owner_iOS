@@ -7,53 +7,63 @@
 
 import Foundation
 import FirebaseFirestore
-
 import SwiftUI
 import Combine
 
-enum TransactionAction {
-    case added(Transaction)
-    case removed(Transaction)
-}
-
 protocol TransactionDataSourceProtocol {
-    var actionSubject: CurrentValueSubject<TransactionAction?, Never> { get }
-    func fetchTransactions() async -> [Transaction]
+    var transactionsPublisher: AnyPublisher<[Transaction], Never> { get }
+    var transactions: [Transaction] { get }
+    func fetchTransactions() async
     func add(transaction: Transaction) async
     func remove(transaction: Transaction) async
 }
 
 final class TransactionDataSource: TransactionDataSourceProtocol {
-    let actionSubject = CurrentValueSubject<TransactionAction?, Never>(nil)
-    
     private let db: Firestore
+    
+    private let transactionsSubject = CurrentValueSubject<[Transaction], Never>([])
+    var transactionsPublisher: AnyPublisher<[Transaction], Never> {
+        transactionsSubject.eraseToAnyPublisher()
+    }
+    
+    var transactions: [Transaction] {
+        transactionsSubject.value
+    }
     
     init() {
         db = Firestore.firestore()
     }
 
-    func add(transaction: Transaction) async {
-        await db.insert(transaction)
-        actionSubject.send(.added(transaction))
-    }
-    
-    func remove(transaction: Transaction) async {
-        await db.delete(transaction)
-        actionSubject.send(.removed(transaction))
-    }
-    
-    func fetchTransactions() async -> [Transaction] {
+    func fetchTransactions() async {
         let docRef = db.collection("Transaction")
         
         do {
             let result  = try await docRef.getDocuments()
             let results = try result.documents.map({ try $0.data(as: Transaction.self) })
-            
-            return results
+            transactionsSubject.send(results)
             
         } catch {
-            print(error)
-            return []
+            print("Failed to fetch transactions: \(error)")
         }
+    }
+    
+    func add(transaction: Transaction) async {
+        await db.insert(transaction)
+        var updated = transactionsSubject.value
+        
+        if let index = updated.firstIndex(where: { $0.id == transaction.id }) {
+            updated[index] = transaction
+        } else {
+            updated.append(transaction)
+        }
+        transactionsSubject.send(updated)
+    }
+    
+    func remove(transaction: Transaction) async {
+        await db.delete(transaction)
+        var updated = transactionsSubject.value
+        updated.removeAll { $0.id == transaction.id }
+        transactionsSubject.send(updated)
+        
     }
 }

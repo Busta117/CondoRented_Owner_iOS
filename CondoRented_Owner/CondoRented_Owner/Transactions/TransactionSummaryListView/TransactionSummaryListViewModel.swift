@@ -17,12 +17,20 @@ class TransactionSummaryListViewModel {
     struct Output {
         var addNew: () -> Void
         var monthDetail: ([Transaction]) -> Void
+        var backDidSelect: (() -> Void)?
+        
+        init(addNew: @escaping () -> Void, monthDetail: @escaping ([Transaction]) -> Void, backDidSelect: (() -> Void)? = nil) {
+            self.addNew = addNew
+            self.monthDetail = monthDetail
+            self.backDidSelect = backDidSelect
+        }
     }
     
     enum Input {
         case onAppear
         case addNewTapped
         case monthDetailTapped([Transaction])
+        case backDidSelect
     }
     
     @ObservationIgnored
@@ -30,67 +38,80 @@ class TransactionSummaryListViewModel {
     @ObservationIgnored
     private var cancellables = Set<AnyCancellable>()
     
+    var selectedListing: Listing? {
+        dataSource.listingDataSource.listings.first(where: { $0.id == selectedListingId })
+    }
+    
     var output: Output
     
     var isLoading = false
     var allAdminFees: [AdminFee] = []
-    private var allTransactions = [Transaction]()
-    var transactionPerMonth = [[Transaction]]()
+    private var allTransactions: [Transaction] = []
+    var transactionPerMonth: [[Transaction]] = []
+    var selectedListingId: String?
     
-    init(dataSource: AppDataSourceProtocol, output: Output) {
+    var summarySelectedTab = 0
+    
+    init(dataSource: AppDataSourceProtocol, selectedListingId: String? = nil, output: Output) {
         self.dataSource = dataSource
         self.output = output
-        
+        self.selectedListingId = selectedListingId
         registerListeners()
-        fetchData()
+        fetchInitialData()
     }
     
     func input(_ input: Input) {
         switch input {
         case .onAppear:
-            fetchData()
+            // Ya no hace falta volver a fetch si ya te suscribiste
+            break
         case .addNewTapped:
             output.addNew()
         case .monthDetailTapped(let transactions):
             output.monthDetail(transactions)
+        case .backDidSelect:
+            output.backDidSelect?()
         }
     }
     
-    private func fetchData(silence: Bool = false) {
-        if !silence {
-            isLoading = true
-        }
+    private func fetchInitialData() {
+        isLoading = true
         Task {
-            self.allTransactions = await dataSource.transactionDataSource.fetchTransactions()
-            self.allAdminFees = await dataSource.adminFeeDataSource.fetchAll()
-            self.transactionPerMonth = TransactionHelper().splitByMonths(transactions: self.allTransactions)
-            self.isLoading = false
+            await dataSource.transactionDataSource.fetchTransactions()
+            await dataSource.adminFeeDataSource.fetchAll()
+            isLoading = false
         }
-        
     }
     
     private func registerListeners() {
-        dataSource.transactionDataSource.actionSubject.sink { [weak self] action in
-            switch action {
-            case .added:
-                self?.fetchData(silence: true)
-            case .removed:
-                self?.fetchData(silence: true)
-            case .none:
-                ()
+        // Observa transacciones
+        dataSource.transactionDataSource.transactionsPublisher
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] transactions in
+                guard let self = self else { return }
+                
+                if let selectedListingId = self.selectedListingId {
+                    self.allTransactions = transactions.filter { $0.listingId == selectedListingId }
+                } else {
+                    self.allTransactions = transactions
+                }
+                
+                self.transactionPerMonth = TransactionHelper().splitByMonths(transactions: self.allTransactions)
             }
-        }
-        .store(in: &cancellables)
+            .store(in: &cancellables)
+        
+        // Observa admin fees
+        dataSource.adminFeeDataSource.adminFeesPublisher
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] fees in
+                self?.allAdminFees = fees
+            }
+            .store(in: &cancellables)
     }
-    
-    
     
     // MARK: - global summary methods
     
-    var summarySelectedTab = 0
-    
     func gloabalBalance(monthsAgo: Int) -> Double {
-        
         var incomeValue: Double = 0
         var expenseValue: Double = 0
         var feesValue: Double = 0
@@ -103,7 +124,6 @@ class TransactionSummaryListViewModel {
             return 0
         }
         
-        // Filter items whose date is between startDate and now
         let transactions = transactionPerMonth.filter { items in
             guard let item = items.first else { return false }
             return item.date >= startDate && item.date <= now
@@ -112,10 +132,8 @@ class TransactionSummaryListViewModel {
         let transactionsFixed = transactions.flatMap({$0})
         
         (incomeValue, _) = TransactionHelper.getExpectingValue(for: transactionsFixed)
-        
         (expenseValue, _) = TransactionHelper.getExpensesValue(for: transactionsFixed)
         
         return incomeValue - expenseValue
-//        (feesValue, _) = TransactionHelper.getFeesToPayValue(for: transactionsFixed, adminFees: adminFees)
     }
 }

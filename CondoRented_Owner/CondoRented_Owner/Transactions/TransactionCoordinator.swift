@@ -79,7 +79,8 @@ final class TransactionCoordinator: Hashable {
                     },
                     monthDetail: { transactions in
                         self.push(TransactionCoordinator(page: .monthDetail(transactions), navigationPath: self.$navigationPath))
-                    }
+                    },
+                    backDidSelect: {}
                 ))
         return TransactionSummaryListView(viewModel: vm)
     }

@@ -10,7 +10,7 @@ import SwiftUI
 
 struct AddEditTransactionView: View {
     
-    @State var viewModel: AddEditTransactionViewModel
+    @Bindable var viewModel: AddEditTransactionViewModel
     
     @FocusState private var textfieldIsFocused: Bool
     
@@ -118,19 +118,40 @@ struct AddEditTransactionView: View {
     
     private var typeSection: some View {
         Section {
-            Picker(selection: $viewModel.type) {
+            
+            let binding = Binding<String>(
+                get: {
+                    if let match = TransactionType.allCases.first(where: { $0.title == viewModel.type?.title }) {
+                        return match.title
+                    } else if let title = viewModel.type?.title {
+                        return TransactionType.other.title
+                    }
+                    return ""
+                },
+                set: { newTitle in
+                    if newTitle == "" {
+                        viewModel.type = nil
+                    } else if let match = TransactionType.allCases.first(where: { $0.title == newTitle }) {
+                        viewModel.type = match
+                    } else {
+                        // Es un tipo personalizado (other)
+                        viewModel.type = .expense(title: newTitle)
+                    }
+                }
+            )
+            
+            Picker(selection: binding) {
                 if viewModel.type == nil {
-                    Text("Select a type")
-                        .tag(nil as TransactionType?)
+                    Text("Select a type").tag("")
                 }
-                ForEach(TransactionType.allCases, id: \.self) { type in
-                    Text(type.title)
-                        .tag(type as TransactionType?)
+                ForEach(TransactionType.allCases.map(\.title), id: \.self) { title in
+                    Text(title).tag(title)
                 }
+                
             } label: {
                 EmptyView()
             }
-
+            
             expenseType
             
         } header: {

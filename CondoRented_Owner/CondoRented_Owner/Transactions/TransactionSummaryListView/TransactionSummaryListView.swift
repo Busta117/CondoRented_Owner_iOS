@@ -10,13 +10,18 @@ import SwiftUI
 
 struct TransactionSummaryListView: View {
     
-    @State var viewModel: TransactionSummaryListViewModel
+    @Bindable var viewModel: TransactionSummaryListViewModel
     @State private var backButtonText: Bool = true
     @State var isGlobalSummaryExpanded = false
     
     var body: some View {
-        ZStack {
+//        ZStack {
             List {
+//                if let listing = viewModel.selectedListing {
+//                    Text(viewModel.selectedListing?.title ?? "")
+//                        .font(.headline)
+//                }
+                    
                 Section(isExpanded: $isGlobalSummaryExpanded) {
                     globalSummary
                 } header: {
@@ -53,11 +58,27 @@ struct TransactionSummaryListView: View {
             .background(Color.clear)
             .navigationTitle("Transactions")
             .toolbar {
-                Button(action: {
-                    viewModel.input(.addNewTapped)
-                }, label: {
-                    Label("Add Item", systemImage: "plus")
-                })
+                if viewModel.selectedListingId != nil {
+                    ToolbarItem(placement: .principal) {
+                        Text(viewModel.selectedListing?.title ?? "")
+                            .font(.headline)
+                    }
+                    ToolbarItem(placement: .topBarLeading) {
+                        Button {
+                            viewModel.input(.backDidSelect)
+                        } label: {
+                            Label("back", systemImage: "chevron.left")
+                        }
+                    }
+                } else {
+                    ToolbarItem(placement: .topBarTrailing) {
+                        Button {
+                            viewModel.input(.addNewTapped)
+                        } label: {
+                            Label("Add Item", systemImage: "plus")
+                        }
+                    }
+                }
             }
             .refreshable {
                 viewModel.input(.onAppear)
@@ -79,7 +100,7 @@ struct TransactionSummaryListView: View {
                     .scaleEffect(2)
                     .padding()
             }
-        }
+//        }
     }
     
     

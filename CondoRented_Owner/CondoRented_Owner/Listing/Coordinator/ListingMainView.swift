@@ -20,9 +20,9 @@ struct ListingMainView: View {
                     case .detail(let listing):
                         navigationRouter.push(.detail(listing: listing))
                     }
-                        
+                    
                 }))
-//                .customTitle("cosa")
+                //                .customTitle("cosa")
             case .detail(let listing):
                 
                 AddEditListingView(viewModel: AddEditListingViewModel(dataSource: AppDataSource.defaultDataSource,
@@ -34,9 +34,11 @@ struct ListingMainView: View {
                         navigationRouter.push(.createOrEditAdminFee(listing: listing, adminFee: nil))
                     case .editAdminFeeDidSelect(let adminFee):
                         navigationRouter.push(.createOrEditAdminFee(listing: listing, adminFee: adminFee))
+                    case .seeTransactionsDidSelect:
+                        navigationRouter.push(.transactionList(listingId: listing.id))
                     }
                 }))
-                    
+                
                 
             case .createOrEditAdminFee(let listing, let adminFee):
                 
@@ -48,6 +50,39 @@ struct ListingMainView: View {
                         navigationRouter.pop()
                     }
                 })
+                
+            case .transactionList(let listingId):
+                let dataSource = AppDataSource.defaultDataSource
+                let vm = TransactionSummaryListViewModel(dataSource: dataSource,
+                                                         selectedListingId: listingId,
+                                                         output:
+                        .init(
+                            addNew: {},
+                            monthDetail: { transactions in
+                                navigationRouter.push(.transactionMonthDetail(transactions: transactions, ListingId: listingId))
+                            },
+                            backDidSelect: {
+                                navigationRouter.pop()
+                            }
+                        ))
+                NavigationStack {
+                    TransactionSummaryListView(viewModel: vm)
+                }
+                
+            case .transactionMonthDetail(let transactions, let ListingId):
+                let dataSource = AppDataSource.defaultDataSource
+                let vm = TransactionMonthDetailViewModel(dataSource: dataSource, transactions: transactions, selectedListingId: ListingId) { output in
+                    switch output {
+                    case .addNewTransaction:
+                        ()
+                    case .editTransaction(let transaction):
+                        ()
+                    }
+                }
+                NavigationStack {
+                    TransactionMonthDetailView(viewModel: vm)
+                }
+                
             }
         }
         

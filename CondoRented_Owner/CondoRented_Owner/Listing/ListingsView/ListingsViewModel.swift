@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import Combine
 
 @Observable
 final class ListingsViewModel {
@@ -17,19 +18,36 @@ final class ListingsViewModel {
     @ObservationIgnored
     let dataSource: AppDataSourceProtocol
     @ObservationIgnored
-    var output: (Output)->()
+    var output: (Output) -> Void
+    @ObservationIgnored
+    private var cancellables = Set<AnyCancellable>()
     
     var listingList: [Listing] = []
     
-    init (dataSource: AppDataSource, output: @escaping (Output)->()) {
+    init(dataSource: AppDataSourceProtocol, output: @escaping (Output) -> Void) {
         self.dataSource = dataSource
         self.output = output
-        fetchData()
+        
+        registerListeners()
+        fetchInitialData()
     }
     
-    private func fetchData() {
+    private func fetchInitialData() {
         Task {
-            self.listingList = await dataSource.listingDataSource.fetchListings()
+            await dataSource.listingDataSource.fetchListings()
         }
+    }
+    
+    private func registerListeners() {
+        dataSource.listingDataSource.listingsPublisher
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] listings in
+                self?.listingList = listings
+            }
+            .store(in: &cancellables)
+    }
+    
+    func didSelectListing(_ listing: Listing) {
+        output(.detail(listing: listing))
     }
 }

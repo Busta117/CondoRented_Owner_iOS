@@ -26,7 +26,10 @@ enum TransactionType: Codable, CaseIterable, Hashable {
     var isOther: Bool {
         if TransactionType.other == self {
             return true
-       }
+        }
+        if TransactionType.allCases.filter({ $0.title == self.title }).isEmpty {
+            return true
+        }
         return false
     }
     

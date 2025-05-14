@@ -10,7 +10,7 @@ import SwiftUI
 
 struct TransactionMonthDetailView: View {
     
-    @State var viewModel: TransactionMonthDetailViewModel
+    @Bindable var viewModel: TransactionMonthDetailViewModel
     @State private var detailExpanded = false
     @State private var chartExpanded = true
     @State private var adminFeeSummaryExpanded = false
@@ -30,30 +30,16 @@ struct TransactionMonthDetailView: View {
     
     var body: some View {
         ZStack {
-            if !viewModel.isLoading {
-                List {
-                    statsSection
-                    summaryMonthView
-                    transactionsListSectionView
-                }
-                
-            } else {
-                VStack {
-                    ZStack {
-                        Color.black.opacity(0.3)
-                            .frame(width: 100, height: 100)
-                            .clipShape(RoundedRectangle(cornerRadius: 10))
-                        ProgressView()
-                            .progressViewStyle(CircularProgressViewStyle(tint: .white))
-                            .scaleEffect(2)
-                            .padding()
-                    }
-                    Spacer()
-                }
+            List {
+                statsSection
+                summaryMonthView
+                transactionsListSectionView
             }
         }
         .background(.clear)
-        .navigationTitle(viewModel.titleMonth)
+        .if(viewModel.selectedListingId == nil) {
+            $0.navigationTitle(viewModel.titleMonth)
+        }
         .navigationBarTitleDisplayMode(.large)
         .navigationBarBackButtonHidden(true)
         .toolbar(.hidden, for: .tabBar)
@@ -68,8 +54,12 @@ struct TransactionMonthDetailView: View {
                     Label("Add Item", systemImage: "plus")
                 })
             }
+            if let selectedListing = viewModel.selectedListing {
+                ToolbarItem(placement: .principal) {
+                    Text("\(selectedListing.title) - \(viewModel.titleMonth)")
+                }
+            }
         }
-            
     }
     
     private var summaryMonthView: some View {
