@@ -158,20 +158,51 @@ struct TransactionMonthDetailView: View {
     }
     
     private var transactionsListView: some View {
-        ForEach(viewModel.transactions) { transaction in
-            
-            Button {
-                viewModel.input(.editTransaction(transaction))
-            } label: {
-                transactionsListElement(for: transaction)
-                    .contentShape(Rectangle())
+        Group {
+            ForEach(Array(viewModel.missingExpensesByListing.enumerated()), id: \.offset) { _, missing in
+                Button {
+                    viewModel.input(.addNewWithTypeTapped(listing: missing.listing, type: missing.type))
+                } label: {
+                    missingTransactionElement(for: missing.type, listing: missing.listing)
+                        .contentShape(Rectangle())
+                }
+                .buttonStyle(PlainButtonStyle())
             }
-            .buttonStyle(PlainButtonStyle())
-            
+            ForEach(viewModel.transactions) { transaction in
+                Button {
+                    viewModel.input(.editTransaction(transaction))
+                } label: {
+                    transactionsListElement(for: transaction)
+                        .contentShape(Rectangle())
+                }
+                .buttonStyle(PlainButtonStyle())
+            }
+            .onDelete(perform: { indexSet in
+                viewModel.input(.deleteTapped(indexSet))
+            })
         }
-        .onDelete(perform: { indexSet in
-            viewModel.input(.deleteTapped(indexSet))
-        })
+    }
+
+    private func missingTransactionElement(for type: TransactionType, listing: Listing) -> some View {
+        VStack(spacing: 4) {
+            HStack {
+                Text(listing.title)
+                    .font(.caption)
+                    .bold()
+                Spacer()
+            }
+            HStack {
+                Image(systemName: "exclamationmark.circle")
+                    .foregroundStyle(.orange)
+                Text(type.title)
+                    .font(.body)
+                Spacer()
+                Text("Missing")
+                    .font(.caption)
+                    .foregroundStyle(.orange)
+            }
+        }
+        .opacity(0.6)
     }
     
     private func transactionsListElement(for transaction: Transaction) -> some View {
@@ -185,31 +216,41 @@ struct TransactionMonthDetailView: View {
                     .font(.caption2)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
-            
-            HStack {
-                VStack {
-                    Group {
-                        
-                        switch transaction.type {
-                        case .income:
-                            Text(transaction.type.title)
-                        case .expense:
-                            Text("\(transaction.type.title)")
-                            if let expensePaidByOwner = transaction.expensePaidByOwner, !expensePaidByOwner {
-                                Text("(payed by ADMIN)")
+
+            if transaction.type == .personalUse {
+                HStack {
+                    Image(systemName: "house.fill")
+                        .foregroundStyle(.blue)
+                    Text(transaction.type.title)
+                        .font(.body)
+                        .foregroundStyle(.blue)
+                    Spacer()
+                }
+            } else {
+                HStack {
+                    VStack {
+                        Group {
+                            switch transaction.type {
+                            case .income:
+                                Text(transaction.type.title)
+                            case .expense:
+                                Text("\(transaction.type.title)")
+                                if let expensePaidByOwner = transaction.expensePaidByOwner, !expensePaidByOwner {
+                                    Text("(payed by ADMIN)")
+                                }
+                            case .personalUse:
+                                EmptyView()
                             }
                         }
-                        
+                        .font(.caption2)
+                        .frame(maxWidth: .infinity, alignment: .leading)
                     }
-                    .font(.caption2)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    
+
+                    Spacer()
+                    Text(transaction.amountMicros * transaction.currency.microMultiplier, format: .currency(code: transaction.currency.id))
+                        .font(.body)
+                        .foregroundStyle(transaction.type == .income ? .green : .red)
                 }
-                
-                Spacer()
-                Text(transaction.amountMicros * transaction.currency.microMultiplier, format: .currency(code: transaction.currency.id))
-                    .font(.body)
-                    .foregroundStyle(transaction.type == .income ? .green : .red)
             }
         }
     }
@@ -246,30 +287,34 @@ struct TransactionMonthDetailView: View {
 
 struct MonthDetailSummarySectionView: View {
     private var currency: Currency
-    
+
     private var incomeValue: Double
     private var expensesValue: Double
     private var feesValue: Double
+    private var personalUseAdjustment: Double
+    private var hasPersonalUse: Bool
     private var balanceValue: Double {
-        (incomeValue - expensesValue - feesValue)
+        (incomeValue - expensesValue - feesValue + personalUseAdjustment)
     }
-    
+
 //    private var expensesByType: [TransactionType: [Transaction]]
-    
+
     init(transactions: [Transaction], adminFees: [AdminFee]) {
         (incomeValue, currency) = TransactionHelper.getExpectingValue(for: transactions)
         (expensesValue, _) = TransactionHelper.getExpensesValue(for: transactions)
         (feesValue, _) = TransactionHelper.getFeesToPayValue(for: transactions, adminFees: adminFees)
-        
+        hasPersonalUse = TransactionHelper.hasPersonalUse(in: transactions)
+        (personalUseAdjustment, _) = TransactionHelper.getPersonalUseAdjustment(for: transactions, adminFees: adminFees)
+
         let onlyExpenses = transactions.filter({ transaction in
             switch transaction.type {
             case .expense:
                 return (transaction.type.isOther ? (transaction.expensePaidByOwner ?? false) : true)
-            case .income:
+            case .income, .personalUse:
                 return false
             }
         })
-        
+
         // TODO: busta fix this
 //        expensesByType = TransactionHelper.splitByType(transactions: onlyExpenses)
 //        expensesByType = [:]
@@ -318,7 +363,18 @@ struct MonthDetailSummarySectionView: View {
 //                    .foregroundStyle(.secondary)
 //                }
 //            }
-            
+
+            if hasPersonalUse {
+                HStack {
+                    Text("Personal Use")
+                        .font(.body)
+                    Spacer()
+                    Text(personalUseAdjustment, format: .currency(code: currency.id))
+                        .font(.body)
+                        .foregroundStyle(.secondary)
+                }
+            }
+
             HStack {
                 Text("Balance")
                     .font(.body)

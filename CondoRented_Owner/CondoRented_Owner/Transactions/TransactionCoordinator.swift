@@ -11,6 +11,7 @@ import SwiftUI
 enum TransactionPage {
     case summaryList
     case addNewTransaction
+    case addNewTransactionWithType(listing: Listing, type: TransactionType)
     case editTransaction(Transaction)
     case monthDetail([Transaction])
 }
@@ -61,6 +62,8 @@ final class TransactionCoordinator: Hashable {
             summaryList()
         case .addNewTransaction:
             addEditView(transaction: nil)
+        case .addNewTransactionWithType(let listing, let type):
+            addEditView(transaction: nil, prefilledListing: listing, prefilledType: type)
         case .editTransaction(let transaction):
             addEditView(transaction: transaction)
         case .monthDetail(let transactions):
@@ -86,13 +89,19 @@ final class TransactionCoordinator: Hashable {
     }
     
     @MainActor
-    private func addEditView(transaction: Transaction?) -> some View {
+    private func addEditView(transaction: Transaction?, prefilledListing: Listing? = nil, prefilledType: TransactionType? = nil) -> some View {
         let dataSource = AppDataSource.defaultDataSource
         let vm = AddEditTransactionViewModel(transaction: transaction, dataSource: dataSource) { output in
             switch output {
             case .back:
                 self.pop()
             }
+        }
+        if let prefilledListing {
+            vm.listing = prefilledListing
+        }
+        if let prefilledType {
+            vm.type = prefilledType
         }
         return AddEditTransactionView(viewModel: vm)
     }
@@ -105,6 +114,8 @@ final class TransactionCoordinator: Hashable {
             switch output {
             case .addNewTransaction:
                 self.push(TransactionCoordinator(page: .addNewTransaction, navigationPath: self.$navigationPath))
+            case .addNewTransactionWithType(let listing, let type):
+                self.push(TransactionCoordinator(page: .addNewTransactionWithType(listing: listing, type: type), navigationPath: self.$navigationPath))
             case .editTransaction(let transaction):
                 self.push(TransactionCoordinator(page: .editTransaction(transaction), navigationPath: self.$navigationPath))
             }

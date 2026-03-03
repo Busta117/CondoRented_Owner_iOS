@@ -22,31 +22,34 @@ struct TransactionSummaryListMonth: View {
     
     var wonValue: Double
     var wonCurrency: Currency
-    
+
     var spendValue: Double
     var spendCurrency: Currency
-    
+
     var feesValue: Double
     var feesCurrency: Currency
-    
+
+    var personalUseAdjustment: Double
+    var hasPersonalUse: Bool
+
     var monthBalanceValue: Double {
-        (wonValue - spendValue - feesValue)
+        (wonValue - spendValue - feesValue + personalUseAdjustment)
     }
-    
+
     init(transactions: [Transaction], adminFees: [AdminFee]) {
         self.transactions = transactions
-        
+
         // month type
         if let trans = transactions.first {
             let currentDate = Date.now
             let monthDate = trans.date
-            
+
             var calender = Calendar.current
             calender.timeZone = TimeZone.current
-            
+
             let currentResult = calender.dateComponents([.year, .month], from: currentDate)
             let monthResult = calender.dateComponents([.year, .month], from: monthDate)
-            
+
             if currentResult.month == monthResult.month && currentResult.year == monthResult.year {
                 monthType = .current
             } else if currentResult.month == ((monthResult.month ?? 0) - 1) && currentResult.year == monthResult.year {
@@ -57,12 +60,15 @@ struct TransactionSummaryListMonth: View {
         } else {
             monthType = .past
         }
-        
+
         (wonValue, wonCurrency) = TransactionHelper.getExpectingValue(for: transactions)
-        
+
         (spendValue, spendCurrency) = TransactionHelper.getExpensesValue(for: transactions)
-        
+
         (feesValue, feesCurrency) = TransactionHelper.getFeesToPayValue(for: transactions, adminFees: adminFees)
+
+        hasPersonalUse = TransactionHelper.hasPersonalUse(in: transactions)
+        (personalUseAdjustment, _) = TransactionHelper.getPersonalUseAdjustment(for: transactions, adminFees: adminFees)
     }
     
     private var monthTitle: String {
@@ -136,7 +142,19 @@ struct TransactionSummaryListMonth: View {
                     .font(.body)
                     .bold()
             }
-            
+
+            if hasPersonalUse {
+                HStack {
+                    Text("Personal Use")
+                        .font(.body)
+                    Spacer()
+                    Text(personalUseAdjustment, format: .currency(code: wonCurrency.id))
+                        .font(.body)
+                        .bold()
+                        .foregroundStyle(.secondary)
+                }
+            }
+
             HStack {
                 Text("Month balance")
                     .font(.body)

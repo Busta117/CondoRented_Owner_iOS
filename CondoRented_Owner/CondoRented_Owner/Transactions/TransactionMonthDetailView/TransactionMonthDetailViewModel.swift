@@ -14,12 +14,14 @@ final class TransactionMonthDetailViewModel {
     
     enum Input {
         case addNewTapped
+        case addNewWithTypeTapped(listing: Listing, type: TransactionType)
         case deleteTapped(IndexSet)
         case editTransaction(Transaction)
     }
-    
+
     enum Output {
         case addNewTransaction
+        case addNewTransactionWithType(listing: Listing, type: TransactionType)
         case editTransaction(Transaction)
     }
     
@@ -120,6 +122,9 @@ final class TransactionMonthDetailViewModel {
         case .addNewTapped:
             output(.addNewTransaction)
 
+        case .addNewWithTypeTapped(let listing, let type):
+            output(.addNewTransactionWithType(listing: listing, type: type))
+
         case .editTransaction(let transaction):
             output(.editTransaction(transaction))
 
@@ -172,6 +177,30 @@ final class TransactionMonthDetailViewModel {
             }
             return false
         }
+    }
+
+    var missingExpensesByListing: [(listing: Listing, type: TransactionType)] {
+        let relevantListings: [Listing] = {
+            if let selectedListingId, let listing = allListings.first(where: { $0.id == selectedListingId }) {
+                return [listing]
+            }
+            return allListings.sorted { $0.title < $1.title }
+        }()
+
+        var result: [(listing: Listing, type: TransactionType)] = []
+        for listing in relevantListings {
+            let listingTransactions = transactionsByListing[listing] ?? []
+            let existingTitles = Set(listingTransactions.compactMap { transaction -> String? in
+                if case .expense(let title) = transaction.type { return title }
+                return nil
+            })
+            for expectedType in TransactionType.expectedMonthlyExpenseTypes {
+                if !existingTitles.contains(expectedType.title) {
+                    result.append((listing: listing, type: expectedType))
+                }
+            }
+        }
+        return result
     }
 
     func totalFeesToPayValue() -> (Double, Currency) {

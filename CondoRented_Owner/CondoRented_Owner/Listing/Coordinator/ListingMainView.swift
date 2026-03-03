@@ -75,6 +75,8 @@ struct ListingMainView: View {
                     switch output {
                     case .addNewTransaction:
                         ()
+                    case .addNewTransactionWithType:
+                        ()
                     case .editTransaction(let transaction):
                         ()
                     }

@@ -27,6 +27,8 @@ struct MonthTransactionsChartPieView: View {
                 tmp[1].value += transaction.amountMicros
             case .expense:
                 tmp[0].value += transaction.amountMicros
+            case .personalUse:
+                () // not included in chart
             }
         }
         let fees: (Double, Currency) = TransactionHelper.getFeesToPayValue(for: transactions, includesExpenses: false, adminFees: adminFees)

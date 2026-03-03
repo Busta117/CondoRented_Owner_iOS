@@ -82,16 +82,16 @@ struct TransactionHelper: TransactionHelperProtocol {
     
     static func getExpectingMicrosValue(for transactions: [Transaction]) -> Double {
         var sum = 0.0
-        
+
         for transaction in transactions {
             switch transaction.type {
             case .income:
                 sum += transaction.amountMicros
-            case .expense:
+            case .expense, .personalUse:
                 () // do nothing
             }
         }
-        
+
         return sum
     }
     
@@ -104,7 +104,7 @@ struct TransactionHelper: TransactionHelperProtocol {
     
     static func getExpensesMicrosValue(for transactions: [Transaction]) -> Double {
         var sum = 0.0
-        
+
         for transaction in transactions {
             switch transaction.type {
             case .expense:
@@ -113,11 +113,11 @@ struct TransactionHelper: TransactionHelperProtocol {
                 } else {
                     sum += transaction.amountMicros
                 }
-            case .income:
+            case .income, .personalUse:
                 () // do nothing
             }
         }
-        
+
         return sum
     }
     
@@ -130,11 +130,11 @@ struct TransactionHelper: TransactionHelperProtocol {
     
     static func getFeeToPayMicrosValue(for transactions: [Transaction], includesExpenses: Bool, adminFees: [AdminFee]) -> Double {
         var sum = 0.0
-        
+
         for transaction in transactions {
             switch transaction.type {
             case .income:
-                
+
                 if let adminFee = adminFees.first(where: {
                     $0.listingId == transaction.listingId && transaction.date >= $0.dateStart && transaction.date <= ($0.dateFinish ?? Date())
                 }) {
@@ -145,9 +145,40 @@ struct TransactionHelper: TransactionHelperProtocol {
                 if let payedByOwner = transaction.expensePaidByOwner, !payedByOwner, includesExpenses {
                     sum += transaction.amountMicros
                 }
+            case .personalUse:
+                () // do nothing
             }
         }
-        
+
         return sum
+    }
+
+    static func hasPersonalUse(in transactions: [Transaction]) -> Bool {
+        transactions.contains { $0.type == .personalUse }
+    }
+
+    static func getPersonalUseAdjustment(for transactions: [Transaction], adminFees: [AdminFee]) -> (Double, Currency) {
+        let currency = transactions.first?.currency ?? Currency.all.first ?? Currency(id: "COP")
+        guard hasPersonalUse(in: transactions) else {
+            return (0, currency)
+        }
+
+        // Find which listings have personalUse
+        let personalUseListingIds = Set(
+            transactions.filter { $0.type == .personalUse }.map { $0.listingId }
+        )
+
+        // Calculate adjustment per listing that has personalUse
+        var totalAdjustment: Double = 0
+        for listingId in personalUseListingIds {
+            let listingTransactions = transactions.filter { $0.listingId == listingId }
+            let (income, _) = getExpectingValue(for: listingTransactions)
+            let (expenses, _) = getExpensesValue(for: listingTransactions)
+            let (fees, _) = getFeesToPayValue(for: listingTransactions, adminFees: adminFees)
+            let deficit = expenses + fees - income
+            totalAdjustment += max(0, deficit)
+        }
+
+        return (totalAdjustment, currency)
     }
 }

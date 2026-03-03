@@ -101,9 +101,9 @@ final class AddEditTransactionViewModel {
     }
     
     var isAmountCorrect: Bool {
-        amount > 0
+        type == .personalUse || amount > 0
     }
-    
+
     var canSave: Bool {
         isAmountCorrect && listing != nil && type != nil
     }

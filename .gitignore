@@ -89,3 +89,9 @@ fastlane/test_output
 
 iOSInjectionProject/
 .DS_Store
+
+# Claude plans
+docs/plans/
+
+# Firebase
+**/GoogleService-Info.plist
