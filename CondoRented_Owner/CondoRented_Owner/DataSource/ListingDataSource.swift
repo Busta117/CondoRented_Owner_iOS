@@ -49,7 +49,11 @@ final class ListingDataSource: ListingDataSourceProtocol {
     func save(_ listing: Listing) async {
         await db.insert(listing)
         var updated = listingsSubject.value
-        updated.append(listing)
+        if let index = updated.firstIndex(where: { $0.id == listing.id }) {
+            updated[index] = listing
+        } else {
+            updated.append(listing)
+        }
         listingsSubject.send(updated)
     }
 }

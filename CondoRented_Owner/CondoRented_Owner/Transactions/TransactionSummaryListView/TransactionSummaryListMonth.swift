@@ -113,9 +113,16 @@ struct TransactionSummaryListMonth: View {
                     .padding(.bottom, -10)   
                     .foregroundStyle(.green)
             }
-            Text(monthTitle)
-                .font(.largeTitle)
-                .frame(maxWidth: .infinity, alignment: .leading)
+            HStack(alignment: .firstTextBaseline, spacing: 6) {
+                Text(monthTitle)
+                    .font(.largeTitle)
+                if hasPersonalUse {
+                    Image(systemName: "house.fill")
+                        .font(.caption)
+                        .foregroundStyle(.orange)
+                }
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
             HStack {
                 Text(wonTitle)
                     .font(.body)

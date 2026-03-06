@@ -220,10 +220,10 @@ struct TransactionMonthDetailView: View {
             if transaction.type == .personalUse {
                 HStack {
                     Image(systemName: "house.fill")
-                        .foregroundStyle(.blue)
+                        .foregroundStyle(.orange)
                     Text(transaction.type.title)
                         .font(.body)
-                        .foregroundStyle(.blue)
+                        .foregroundStyle(.orange)
                     Spacer()
                 }
             } else {

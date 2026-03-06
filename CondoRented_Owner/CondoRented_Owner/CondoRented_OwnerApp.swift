@@ -74,6 +74,14 @@ struct TransactionTabbarItemView: View {
     }
 }
 
+struct StatisticsTabbarItemView: View {
+    var body: some View {
+        NavigationStack {
+            StatisticsView(viewModel: StatisticsViewModel(dataSource: AppDataSource.defaultDataSource))
+        }
+    }
+}
+
 @main
 struct CondoRented_OwnerApp: App {
     
@@ -106,6 +114,10 @@ struct CondoRented_OwnerApp: App {
                     ListingMainView()
                         .tabItem { Label("Listing", systemImage: "house.circle") }
                         .tag(2)
+
+                    StatisticsTabbarItemView()
+                        .tabItem { Label("Statistics", systemImage: "chart.bar.xaxis") }
+                        .tag(3)
                 }
                 .toolbarBackground(.background.blendMode(.normal), for: .tabBar)
                 .toolbarBackground(.visible, for: .tabBar)

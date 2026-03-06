@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		274F8F0878784B1385D6A3E8 /* CompactCurrencyFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = C681F26AC98D49F48AED128A /* CompactCurrencyFormatter.swift */; };
 		4211FB7A2D20F8BF00A7D5FE /* NewAdminFeeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4211FB792D20F8BF00A7D5FE /* NewAdminFeeViewModel.swift */; };
 		423B0C372BCFBFD20030AD65 /* CondoRented_OwnerApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 423B0C362BCFBFD20030AD65 /* CondoRented_OwnerApp.swift */; };
 		423B0C392BCFBFD20030AD65 /* ListingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 423B0C382BCFBFD20030AD65 /* ListingsView.swift */; };
@@ -73,6 +74,12 @@
 		42C9C9B82CFB96970006FA84 /* Firestore+functions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42C9C9B62CFB96970006FA84 /* Firestore+functions.swift */; };
 		42C9C9BA2CFBBC0A0006FA84 /* TransactionType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42C9C9B92CFBBC0A0006FA84 /* TransactionType.swift */; };
 		42C9C9BB2CFBBC0A0006FA84 /* TransactionType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42C9C9B92CFBBC0A0006FA84 /* TransactionType.swift */; };
+		48AE23001F45489F89E8D287 /* StatisticsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05855BFD1FB8467597A3199B /* StatisticsView.swift */; };
+		8AED5963B8794AA1BC820EC0 /* StatisticsPieChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 014570D3DD404ABD990DCDB1 /* StatisticsPieChartView.swift */; };
+		E1F1022ECD00436EA18D2E34 /* StatisticsPersonalUseView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 986FC06600524418B6F8F3DE /* StatisticsPersonalUseView.swift */; };
+		E58C47A5C5AF4ADEA67C2F0C /* StatisticsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4687EE57968C4B1F915FE47B /* StatisticsViewModel.swift */; };
+		EB7981FC4C11424CAC53104B /* StatisticsKPICardsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4713C31FEFB44E7AEC181EF /* StatisticsKPICardsView.swift */; };
+		EEC89B8FD70346579CFA21CE /* StatisticsChartBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C368479E3C184CF79E811484 /* StatisticsChartBarView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -93,6 +100,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		014570D3DD404ABD990DCDB1 /* StatisticsPieChartView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatisticsPieChartView.swift; sourceTree = "<group>"; };
+		05855BFD1FB8467597A3199B /* StatisticsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatisticsView.swift; sourceTree = "<group>"; };
 		4211FB792D20F8BF00A7D5FE /* NewAdminFeeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewAdminFeeViewModel.swift; sourceTree = "<group>"; };
 		423B0C332BCFBFD10030AD65 /* CondoRented_Owner.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CondoRented_Owner.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		423B0C362BCFBFD20030AD65 /* CondoRented_OwnerApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CondoRented_OwnerApp.swift; sourceTree = "<group>"; };
@@ -141,6 +150,11 @@
 		42C9C9AD2CFB95190006FA84 /* CodableAndIdentifiable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CodableAndIdentifiable.swift; sourceTree = "<group>"; };
 		42C9C9B62CFB96970006FA84 /* Firestore+functions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Firestore+functions.swift"; sourceTree = "<group>"; };
 		42C9C9B92CFBBC0A0006FA84 /* TransactionType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionType.swift; sourceTree = "<group>"; };
+		4687EE57968C4B1F915FE47B /* StatisticsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatisticsViewModel.swift; sourceTree = "<group>"; };
+		986FC06600524418B6F8F3DE /* StatisticsPersonalUseView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatisticsPersonalUseView.swift; sourceTree = "<group>"; };
+		C368479E3C184CF79E811484 /* StatisticsChartBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatisticsChartBarView.swift; sourceTree = "<group>"; };
+		C681F26AC98D49F48AED128A /* CompactCurrencyFormatter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompactCurrencyFormatter.swift; sourceTree = "<group>"; };
+		D4713C31FEFB44E7AEC181EF /* StatisticsKPICardsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatisticsKPICardsView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -206,6 +220,7 @@
 				423B0C632BCFC02C0030AD65 /* Models */,
 				423B0D062BE9588F0030AD65 /* Transactions */,
 				423B0C762BD18DFF0030AD65 /* Listing */,
+				6A150DDF5457400C8543A338 /* Statistics */,
 				423B0D0B2BEA29DC0030AD65 /* TransactionHelper.swift */,
 				423B0C3C2BCFBFD30030AD65 /* Assets.xcassets */,
 				423B0C3E2BCFBFD30030AD65 /* CondoRented_Owner.entitlements */,
@@ -364,6 +379,20 @@
 				42BBCE3E2CCC189400A74B9A /* AddEditListingViewModel.swift */,
 			);
 			path = AddEditListingView;
+			sourceTree = "<group>";
+		};
+		6A150DDF5457400C8543A338 /* Statistics */ = {
+			isa = PBXGroup;
+			children = (
+				4687EE57968C4B1F915FE47B /* StatisticsViewModel.swift */,
+				05855BFD1FB8467597A3199B /* StatisticsView.swift */,
+				D4713C31FEFB44E7AEC181EF /* StatisticsKPICardsView.swift */,
+				C368479E3C184CF79E811484 /* StatisticsChartBarView.swift */,
+				014570D3DD404ABD990DCDB1 /* StatisticsPieChartView.swift */,
+				986FC06600524418B6F8F3DE /* StatisticsPersonalUseView.swift */,
+				C681F26AC98D49F48AED128A /* CompactCurrencyFormatter.swift */,
+			);
+			path = Statistics;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -548,6 +577,13 @@
 				423B0C7A2BD96F370030AD65 /* AdminFeeDetail.swift in Sources */,
 				423B0C7E2BE279190030AD65 /* Admin.swift in Sources */,
 				42C9C9B72CFB96970006FA84 /* Firestore+functions.swift in Sources */,
+				E58C47A5C5AF4ADEA67C2F0C /* StatisticsViewModel.swift in Sources */,
+				48AE23001F45489F89E8D287 /* StatisticsView.swift in Sources */,
+				EB7981FC4C11424CAC53104B /* StatisticsKPICardsView.swift in Sources */,
+				EEC89B8FD70346579CFA21CE /* StatisticsChartBarView.swift in Sources */,
+				8AED5963B8794AA1BC820EC0 /* StatisticsPieChartView.swift in Sources */,
+				E1F1022ECD00436EA18D2E34 /* StatisticsPersonalUseView.swift in Sources */,
+				274F8F0878784B1385D6A3E8 /* CompactCurrencyFormatter.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -723,7 +759,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_ASSET_PATHS = "\"CondoRented_Owner/Preview Content\"";
-				DEVELOPMENT_TEAM = A5U6A6CPN6;
+				DEVELOPMENT_TEAM = T8SEA364VE;
 				ENABLE_DEBUG_DYLIB = YES;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
@@ -745,7 +781,7 @@
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "me.busta.CondoRented-Owner";
+				PRODUCT_BUNDLE_IDENTIFIER = com.astrazeneca.evinova;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = auto;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
@@ -765,7 +801,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"CondoRented_Owner/Preview Content\"";
-				DEVELOPMENT_TEAM = A5U6A6CPN6;
+				DEVELOPMENT_TEAM = T8SEA364VE;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -786,7 +822,7 @@
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "me.busta.CondoRented-Owner";
+				PRODUCT_BUNDLE_IDENTIFIER = com.astrazeneca.evinova;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = auto;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";

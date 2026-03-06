@@ -10,9 +10,10 @@ import FirebaseFirestore
 
 
 struct AddEditListingView: View {
-    
+
     @Bindable var viewModel: AddEditListingViewModel
-    
+    @FocusState private var isFieldFocused: Bool
+
     init(viewModel: AddEditListingViewModel) {
         self.viewModel = viewModel
     }
@@ -30,6 +31,22 @@ struct AddEditListingView: View {
                     Text("Listing Name")
                 }
                 
+                Section {
+                    TextField("Property Value", value: $viewModel.listing.propertyValue, format: .number)
+                        .keyboardType(.numberPad)
+                        .focused($isFieldFocused)
+                        .toolbar {
+                            ToolbarItemGroup(placement: .keyboard) {
+                                Spacer()
+                                Button("Done") {
+                                    isFieldFocused = false
+                                }
+                            }
+                        }
+                } header: {
+                    Text("Property Value (COP)")
+                }
+
                 Section {
                     Button(action: {
                         seeTransactionsAction()
@@ -114,36 +131,8 @@ struct AddEditListingView: View {
     }
     
     private func saveAction() {
-//        do {
-//            try tempModelContext.save()
-//            if !path.isEmpty {
-//                path.removeLast()
-//            }
-//            
-//            let db = Firestore.firestore()
-//            db.insert(listing, collection: "Listing")
-//            
-//        } catch {
-//            print(error)
-//        }
-        
-//        let id = listing.id
-//        let descriptor = FetchDescriptor<Listing>(predicate: #Predicate {$0.id == id})
-//        
-//        do {
-//            let existElement = try modelContext.fetch(descriptor)
-//            if let listing = existElement.first {
-//                listing.title = self.listing.title
-//                try? modelContext.save()
-//            } else {
-//                modelContext.insert(listing)
-//            }
-//        } catch {
-//            modelContext.insert(listing)
-//        }
-//        if !path.isEmpty {
-//            path.removeLast()
-//        }
+        isFieldFocused = false
+        viewModel.save()
     }
 }
 

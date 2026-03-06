@@ -42,6 +42,12 @@ final class AddEditListingViewModel {
         // Ya no necesitas llamar a fetchData manualmente si ya tienes registerListeners()
     }
 
+    func save() {
+        Task {
+            await dataSource.listingDataSource.save(listing)
+        }
+    }
+
     func admin(forId id: String) -> Admin? {
         admins.first(where: { $0.id == id })
     }
