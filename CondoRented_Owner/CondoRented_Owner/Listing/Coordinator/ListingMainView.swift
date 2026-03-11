@@ -8,24 +8,24 @@
 import SwiftUI
 
 struct ListingMainView: View {
+    @EnvironmentObject var session: SessionManager
     @ObservedObject var coordinator: ListingCoordinator = ListingCoordinator()
     @StateObject var navigationRouter: NavigatorRouter<ListingRoute> = .init(initial: .list)
-    
+
     var body: some View {
         NavigatorView(router: navigationRouter) { route in
             switch route {
             case .list:
-                ListingsView(viewModel: ListingsViewModel(dataSource: AppDataSource.defaultDataSource, output: { output in
+                ListingsView(viewModel: ListingsViewModel(dataSource: session.appDataSource!, output: { output in
                     switch output {
                     case .detail(let listing):
                         navigationRouter.push(.detail(listing: listing))
                     }
-                    
+
                 }))
-                //                .customTitle("cosa")
             case .detail(let listing):
-                
-                AddEditListingView(viewModel: AddEditListingViewModel(dataSource: AppDataSource.defaultDataSource,
+
+                AddEditListingView(viewModel: AddEditListingViewModel(dataSource: session.appDataSource!,
                                                                       listing: listing, output: { output in
                     switch output {
                     case .backDidSelect:
@@ -38,11 +38,11 @@ struct ListingMainView: View {
                         navigationRouter.push(.transactionList(listingId: listing.id))
                     }
                 }))
-                
-                
+
+
             case .createOrEditAdminFee(let listing, let adminFee):
-                
-                NewAdminFeeView(viewModel: NewAdminFeeViewModel(dataSource: AppDataSource.defaultDataSource,
+
+                NewAdminFeeView(viewModel: NewAdminFeeViewModel(dataSource: session.appDataSource!,
                                                                 listing: listing,
                                                                 adminFee: adminFee) { output in
                     switch output {
@@ -50,9 +50,9 @@ struct ListingMainView: View {
                         navigationRouter.pop()
                     }
                 })
-                
+
             case .transactionList(let listingId):
-                let dataSource = AppDataSource.defaultDataSource
+                let dataSource = session.appDataSource!
                 let vm = TransactionSummaryListViewModel(dataSource: dataSource,
                                                          selectedListingId: listingId,
                                                          output:
@@ -68,9 +68,9 @@ struct ListingMainView: View {
                 NavigationStack {
                     TransactionSummaryListView(viewModel: vm)
                 }
-                
+
             case .transactionMonthDetail(let transactions, let ListingId):
-                let dataSource = AppDataSource.defaultDataSource
+                let dataSource = session.appDataSource!
                 let vm = TransactionMonthDetailViewModel(dataSource: dataSource, transactions: transactions, selectedListingId: ListingId) { output in
                     switch output {
                     case .addNewTransaction:
@@ -84,10 +84,10 @@ struct ListingMainView: View {
                 NavigationStack {
                     TransactionMonthDetailView(viewModel: vm)
                 }
-                
+
             }
         }
-        
+
         .onLoad {
             coordinator.set(navigationRouter: navigationRouter)
         }

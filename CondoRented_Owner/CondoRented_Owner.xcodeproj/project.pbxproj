@@ -76,8 +76,27 @@
 		42C9C9BB2CFBBC0A0006FA84 /* TransactionType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42C9C9B92CFBBC0A0006FA84 /* TransactionType.swift */; };
 		48AE23001F45489F89E8D287 /* StatisticsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05855BFD1FB8467597A3199B /* StatisticsView.swift */; };
 		8AED5963B8794AA1BC820EC0 /* StatisticsPieChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 014570D3DD404ABD990DCDB1 /* StatisticsPieChartView.swift */; };
+		AC000001AC000001AC000001 /* AccountManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC000000AC000000AC000000 /* AccountManager.swift */; };
+		AC000002AC000002AC000002 /* AccountManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC000000AC000000AC000000 /* AccountManager.swift */; };
+		BB000001BB000001BB000001 /* AppUser.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB000000BB000000BB000000 /* AppUser.swift */; };
+		BB000002BB000002BB000002 /* AppUser.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB000000BB000000BB000000 /* AppUser.swift */; };
+		BB000011BB000011BB000011 /* AccountMember.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB000010BB000010BB000010 /* AccountMember.swift */; };
+		BB000012BB000012BB000012 /* AccountMember.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB000010BB000010BB000010 /* AccountMember.swift */; };
+		BB000021BB000021BB000021 /* AuthManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB000020BB000020BB000020 /* AuthManager.swift */; };
+		BB000022BB000022BB000022 /* AuthManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB000020BB000020BB000020 /* AuthManager.swift */; };
+		BB000031BB000031BB000031 /* UserDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB000030BB000030BB000030 /* UserDataSource.swift */; };
+		BB000032BB000032BB000032 /* UserDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB000030BB000030BB000030 /* UserDataSource.swift */; };
+		BB000041BB000041BB000041 /* AccountMemberDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB000040BB000040BB000040 /* AccountMemberDataSource.swift */; };
+		BB000042BB000042BB000042 /* AccountMemberDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB000040BB000040BB000040 /* AccountMemberDataSource.swift */; };
+		BB000051BB000051BB000051 /* SessionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB000050BB000050BB000050 /* SessionManager.swift */; };
+		BB000052BB000052BB000052 /* SessionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB000050BB000050BB000050 /* SessionManager.swift */; };
+		BB000061BB000061BB000061 /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB000060BB000060BB000060 /* LoginView.swift */; };
+		BB000062BB000062BB000062 /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB000060BB000060BB000060 /* LoginView.swift */; };
+		BB000071BB000071BB000071 /* ProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB000070BB000070BB000070 /* ProfileView.swift */; };
+		BB000072BB000072BB000072 /* ProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB000070BB000070BB000070 /* ProfileView.swift */; };
 		E1F1022ECD00436EA18D2E34 /* StatisticsPersonalUseView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 986FC06600524418B6F8F3DE /* StatisticsPersonalUseView.swift */; };
 		E58C47A5C5AF4ADEA67C2F0C /* StatisticsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4687EE57968C4B1F915FE47B /* StatisticsViewModel.swift */; };
+		E6CE54442F61A0A1008A12FE /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = E6CE54432F61A0A1008A12FE /* FirebaseAuth */; };
 		EB7981FC4C11424CAC53104B /* StatisticsKPICardsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4713C31FEFB44E7AEC181EF /* StatisticsKPICardsView.swift */; };
 		EEC89B8FD70346579CFA21CE /* StatisticsChartBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C368479E3C184CF79E811484 /* StatisticsChartBarView.swift */; };
 /* End PBXBuildFile section */
@@ -152,6 +171,15 @@
 		42C9C9B92CFBBC0A0006FA84 /* TransactionType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionType.swift; sourceTree = "<group>"; };
 		4687EE57968C4B1F915FE47B /* StatisticsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatisticsViewModel.swift; sourceTree = "<group>"; };
 		986FC06600524418B6F8F3DE /* StatisticsPersonalUseView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatisticsPersonalUseView.swift; sourceTree = "<group>"; };
+		AC000000AC000000AC000000 /* AccountManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountManager.swift; sourceTree = "<group>"; };
+		BB000000BB000000BB000000 /* AppUser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppUser.swift; sourceTree = "<group>"; };
+		BB000010BB000010BB000010 /* AccountMember.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountMember.swift; sourceTree = "<group>"; };
+		BB000020BB000020BB000020 /* AuthManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthManager.swift; sourceTree = "<group>"; };
+		BB000030BB000030BB000030 /* UserDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDataSource.swift; sourceTree = "<group>"; };
+		BB000040BB000040BB000040 /* AccountMemberDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountMemberDataSource.swift; sourceTree = "<group>"; };
+		BB000050BB000050BB000050 /* SessionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionManager.swift; sourceTree = "<group>"; };
+		BB000060BB000060BB000060 /* LoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
+		BB000070BB000070BB000070 /* ProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileView.swift; sourceTree = "<group>"; };
 		C368479E3C184CF79E811484 /* StatisticsChartBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatisticsChartBarView.swift; sourceTree = "<group>"; };
 		C681F26AC98D49F48AED128A /* CompactCurrencyFormatter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompactCurrencyFormatter.swift; sourceTree = "<group>"; };
 		D4713C31FEFB44E7AEC181EF /* StatisticsKPICardsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatisticsKPICardsView.swift; sourceTree = "<group>"; };
@@ -166,6 +194,7 @@
 				428481F72C32B18C006336A1 /* FirebaseCrashlytics in Frameworks */,
 				428481F52C32B18C006336A1 /* FirebaseAnalyticsSwift in Frameworks */,
 				428481F92C32B18C006336A1 /* FirebaseDatabase in Frameworks */,
+				E6CE54442F61A0A1008A12FE /* FirebaseAuth in Frameworks */,
 				428481F32C32B18C006336A1 /* FirebaseAnalytics in Frameworks */,
 				428481FD2C32B18C006336A1 /* FirebaseFirestore in Frameworks */,
 				428481FF2C32B18C006336A1 /* FirebaseFirestoreCombine-Community in Frameworks */,
@@ -196,6 +225,7 @@
 				423B0C352BCFBFD20030AD65 /* CondoRented_Owner */,
 				423B0C492BCFBFD30030AD65 /* CondoRented_OwnerTests */,
 				423B0C532BCFBFD30030AD65 /* CondoRented_OwnerUITests */,
+				E6CE54422F61A0A1008A12FE /* Frameworks */,
 				423B0C342BCFBFD10030AD65 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -221,6 +251,8 @@
 				423B0D062BE9588F0030AD65 /* Transactions */,
 				423B0C762BD18DFF0030AD65 /* Listing */,
 				6A150DDF5457400C8543A338 /* Statistics */,
+				BB0000A0BB0000A0BB0000A0 /* Auth */,
+				BB0000B0BB0000B0BB0000B0 /* Profile */,
 				423B0D0B2BEA29DC0030AD65 /* TransactionHelper.swift */,
 				423B0C3C2BCFBFD30030AD65 /* Assets.xcassets */,
 				423B0C3E2BCFBFD30030AD65 /* CondoRented_Owner.entitlements */,
@@ -264,6 +296,8 @@
 				423B0C6E2BCFCAD30030AD65 /* AdminFee.swift */,
 				423B0C7D2BE279190030AD65 /* Admin.swift */,
 				423B0C702BCFCB6F0030AD65 /* Listing.swift */,
+				BB000000BB000000BB000000 /* AppUser.swift */,
+				BB000010BB000010BB000010 /* AccountMember.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -319,6 +353,11 @@
 				42BBCE442CCC22B700A74B9A /* AdminFeeDataSource.swift */,
 				423B0D322BF605DB0030AD65 /* AppDataSource.swift */,
 				42C9C9B62CFB96970006FA84 /* Firestore+functions.swift */,
+				AC000000AC000000AC000000 /* AccountManager.swift */,
+				BB000020BB000020BB000020 /* AuthManager.swift */,
+				BB000030BB000030BB000030 /* UserDataSource.swift */,
+				BB000040BB000040BB000040 /* AccountMemberDataSource.swift */,
+				BB000050BB000050BB000050 /* SessionManager.swift */,
 			);
 			path = DataSource;
 			sourceTree = "<group>";
@@ -395,6 +434,29 @@
 			path = Statistics;
 			sourceTree = "<group>";
 		};
+		BB0000A0BB0000A0BB0000A0 /* Auth */ = {
+			isa = PBXGroup;
+			children = (
+				BB000060BB000060BB000060 /* LoginView.swift */,
+			);
+			path = Auth;
+			sourceTree = "<group>";
+		};
+		BB0000B0BB0000B0BB0000B0 /* Profile */ = {
+			isa = PBXGroup;
+			children = (
+				BB000070BB000070BB000070 /* ProfileView.swift */,
+			);
+			path = Profile;
+			sourceTree = "<group>";
+		};
+		E6CE54422F61A0A1008A12FE /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -420,6 +482,7 @@
 				428481FC2C32B18C006336A1 /* FirebaseFirestore */,
 				428481FE2C32B18C006336A1 /* FirebaseFirestoreCombine-Community */,
 				428482002C32B18C006336A1 /* FirebaseFirestoreSwift */,
+				E6CE54432F61A0A1008A12FE /* FirebaseAuth */,
 			);
 			productName = CondoRented_Owner;
 			productReference = 423B0C332BCFBFD10030AD65 /* CondoRented_Owner.app */;
@@ -563,6 +626,15 @@
 				423B0D242BF35C5E0030AD65 /* TransactionSummaryListViewModel.swift in Sources */,
 				42C9C9BB2CFBBC0A0006FA84 /* TransactionType.swift in Sources */,
 				42BBCE452CCC22B700A74B9A /* AdminFeeDataSource.swift in Sources */,
+				AC000001AC000001AC000001 /* AccountManager.swift in Sources */,
+				BB000001BB000001BB000001 /* AppUser.swift in Sources */,
+				BB000011BB000011BB000011 /* AccountMember.swift in Sources */,
+				BB000021BB000021BB000021 /* AuthManager.swift in Sources */,
+				BB000031BB000031BB000031 /* UserDataSource.swift in Sources */,
+				BB000041BB000041BB000041 /* AccountMemberDataSource.swift in Sources */,
+				BB000051BB000051BB000051 /* SessionManager.swift in Sources */,
+				BB000061BB000061BB000061 /* LoginView.swift in Sources */,
+				BB000071BB000071BB000071 /* ProfileView.swift in Sources */,
 				423B0D352BF647020030AD65 /* TransactionCoordinator.swift in Sources */,
 				42BBCE3C2CCB937A00A74B9A /* ListingsViewModel.swift in Sources */,
 				423B0D3A2BFFB0C10030AD65 /* TransactionMonthDetailViewModel.swift in Sources */,
@@ -603,6 +675,15 @@
 				423B0D3E2C011FBA0030AD65 /* AdminFee.swift in Sources */,
 				42BBCE432CCC211900A74B9A /* AdminDataSource.swift in Sources */,
 				42BBCE462CCC22B700A74B9A /* AdminFeeDataSource.swift in Sources */,
+				AC000002AC000002AC000002 /* AccountManager.swift in Sources */,
+				BB000002BB000002BB000002 /* AppUser.swift in Sources */,
+				BB000012BB000012BB000012 /* AccountMember.swift in Sources */,
+				BB000022BB000022BB000022 /* AuthManager.swift in Sources */,
+				BB000032BB000032BB000032 /* UserDataSource.swift in Sources */,
+				BB000042BB000042BB000042 /* AccountMemberDataSource.swift in Sources */,
+				BB000052BB000052BB000052 /* SessionManager.swift in Sources */,
+				BB000062BB000062BB000062 /* LoginView.swift in Sources */,
+				BB000072BB000072BB000072 /* ProfileView.swift in Sources */,
 				423B0D3F2C011FBA0030AD65 /* Transaction.swift in Sources */,
 				423B0D442C0120090030AD65 /* TransactionHelper.swift in Sources */,
 				423B0C4B2BCFBFD30030AD65 /* CondoRented_OwnerTests.swift in Sources */,
@@ -1014,6 +1095,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 428481F12C32B18C006336A1 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = FirebaseFirestoreSwift;
+		};
+		E6CE54432F61A0A1008A12FE /* FirebaseAuth */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 428481F12C32B18C006336A1 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAuth;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

@@ -20,37 +20,39 @@ protocol TransactionDataSourceProtocol {
 
 final class TransactionDataSource: TransactionDataSourceProtocol {
     private let db: Firestore
-    
+    private let accountId: String
+
     private let transactionsSubject = CurrentValueSubject<[Transaction], Never>([])
     var transactionsPublisher: AnyPublisher<[Transaction], Never> {
         transactionsSubject.eraseToAnyPublisher()
     }
-    
+
     var transactions: [Transaction] {
         transactionsSubject.value
     }
-    
-    init() {
-        db = Firestore.firestore()
+
+    init(accountId: String) {
+        self.db = Firestore.firestore()
+        self.accountId = accountId
     }
 
     func fetchTransactions() async {
-        let docRef = db.collection("Transaction")
-        
+        let docRef = db.accountCollection("Transaction", accountId: accountId)
+
         do {
             let result  = try await docRef.getDocuments()
             let results = try result.documents.map({ try $0.data(as: Transaction.self) })
             transactionsSubject.send(results)
-            
+
         } catch {
             print("Failed to fetch transactions: \(error)")
         }
     }
-    
+
     func add(transaction: Transaction) async {
-        await db.insert(transaction)
+        await db.insert(transaction, accountId: accountId)
         var updated = transactionsSubject.value
-        
+
         if let index = updated.firstIndex(where: { $0.id == transaction.id }) {
             updated[index] = transaction
         } else {
@@ -58,12 +60,12 @@ final class TransactionDataSource: TransactionDataSourceProtocol {
         }
         transactionsSubject.send(updated)
     }
-    
+
     func remove(transaction: Transaction) async {
-        await db.delete(transaction)
+        await db.delete(transaction, accountId: accountId)
         var updated = transactionsSubject.value
         updated.removeAll { $0.id == transaction.id }
         transactionsSubject.send(updated)
-        
+
     }
 }

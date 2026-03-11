@@ -20,6 +20,7 @@ protocol ListingDataSourceProtocol {
 final class ListingDataSource: ListingDataSourceProtocol {
 
     private let db: Firestore
+    private let accountId: String
     private let listingsSubject = CurrentValueSubject<[Listing], Never>([])
 
     var listingsPublisher: AnyPublisher<[Listing], Never> {
@@ -30,12 +31,13 @@ final class ListingDataSource: ListingDataSourceProtocol {
         listingsSubject.value
     }
 
-    init() {
+    init(accountId: String) {
         self.db = Firestore.firestore()
+        self.accountId = accountId
     }
 
     func fetchListings() async {
-        let docRef = db.collection("Listing")
+        let docRef = db.accountCollection("Listing", accountId: accountId)
 
         do {
             let result = try await docRef.getDocuments()
@@ -47,7 +49,7 @@ final class ListingDataSource: ListingDataSourceProtocol {
     }
 
     func save(_ listing: Listing) async {
-        await db.insert(listing)
+        await db.insert(listing, accountId: accountId)
         var updated = listingsSubject.value
         if let index = updated.firstIndex(where: { $0.id == listing.id }) {
             updated[index] = listing

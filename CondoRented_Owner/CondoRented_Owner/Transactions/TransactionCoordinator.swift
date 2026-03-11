@@ -43,13 +43,18 @@ final class TransactionCoordinator: Hashable {
     @ObservationIgnored
     private var page: TransactionPage
     
+    @ObservationIgnored
+    private var dataSource: AppDataSourceProtocol
+
     init(
         page: TransactionPage,
         navigationPath: Binding<NavigationPath>,
+        dataSource: AppDataSourceProtocol,
         output: Output? = nil
     ) {
         self.id = UUID()
         self.page = page
+        self.dataSource = dataSource
         self.output = output
         self._navigationPath = navigationPath
     }
@@ -73,15 +78,14 @@ final class TransactionCoordinator: Hashable {
  
     @MainActor
     private func summaryList() -> some View {
-        let dataSource = AppDataSource.defaultDataSource
         let vm = TransactionSummaryListViewModel(dataSource: dataSource,
                                                  output:
                 .init(
                     addNew: {
-                        self.push(TransactionCoordinator(page: .addNewTransaction, navigationPath: self.$navigationPath))
+                        self.push(TransactionCoordinator(page: .addNewTransaction, navigationPath: self.$navigationPath, dataSource: self.dataSource))
                     },
                     monthDetail: { transactions in
-                        self.push(TransactionCoordinator(page: .monthDetail(transactions), navigationPath: self.$navigationPath))
+                        self.push(TransactionCoordinator(page: .monthDetail(transactions), navigationPath: self.$navigationPath, dataSource: self.dataSource))
                     },
                     backDidSelect: {}
                 ))
@@ -90,7 +94,6 @@ final class TransactionCoordinator: Hashable {
     
     @MainActor
     private func addEditView(transaction: Transaction?, prefilledListing: Listing? = nil, prefilledType: TransactionType? = nil) -> some View {
-        let dataSource = AppDataSource.defaultDataSource
         let vm = AddEditTransactionViewModel(transaction: transaction, dataSource: dataSource) { output in
             switch output {
             case .back:
@@ -108,16 +111,14 @@ final class TransactionCoordinator: Hashable {
     
     @MainActor
     private func monthDetailView(with transactions: [Transaction]) -> some View {
-        let dataSource = AppDataSource.defaultDataSource
-        
         let vm = TransactionMonthDetailViewModel(dataSource: dataSource, transactions: transactions) { output in
             switch output {
             case .addNewTransaction:
-                self.push(TransactionCoordinator(page: .addNewTransaction, navigationPath: self.$navigationPath))
+                self.push(TransactionCoordinator(page: .addNewTransaction, navigationPath: self.$navigationPath, dataSource: self.dataSource))
             case .addNewTransactionWithType(let listing, let type):
-                self.push(TransactionCoordinator(page: .addNewTransactionWithType(listing: listing, type: type), navigationPath: self.$navigationPath))
+                self.push(TransactionCoordinator(page: .addNewTransactionWithType(listing: listing, type: type), navigationPath: self.$navigationPath, dataSource: self.dataSource))
             case .editTransaction(let transaction):
-                self.push(TransactionCoordinator(page: .editTransaction(transaction), navigationPath: self.$navigationPath))
+                self.push(TransactionCoordinator(page: .editTransaction(transaction), navigationPath: self.$navigationPath, dataSource: self.dataSource))
             }
         }
         return TransactionMonthDetailView(viewModel: vm)

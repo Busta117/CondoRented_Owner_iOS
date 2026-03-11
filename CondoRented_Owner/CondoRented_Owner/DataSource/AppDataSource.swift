@@ -33,10 +33,4 @@ final class AppDataSource: AppDataSourceProtocol {
         self.adminFeeDataSource = adminFeeDataSource
     }
     
-    static var defaultDataSource: AppDataSource = {
-        return AppDataSource(transactionDataSource: TransactionDataSource(),
-                             listingDataSource: ListingDataSource(),
-                             adminDataSource: AdminDataSource(),
-                             adminFeeDataSource: AdminFeeDataSource())
-    }()
 }

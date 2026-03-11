@@ -20,6 +20,7 @@ protocol AdminDataSourceProtocol {
 
 final class AdminDataSource: AdminDataSourceProtocol {
     private let db: Firestore
+    private let accountId: String
     private let adminsSubject = CurrentValueSubject<[Admin], Never>([])
 
     var adminsPublisher: AnyPublisher<[Admin], Never> {
@@ -30,12 +31,13 @@ final class AdminDataSource: AdminDataSourceProtocol {
         adminsSubject.value
     }
 
-    init() {
-        db = Firestore.firestore()
+    init(accountId: String) {
+        self.db = Firestore.firestore()
+        self.accountId = accountId
     }
 
     func fetchAll() async {
-        let docRef = db.collection("Admin")
+        let docRef = db.accountCollection("Admin", accountId: accountId)
 
         do {
             let result = try await docRef.getDocuments()
@@ -47,7 +49,7 @@ final class AdminDataSource: AdminDataSourceProtocol {
     }
 
     func fetch(id: String) async -> Admin? {
-        let docRef = db.collection("Admin").document(id)
+        let docRef = db.accountCollection("Admin", accountId: accountId).document(id)
         do {
             let result = try await docRef.getDocument(as: Admin.self)
             return result
@@ -58,9 +60,9 @@ final class AdminDataSource: AdminDataSourceProtocol {
     }
 
     func save(_ admin: Admin) async {
-        await db.insert(admin)
+        await db.insert(admin, accountId: accountId)
         var updated = adminsSubject.value
-        updated.removeAll { $0.id == admin.id } 
+        updated.removeAll { $0.id == admin.id }
         updated.append(admin)
         adminsSubject.send(updated)
     }

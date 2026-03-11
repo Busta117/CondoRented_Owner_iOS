@@ -21,6 +21,7 @@ protocol AdminFeeDataSourceProtocol {
 
 final class AdminFeeDataSource: AdminFeeDataSourceProtocol {
     private let db: Firestore
+    private let accountId: String
     private let adminFeesSubject = CurrentValueSubject<[AdminFee], Never>([])
 
     var adminFeesPublisher: AnyPublisher<[AdminFee], Never> {
@@ -31,12 +32,13 @@ final class AdminFeeDataSource: AdminFeeDataSourceProtocol {
         adminFeesSubject.value
     }
 
-    init() {
-        db = Firestore.firestore()
+    init(accountId: String) {
+        self.db = Firestore.firestore()
+        self.accountId = accountId
     }
 
     func fetchAll() async {
-        let docRef = db.collection("AdminFee")
+        let docRef = db.accountCollection("AdminFee", accountId: accountId)
 
         do {
             let result = try await docRef.getDocuments()
@@ -48,7 +50,7 @@ final class AdminFeeDataSource: AdminFeeDataSourceProtocol {
     }
 
     func fetch(id: String) async -> AdminFee? {
-        let docRef = db.collection("AdminFee").document(id)
+        let docRef = db.accountCollection("AdminFee", accountId: accountId).document(id)
         do {
             return try await docRef.getDocument(as: AdminFee.self)
         } catch {
@@ -62,7 +64,7 @@ final class AdminFeeDataSource: AdminFeeDataSourceProtocol {
     }
 
     func save(_ adminFee: AdminFee) async {
-        await db.insert(adminFee)
+        await db.insert(adminFee, accountId: accountId)
         var updated = adminFeesSubject.value
         updated.removeAll { $0.id == adminFee.id }
         updated.append(adminFee)
