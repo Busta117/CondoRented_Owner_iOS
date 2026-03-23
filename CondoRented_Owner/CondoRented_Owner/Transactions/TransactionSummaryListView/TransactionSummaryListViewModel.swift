@@ -46,6 +46,7 @@ class TransactionSummaryListViewModel {
     
     var isLoading = false
     var allAdminFees: [AdminFee] = []
+    var allListings: [Listing] = []
     private var allTransactions: [Transaction] = []
     var transactionPerMonth: [[Transaction]] = []
     var selectedListingId: String?
@@ -79,6 +80,7 @@ class TransactionSummaryListViewModel {
         Task {
             await dataSource.transactionDataSource.fetchTransactions()
             await dataSource.adminFeeDataSource.fetchAll()
+            await dataSource.listingDataSource.fetchListings()
             isLoading = false
         }
     }
@@ -105,6 +107,14 @@ class TransactionSummaryListViewModel {
             .receive(on: DispatchQueue.main)
             .sink { [weak self] fees in
                 self?.allAdminFees = fees
+            }
+            .store(in: &cancellables)
+
+        // Observa listings
+        dataSource.listingDataSource.listingsPublisher
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] listings in
+                self?.allListings = listings
             }
             .store(in: &cancellables)
     }

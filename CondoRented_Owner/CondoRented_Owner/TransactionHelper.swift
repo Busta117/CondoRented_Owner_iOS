@@ -153,6 +153,24 @@ struct TransactionHelper: TransactionHelperProtocol {
         return sum
     }
 
+    static func missingExpensesCount(for transactions: [Transaction], listings: [Listing]) -> Int {
+        let transactionsByListing = splitByListing(transactions: transactions, listings: listings)
+        var count = 0
+        for listing in listings {
+            let listingTransactions = transactionsByListing[listing] ?? []
+            let existingTitles = Set(listingTransactions.compactMap { transaction -> String? in
+                if case .expense(let title) = transaction.type { return title }
+                return nil
+            })
+            for expectedType in TransactionType.expectedMonthlyExpenseTypes {
+                if !existingTitles.contains(expectedType.title) {
+                    count += 1
+                }
+            }
+        }
+        return count
+    }
+
     static func hasPersonalUse(in transactions: [Transaction]) -> Bool {
         transactions.contains { $0.type == .personalUse }
     }

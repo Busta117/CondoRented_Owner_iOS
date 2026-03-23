@@ -11,7 +11,7 @@ import SwiftUI
 struct TransactionMonthDetailView: View {
     
     @Bindable var viewModel: TransactionMonthDetailViewModel
-    @State private var detailExpanded = false
+    @State private var detailExpanded = true
     @State private var chartExpanded = true
     @State private var adminFeeSummaryExpanded = false
     

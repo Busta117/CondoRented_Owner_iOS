@@ -31,13 +31,15 @@ struct TransactionSummaryListMonth: View {
 
     var personalUseAdjustment: Double
     var hasPersonalUse: Bool
+    var missingExpensesCount: Int
 
     var monthBalanceValue: Double {
         (wonValue - spendValue - feesValue + personalUseAdjustment)
     }
 
-    init(transactions: [Transaction], adminFees: [AdminFee]) {
+    init(transactions: [Transaction], adminFees: [AdminFee], listings: [Listing]) {
         self.transactions = transactions
+        self.missingExpensesCount = TransactionHelper.missingExpensesCount(for: transactions, listings: listings)
 
         // month type
         if let trans = transactions.first {
@@ -107,22 +109,31 @@ struct TransactionSummaryListMonth: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 5) {
-            if monthType == .current {
-                Circle()
-                    .frame(width: 10)
-                    .padding(.bottom, -10)   
-                    .foregroundStyle(.green)
-            }
-            HStack(alignment: .firstTextBaseline, spacing: 6) {
-                Text(monthTitle)
-                    .font(.largeTitle)
+            HStack(alignment: .center) {
+                if monthType == .current {
+                    Circle()
+                        .frame(width: 10)
+                        .foregroundStyle(.green)
+                }
+                Spacer()
                 if hasPersonalUse {
                     Image(systemName: "house.fill")
                         .font(.caption)
                         .foregroundStyle(.orange)
                 }
+                if missingExpensesCount > 0 {
+                    HStack(spacing: 2) {
+                        Image(systemName: "exclamationmark.triangle.fill")
+                        Text("\(missingExpensesCount)")
+                    }
+                    .font(.caption)
+                    .foregroundStyle(.orange)
+                }
             }
-            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(.bottom, -10)
+            Text(monthTitle)
+                .font(.largeTitle)
+                .frame(maxWidth: .infinity, alignment: .leading)
             HStack {
                 Text(wonTitle)
                     .font(.body)

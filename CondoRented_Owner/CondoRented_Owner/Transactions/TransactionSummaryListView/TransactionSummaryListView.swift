@@ -47,7 +47,7 @@ struct TransactionSummaryListView: View {
                         Button(action: {
                             viewModel.input(.monthDetailTapped(transactions))
                         }, label: {
-                            TransactionSummaryListMonth(transactions: transactions, adminFees: viewModel.allAdminFees)
+                            TransactionSummaryListMonth(transactions: transactions, adminFees: viewModel.allAdminFees, listings: viewModel.allListings)
                                 .contentShape(Rectangle())
                         })
                         .buttonStyle(PlainButtonStyle())
