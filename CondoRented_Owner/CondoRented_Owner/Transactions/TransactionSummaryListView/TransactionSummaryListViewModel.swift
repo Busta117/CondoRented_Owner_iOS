@@ -52,6 +52,7 @@ class TransactionSummaryListViewModel {
     var selectedListingId: String?
     
     var summarySelectedTab = 0
+    var listingsVersion = UUID()
     
     init(dataSource: AppDataSourceProtocol, selectedListingId: String? = nil, output: Output) {
         self.dataSource = dataSource
@@ -114,7 +115,9 @@ class TransactionSummaryListViewModel {
         dataSource.listingDataSource.listingsPublisher
             .receive(on: DispatchQueue.main)
             .sink { [weak self] listings in
-                self?.allListings = listings
+                guard let self else { return }
+                self.allListings = listings
+                self.listingsVersion = UUID()
             }
             .store(in: &cancellables)
     }

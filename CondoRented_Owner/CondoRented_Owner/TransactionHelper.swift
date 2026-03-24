@@ -162,7 +162,8 @@ struct TransactionHelper: TransactionHelperProtocol {
                 if case .expense(let title) = transaction.type { return title }
                 return nil
             })
-            for expectedType in TransactionType.expectedMonthlyExpenseTypes {
+            let expectedTypes = TransactionType.expectedMonthlyExpenseTypes(for: listing.expectedMonthlyExpenseTypes)
+            for expectedType in expectedTypes {
                 if !existingTitles.contains(expectedType.title) {
                     count += 1
                 }

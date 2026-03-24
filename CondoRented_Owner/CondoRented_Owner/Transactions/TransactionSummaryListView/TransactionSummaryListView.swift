@@ -47,12 +47,17 @@ struct TransactionSummaryListView: View {
                         Button(action: {
                             viewModel.input(.monthDetailTapped(transactions))
                         }, label: {
-                            TransactionSummaryListMonth(transactions: transactions, adminFees: viewModel.allAdminFees, listings: viewModel.allListings)
-                                .contentShape(Rectangle())
+                            TransactionSummaryListMonth(
+                                transactions: transactions,
+                                adminFees: viewModel.allAdminFees,
+                                missingExpensesCount: TransactionHelper.missingExpensesCount(for: transactions, listings: viewModel.allListings)
+                            )
+                            .contentShape(Rectangle())
                         })
                         .buttonStyle(PlainButtonStyle())
                     }
                 }
+                .id(viewModel.listingsVersion)
             }
             .listStyle(.insetGrouped)
             .background(Color.clear)

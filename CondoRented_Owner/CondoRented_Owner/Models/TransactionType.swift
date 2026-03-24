@@ -15,11 +15,17 @@ enum TransactionType: Codable, CaseIterable, Hashable {
         .expense(title: "Other")
     }
 
-    static var expectedMonthlyExpenseTypes: [TransactionType] {
-        [.expense(title: "Internet"),
-         .expense(title: "Mortgage"),
-         .expense(title: "Utilities"),
-         .expense(title: "Co-Ownership Fees")]
+    static var availableExpenseTypes: [String] {
+        ["Internet", "Mortgage", "Utilities", "Co-Ownership Fees"]
+    }
+
+    static var defaultExpenseTypes: [String] {
+        availableExpenseTypes
+    }
+
+    static func expectedMonthlyExpenseTypes(for expenseTypes: [String]) -> [TransactionType] {
+        let types = expenseTypes.isEmpty ? defaultExpenseTypes : expenseTypes
+        return types.map { .expense(title: $0) }
     }
 
     static var allCases: [TransactionType] {

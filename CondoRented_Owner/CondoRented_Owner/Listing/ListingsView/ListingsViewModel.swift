@@ -23,6 +23,7 @@ final class ListingsViewModel {
     private var cancellables = Set<AnyCancellable>()
     
     var listingList: [Listing] = []
+    var listingsVersion = UUID()
     
     init(dataSource: AppDataSourceProtocol, output: @escaping (Output) -> Void) {
         self.dataSource = dataSource
@@ -42,7 +43,9 @@ final class ListingsViewModel {
         dataSource.listingDataSource.listingsPublisher
             .receive(on: DispatchQueue.main)
             .sink { [weak self] listings in
-                self?.listingList = listings
+                guard let self else { return }
+                self.listingList = listings
+                self.listingsVersion = UUID()
             }
             .store(in: &cancellables)
     }

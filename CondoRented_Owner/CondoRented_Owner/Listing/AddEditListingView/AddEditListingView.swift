@@ -11,45 +11,67 @@ import FirebaseFirestore
 
 struct AddEditListingView: View {
 
+    enum Field {
+        case title, propertyValue
+    }
+
     @Bindable var viewModel: AddEditListingViewModel
-    @FocusState private var isFieldFocused: Bool
+    @FocusState private var focusedField: Field?
 
     init(viewModel: AddEditListingViewModel) {
         self.viewModel = viewModel
     }
-    
+
+    private var titleBinding: Binding<String> {
+        Binding(
+            get: { viewModel.listing.title },
+            set: { newValue in
+                viewModel.listing.title = newValue
+                viewModel.triggerSave()
+            }
+        )
+    }
+
+    private var propertyValueBinding: Binding<Double?> {
+        Binding(
+            get: { viewModel.listing.propertyValue },
+            set: { newValue in
+                viewModel.listing.propertyValue = newValue
+                viewModel.triggerSave()
+            }
+        )
+    }
+
     var body: some View {
         VStack {
             NavigatorBar(title: "Listing")
                 .navigatorBackButton(title: "") {
+                    viewModel.saveImmediately()
                     viewModel.output(.backDidSelect)
                 }
             Form {
                 Section {
-                    TextField("", text: $viewModel.listing.title)
+                    TextField("", text: titleBinding)
+                        .focused($focusedField, equals: .title)
+                        .onSubmit {
+                            focusedField = nil
+                            viewModel.saveImmediately()
+                        }
                 } header: {
                     Text("Listing Name")
                 }
-                
+
                 Section {
-                    TextField("Property Value", value: $viewModel.listing.propertyValue, format: .number)
+                    TextField("Property Value", value: propertyValueBinding, format: .number)
                         .keyboardType(.numberPad)
-                        .focused($isFieldFocused)
-                        .toolbar {
-                            ToolbarItemGroup(placement: .keyboard) {
-                                Spacer()
-                                Button("Done") {
-                                    isFieldFocused = false
-                                }
-                            }
-                        }
+                        .focused($focusedField, equals: .propertyValue)
                 } header: {
                     Text("Property Value (COP)")
                 }
 
                 Section {
                     Button(action: {
-                        seeTransactionsAction()
+                        viewModel.output(.seeTransactionsDidSelect)
                     }, label: {
                         HStack {
                             Text("See Transactions")
@@ -61,7 +83,31 @@ struct AddEditListingView: View {
                     })
                     .buttonStyle(.plain)
                 }
-                
+
+                Section {
+                    ForEach(viewModel.listing.expectedMonthlyExpenseTypes, id: \.self) { expenseType in
+                        Text(expenseType)
+                    }
+                    .onDelete { indexSet in
+                        let types = viewModel.listing.expectedMonthlyExpenseTypes
+                        for index in indexSet {
+                            viewModel.removeExpenseType(types[index])
+                        }
+                    }
+                } header: {
+                    HStack {
+                        Text("Expected Monthly Expenses")
+                        Spacer()
+                        Button {
+                            viewModel.showExpensePicker = true
+                        } label: {
+                            Text("add new")
+                                .font(.caption)
+                                .bold()
+                        }
+                    }
+                }
+
                 Section {
                     if viewModel.adminFees.count > 0 {
                         List {
@@ -78,68 +124,50 @@ struct AddEditListingView: View {
                     }
                     else {
                         Button {
-                            addNewAdminFee()
+                            viewModel.output(.addNewAdminFeeDidSelect)
                         } label: {
                             Text("add new")
                                 .font(.headline)
                                 .bold()
                         }
-                        
+
                     }
-                    
+
                 } header: {
                     HStack {
                         Text("Admin Fee")
                         Spacer()
                         Button(action: {
-                            addNewAdminFee()
+                            viewModel.output(.addNewAdminFeeDidSelect)
                         }, label: {
                             Text("add new")
                                 .font(.caption)
                                 .bold()
                         })
                     }
-                    
+
                 }
-                
-                Section {
-                    Button(action: {
-                        saveAction()
-                    }, label: {
-                        HStack {
-                            Spacer()
-                            Text("Save")
-                                .font(.headline)
-                            Spacer()
-                        }
-                    })
+            }
+            .toolbar {
+                ToolbarItemGroup(placement: .keyboard) {
+                    Spacer()
+                    Button("Done") {
+                        focusedField = nil
+                        viewModel.saveImmediately()
+                    }
                 }
             }
         }
         .onAppear {
             viewModel.onAppear()
         }
-            
-    }
-    
-    private func addNewAdminFee() {
-        viewModel.output(.addNewAdminFeeDidSelect)
-    }
-    
-    private func seeTransactionsAction() {
-        viewModel.output(.seeTransactionsDidSelect)
-    }
-    
-    private func saveAction() {
-        isFieldFocused = false
-        viewModel.save()
+        .sheet(isPresented: $viewModel.showExpensePicker) {
+            ExpenseTypePickerView(
+                items: viewModel.availableExpenseTypesForPicker,
+                onSelect: { type in
+                    viewModel.addExpenseType(type)
+                }
+            )
+        }
     }
 }
-
-//#Preview {
-//    let container = ModelContainer.sharedInMemoryModelContainer
-//    let example = Listing(id: "1", title: "title here")
-//    return AddEditListingView(path: .constant(NavigationPath()), container: container, listing: example)
-//        .modelContainer(container)
-//        .modelContext(container.mainContext)
-//}

@@ -37,9 +37,9 @@ struct TransactionSummaryListMonth: View {
         (wonValue - spendValue - feesValue + personalUseAdjustment)
     }
 
-    init(transactions: [Transaction], adminFees: [AdminFee], listings: [Listing]) {
+    init(transactions: [Transaction], adminFees: [AdminFee], missingExpensesCount: Int) {
         self.transactions = transactions
-        self.missingExpensesCount = TransactionHelper.missingExpensesCount(for: transactions, listings: listings)
+        self.missingExpensesCount = missingExpensesCount
 
         // month type
         if let trans = transactions.first {

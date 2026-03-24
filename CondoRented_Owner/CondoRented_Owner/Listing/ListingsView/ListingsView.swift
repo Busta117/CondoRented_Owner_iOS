@@ -49,6 +49,7 @@ struct ListingsView: View {
                     }
 //                }
             }
+            .id(viewModel.listingsVersion)
         }
         
         

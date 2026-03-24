@@ -64,6 +64,7 @@
 		42B084D12D20F6D000867FC9 /* NewAdminFeeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42B084CF2D20F6D000867FC9 /* NewAdminFeeView.swift */; };
 		42BBCE3C2CCB937A00A74B9A /* ListingsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42BBCE3B2CCB937A00A74B9A /* ListingsViewModel.swift */; };
 		42BBCE3F2CCC189400A74B9A /* AddEditListingViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42BBCE3E2CCC189400A74B9A /* AddEditListingViewModel.swift */; };
+		B45CBED7B81849B1A28E9D72 /* ExpenseTypePickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C461EB93C644C8D84B4634E /* ExpenseTypePickerView.swift */; };
 		42BBCE422CCC211900A74B9A /* AdminDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42BBCE412CCC211900A74B9A /* AdminDataSource.swift */; };
 		42BBCE432CCC211900A74B9A /* AdminDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42BBCE412CCC211900A74B9A /* AdminDataSource.swift */; };
 		42BBCE452CCC22B700A74B9A /* AdminFeeDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42BBCE442CCC22B700A74B9A /* AdminFeeDataSource.swift */; };
@@ -164,6 +165,7 @@
 		42B084CF2D20F6D000867FC9 /* NewAdminFeeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewAdminFeeView.swift; sourceTree = "<group>"; };
 		42BBCE3B2CCB937A00A74B9A /* ListingsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListingsViewModel.swift; sourceTree = "<group>"; };
 		42BBCE3E2CCC189400A74B9A /* AddEditListingViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddEditListingViewModel.swift; sourceTree = "<group>"; };
+		4C461EB93C644C8D84B4634E /* ExpenseTypePickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpenseTypePickerView.swift; sourceTree = "<group>"; };
 		42BBCE412CCC211900A74B9A /* AdminDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdminDataSource.swift; sourceTree = "<group>"; };
 		42BBCE442CCC22B700A74B9A /* AdminFeeDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdminFeeDataSource.swift; sourceTree = "<group>"; };
 		42C9C9AD2CFB95190006FA84 /* CodableAndIdentifiable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CodableAndIdentifiable.swift; sourceTree = "<group>"; };
@@ -416,6 +418,7 @@
 			children = (
 				423B0C742BD18DF80030AD65 /* AddEditListingView.swift */,
 				42BBCE3E2CCC189400A74B9A /* AddEditListingViewModel.swift */,
+				4C461EB93C644C8D84B4634E /* ExpenseTypePickerView.swift */,
 			);
 			path = AddEditListingView;
 			sourceTree = "<group>";
@@ -610,6 +613,7 @@
 				423B0C712BCFCB6F0030AD65 /* Listing.swift in Sources */,
 				423B0D332BF605DB0030AD65 /* AppDataSource.swift in Sources */,
 				42BBCE3F2CCC189400A74B9A /* AddEditListingViewModel.swift in Sources */,
+				B45CBED7B81849B1A28E9D72 /* ExpenseTypePickerView.swift in Sources */,
 				4211FB7A2D20F8BF00A7D5FE /* NewAdminFeeViewModel.swift in Sources */,
 				423B0D0A2BE9593D0030AD65 /* TransactionSummaryListMonth.swift in Sources */,
 				42C9C9AF2CFB95190006FA84 /* CodableAndIdentifiable.swift in Sources */,
