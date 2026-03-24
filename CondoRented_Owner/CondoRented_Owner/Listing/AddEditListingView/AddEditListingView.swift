@@ -147,6 +147,33 @@ struct AddEditListingView: View {
                     }
 
                 }
+
+                Section {
+                    if let folderName = viewModel.listing.driveFolderName {
+                        HStack {
+                            Label(folderName, systemImage: "folder")
+                            Spacer()
+                            Button("Cambiar") {
+                                viewModel.selectDriveFolder()
+                            }
+                            .font(.caption)
+                        }
+                    } else {
+                        Button("Seleccionar carpeta") {
+                            viewModel.selectDriveFolder()
+                        }
+                    }
+                } header: {
+                    Text("Carpeta de Drive")
+                }
+
+                RecipientEmailsView(
+                    emails: Binding(
+                        get: { viewModel.listing.recipientEmails },
+                        set: { viewModel.listing.recipientEmails = $0 }
+                    ),
+                    onChanged: { viewModel.triggerSave() }
+                )
             }
             .toolbar {
                 ToolbarItemGroup(placement: .keyboard) {
@@ -168,6 +195,13 @@ struct AddEditListingView: View {
                     viewModel.addExpenseType(type)
                 }
             )
+        }
+        .sheet(isPresented: $viewModel.showDriveFolderPicker) {
+            DriveFolderPickerView { folderId, folderName in
+                viewModel.listing.driveFolderId = folderId
+                viewModel.listing.driveFolderName = folderName
+                viewModel.triggerSave()
+            }
         }
     }
 }

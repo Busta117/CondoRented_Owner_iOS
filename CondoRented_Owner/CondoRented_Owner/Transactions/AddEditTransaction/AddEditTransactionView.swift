@@ -36,6 +36,9 @@ struct AddEditTransactionView: View {
                     listingSection
                     dateSection
                     typeSection
+                    if viewModel.isCoOwnershipFee {
+                        ReceiptSectionView(viewModel: viewModel)
+                    }
                     saveButtonSection
                 }
             }

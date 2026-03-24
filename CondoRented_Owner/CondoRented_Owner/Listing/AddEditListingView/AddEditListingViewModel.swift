@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import UIKit
 import Combine
 
 @Observable
@@ -35,6 +36,7 @@ final class AddEditListingViewModel {
     var allListings: [Listing] = []
     var allTransactions: [Transaction] = []
     var showExpensePicker = false
+    var showDriveFolderPicker = false
 
     init(dataSource: AppDataSourceProtocol, listing: Listing, output: @escaping (Output) -> Void) {
         self.listing = listing.copy()
@@ -92,6 +94,23 @@ final class AddEditListingViewModel {
                 return lhs.key < rhs.key
             }
             .map { (type: $0.key, count: $0.value) }
+    }
+
+    func selectDriveFolder() {
+        if GoogleAuthManager.shared.isSignedIn {
+            showDriveFolderPicker = true
+        } else {
+            Task { @MainActor in
+                guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+                      let rootVC = windowScene.windows.first?.rootViewController else { return }
+                do {
+                    try await GoogleAuthManager.shared.signIn(presenting: rootVC)
+                    showDriveFolderPicker = true
+                } catch {
+                    // Sign-in cancelled or failed
+                }
+            }
+        }
     }
 
     func admin(forId id: String) -> Admin? {

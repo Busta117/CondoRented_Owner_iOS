@@ -102,6 +102,13 @@
 		EEC89B8FD70346579CFA21CE /* StatisticsChartBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C368479E3C184CF79E811484 /* StatisticsChartBarView.swift */; };
 		GS000001GS000001GS000001 /* GoogleSignIn in Frameworks */ = {isa = PBXBuildFile; productRef = GS000000GS000000GS000000 /* GoogleSignIn */; };
 		GS000003GS000003GS000003 /* GoogleSignInSwift in Frameworks */ = {isa = PBXBuildFile; productRef = GS000002GS000002GS000002 /* GoogleSignInSwift */; };
+		FD6BD60DDBBA406CA2814795 /* GoogleAuthManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F776932CF3046458B4AB21A /* GoogleAuthManager.swift */; };
+		2626C607279D41D4ABD9157F /* DriveService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C50347EC0DB4BC3A19BF2F0 /* DriveService.swift */; };
+		E8ACB696F656409B971AFF01 /* DriveFolderPickerViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6031DADBED934FF28B999F5A /* DriveFolderPickerViewModel.swift */; };
+		8FE977E4EA0B497F8160109A /* DriveFolderPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FFC96EE82E264F81B3E03171 /* DriveFolderPickerView.swift */; };
+		C8ADB1D7D7754122B6C64337 /* MailComposeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16169B510F9E4ED0AFEED9D5 /* MailComposeView.swift */; };
+		DADC13E381B64BD28DEF8F1A /* RecipientEmailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC10BC42A37D4478A2185EC5 /* RecipientEmailsView.swift */; };
+		C2C5AEAF6DC94B0AB3C949D5 /* ReceiptSectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E52524DE81864482AFCFACF1 /* ReceiptSectionView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -187,6 +194,13 @@
 		C368479E3C184CF79E811484 /* StatisticsChartBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatisticsChartBarView.swift; sourceTree = "<group>"; };
 		C681F26AC98D49F48AED128A /* CompactCurrencyFormatter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompactCurrencyFormatter.swift; sourceTree = "<group>"; };
 		D4713C31FEFB44E7AEC181EF /* StatisticsKPICardsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatisticsKPICardsView.swift; sourceTree = "<group>"; };
+		4F776932CF3046458B4AB21A /* GoogleAuthManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoogleAuthManager.swift; sourceTree = "<group>"; };
+		0C50347EC0DB4BC3A19BF2F0 /* DriveService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DriveService.swift; sourceTree = "<group>"; };
+		6031DADBED934FF28B999F5A /* DriveFolderPickerViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DriveFolderPickerViewModel.swift; sourceTree = "<group>"; };
+		FFC96EE82E264F81B3E03171 /* DriveFolderPickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DriveFolderPickerView.swift; sourceTree = "<group>"; };
+		16169B510F9E4ED0AFEED9D5 /* MailComposeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MailComposeView.swift; sourceTree = "<group>"; };
+		DC10BC42A37D4478A2185EC5 /* RecipientEmailsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipientEmailsView.swift; sourceTree = "<group>"; };
+		E52524DE81864482AFCFACF1 /* ReceiptSectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReceiptSectionView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -251,6 +265,7 @@
 			children = (
 				428482022C32B362006336A1 /* GoogleService-Info.plist */,
 				423B0C362BCFBFD20030AD65 /* CondoRented_OwnerApp.swift */,
+				35BFEC9595B14BA0B57FFCE4 /* GoogleAuth */,
 				4296907F2D15DBED00E0E6ED /* Common */,
 				423B0D2D2BF5354F0030AD65 /* DataSource */,
 				423B0C632BCFC02C0030AD65 /* Models */,
@@ -346,6 +361,7 @@
 			children = (
 				423B0D2B2BF52E270030AD65 /* AddEditTransactionViewModel.swift */,
 				423B0D292BF52E1B0030AD65 /* AddEditTransactionView.swift */,
+				E52524DE81864482AFCFACF1 /* ReceiptSectionView.swift */,
 			);
 			path = AddEditTransaction;
 			sourceTree = "<group>";
@@ -392,6 +408,7 @@
 			isa = PBXGroup;
 			children = (
 				429690862D16219800E0E6ED /* NavigatorBar.swift */,
+				16169B510F9E4ED0AFEED9D5 /* MailComposeView.swift */,
 				429690842D16208000E0E6ED /* OnLoadModifier.swift */,
 				4296907B2D15DB3300E0E6ED /* NavigatorRouter.swift */,
 				429690802D161A4A00E0E6ED /* NavigatorView.swift */,
@@ -421,6 +438,7 @@
 			isa = PBXGroup;
 			children = (
 				423B0C742BD18DF80030AD65 /* AddEditListingView.swift */,
+				DC10BC42A37D4478A2185EC5 /* RecipientEmailsView.swift */,
 				42BBCE3E2CCC189400A74B9A /* AddEditListingViewModel.swift */,
 				4C461EB93C644C8D84B4634E /* ExpenseTypePickerView.swift */,
 			);
@@ -462,6 +480,17 @@
 			children = (
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		35BFEC9595B14BA0B57FFCE4 /* GoogleAuth */ = {
+			isa = PBXGroup;
+			children = (
+				4F776932CF3046458B4AB21A /* GoogleAuthManager.swift */,
+				0C50347EC0DB4BC3A19BF2F0 /* DriveService.swift */,
+				6031DADBED934FF28B999F5A /* DriveFolderPickerViewModel.swift */,
+				FFC96EE82E264F81B3E03171 /* DriveFolderPickerView.swift */
+			);
+			path = GoogleAuth;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -667,6 +696,13 @@
 				8AED5963B8794AA1BC820EC0 /* StatisticsPieChartView.swift in Sources */,
 				E1F1022ECD00436EA18D2E34 /* StatisticsPersonalUseView.swift in Sources */,
 				274F8F0878784B1385D6A3E8 /* CompactCurrencyFormatter.swift in Sources */,
+				FD6BD60DDBBA406CA2814795 /* GoogleAuthManager.swift in Sources */,
+				2626C607279D41D4ABD9157F /* DriveService.swift in Sources */,
+				E8ACB696F656409B971AFF01 /* DriveFolderPickerViewModel.swift in Sources */,
+				8FE977E4EA0B497F8160109A /* DriveFolderPickerView.swift in Sources */,
+				C8ADB1D7D7754122B6C64337 /* MailComposeView.swift in Sources */,
+				DADC13E381B64BD28DEF8F1A /* RecipientEmailsView.swift in Sources */,
+				C2C5AEAF6DC94B0AB3C949D5 /* ReceiptSectionView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

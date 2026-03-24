@@ -9,6 +9,7 @@ import SwiftUI
 
 struct ProfileView: View {
     @EnvironmentObject var session: SessionManager
+    private var googleAuth = GoogleAuthManager.shared
 
     var body: some View {
         List {
@@ -32,6 +33,25 @@ struct ProfileView: View {
                                 Image(systemName: "checkmark.circle.fill")
                                     .foregroundColor(.accentColor)
                             }
+                        }
+                    }
+                }
+            }
+
+            Section("Google Drive") {
+                if googleAuth.isSignedIn {
+                    if let email = googleAuth.userEmail {
+                        LabeledContent("Conectado como", value: email)
+                    }
+                    Button("Desconectar Google Drive", role: .destructive) {
+                        googleAuth.signOut()
+                    }
+                } else {
+                    Button("Conectar Google Drive") {
+                        Task { @MainActor in
+                            guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+                                  let rootVC = windowScene.windows.first?.rootViewController else { return }
+                            try? await googleAuth.signIn(presenting: rootVC)
                         }
                     }
                 }

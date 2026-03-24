@@ -29,6 +29,9 @@ struct CondoRented_OwnerApp: App {
                 .onOpenURL { url in
                     GIDSignIn.sharedInstance.handle(url)
                 }
+                .task {
+                    await GoogleAuthManager.shared.restorePreviousSignIn()
+                }
         }
     }
 }

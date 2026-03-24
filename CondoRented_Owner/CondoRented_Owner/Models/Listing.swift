@@ -16,6 +16,9 @@ class Listing: CodableAndIdentifiable, Equatable, Hashable {
         && lhs.propertyValue == rhs.propertyValue
         && lhs.expectedMonthlyExpenseTypes == rhs.expectedMonthlyExpenseTypes
         && lhs.adminFeeIds == rhs.adminFeeIds
+        && lhs.driveFolderId == rhs.driveFolderId
+        && lhs.driveFolderName == rhs.driveFolderName
+        && lhs.recipientEmails == rhs.recipientEmails
     }
 
     func hash(into hasher: inout Hasher) {
@@ -30,6 +33,16 @@ class Listing: CodableAndIdentifiable, Equatable, Hashable {
 
     var adminFeeIds: [String] = []
     var expectedMonthlyExpenseTypes: [String] = []
+    var driveFolderId: String?
+    var driveFolderName: String?
+    var recipientEmails: [String] = []
+
+    var shortCode: String {
+        title.split(separator: " ")
+            .compactMap { $0.first }
+            .map { String($0).uppercased() }
+            .joined()
+    }
 
     init(id: String = UUID().uuidString,
          title: String,
@@ -37,7 +50,10 @@ class Listing: CodableAndIdentifiable, Equatable, Hashable {
          adminFeeIds: [String] = [],
          airbnbId: String? = nil,
          propertyValue: Double? = nil,
-         expectedMonthlyExpenseTypes: [String] = []) {
+         expectedMonthlyExpenseTypes: [String] = [],
+         driveFolderId: String? = nil,
+         driveFolderName: String? = nil,
+         recipientEmails: [String] = []) {
 
         self.id = id
         self.title = title
@@ -46,6 +62,9 @@ class Listing: CodableAndIdentifiable, Equatable, Hashable {
         self.airbnbId = airbnbId
         self.propertyValue = propertyValue
         self.expectedMonthlyExpenseTypes = expectedMonthlyExpenseTypes
+        self.driveFolderId = driveFolderId
+        self.driveFolderName = driveFolderName
+        self.recipientEmails = recipientEmails
     }
 
     enum CodingKeys: String, CodingKey {
@@ -56,6 +75,9 @@ class Listing: CodableAndIdentifiable, Equatable, Hashable {
         case airbnbId
         case propertyValue
         case expectedMonthlyExpenseTypes
+        case driveFolderId
+        case driveFolderName
+        case recipientEmails
     }
 
     required init(from decoder: Decoder) throws {
@@ -66,6 +88,9 @@ class Listing: CodableAndIdentifiable, Equatable, Hashable {
         adminFeeIds = try container.decodeIfPresent([String].self, forKey: .adminFeeIds) ?? []
         propertyValue = try container.decodeIfPresent(Double.self, forKey: .propertyValue)
         expectedMonthlyExpenseTypes = try container.decodeIfPresent([String].self, forKey: .expectedMonthlyExpenseTypes) ?? []
+        driveFolderId = try container.decodeIfPresent(String.self, forKey: .driveFolderId)
+        driveFolderName = try container.decodeIfPresent(String.self, forKey: .driveFolderName)
+        recipientEmails = try container.decodeIfPresent([String].self, forKey: .recipientEmails) ?? []
     }
 
     func copy() -> Listing {
@@ -76,7 +101,10 @@ class Listing: CodableAndIdentifiable, Equatable, Hashable {
             adminFeeIds: adminFeeIds,
             airbnbId: airbnbId,
             propertyValue: propertyValue,
-            expectedMonthlyExpenseTypes: expectedMonthlyExpenseTypes
+            expectedMonthlyExpenseTypes: expectedMonthlyExpenseTypes,
+            driveFolderId: driveFolderId,
+            driveFolderName: driveFolderName,
+            recipientEmails: recipientEmails
         )
     }
 
@@ -88,5 +116,8 @@ class Listing: CodableAndIdentifiable, Equatable, Hashable {
         try container.encode(adminFeeIds, forKey: .adminFeeIds)
         try container.encodeIfPresent(propertyValue, forKey: .propertyValue)
         try container.encode(expectedMonthlyExpenseTypes, forKey: .expectedMonthlyExpenseTypes)
+        try container.encodeIfPresent(driveFolderId, forKey: .driveFolderId)
+        try container.encodeIfPresent(driveFolderName, forKey: .driveFolderName)
+        try container.encode(recipientEmails, forKey: .recipientEmails)
     }
 }
