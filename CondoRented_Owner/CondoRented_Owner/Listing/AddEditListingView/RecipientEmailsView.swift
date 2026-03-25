@@ -23,11 +23,11 @@ struct RecipientEmailsView: View {
 
             if showAddField {
                 HStack {
-                    TextField("email@ejemplo.com", text: $newEmail)
+                    TextField("email@example.com", text: $newEmail)
                         .keyboardType(.emailAddress)
                         .textInputAutocapitalization(.never)
                         .autocorrectionDisabled()
-                    Button("Agregar") {
+                    Button("Add") {
                         let trimmed = newEmail.trimmingCharacters(in: .whitespaces)
                         guard !trimmed.isEmpty, trimmed.contains("@"), trimmed.contains(".") else { return }
                         emails.append(trimmed)
@@ -40,7 +40,7 @@ struct RecipientEmailsView: View {
             }
         } header: {
             HStack {
-                Text("Emails destinatarios comprobante")
+                Text("Receipt Recipient Emails")
                 Spacer()
                 Button {
                     showAddField = true

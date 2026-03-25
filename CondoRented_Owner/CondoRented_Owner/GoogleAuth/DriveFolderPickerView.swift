@@ -39,13 +39,13 @@ struct DriveFolderPickerView: View {
                     Text(error)
                         .foregroundStyle(.red)
                         .padding()
-                    Button("Reintentar") {
+                    Button("Retry") {
                         Task { await viewModel.loadRoot() }
                     }
                     Spacer()
                 } else if viewModel.folders.isEmpty {
                     Spacer()
-                    Text("No hay subcarpetas")
+                    Text("No subfolders")
                         .foregroundStyle(.secondary)
                     Spacer()
                 } else {
@@ -62,7 +62,7 @@ struct DriveFolderPickerView: View {
                     onSelect(viewModel.currentFolderId, viewModel.currentFolderName)
                     dismiss()
                 } label: {
-                    Text("Seleccionar esta carpeta")
+                    Text("Select this folder")
                         .font(.headline)
                         .frame(maxWidth: .infinity)
                         .padding()
@@ -85,7 +85,7 @@ struct DriveFolderPickerView: View {
                     }
                 }
                 ToolbarItem(placement: .confirmationAction) {
-                    Button("Cancelar") { dismiss() }
+                    Button("Cancel") { dismiss() }
                 }
             }
             .task {

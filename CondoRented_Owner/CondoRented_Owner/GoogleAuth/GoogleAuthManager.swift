@@ -16,7 +16,7 @@ final class GoogleAuthManager {
 
     var userEmail: String? { currentUser?.profile?.email }
 
-    private static let driveScope = "https://www.googleapis.com/auth/drive"
+    private static let driveScope = "https://www.googleapis.com/auth/drive.file"
 
     private init() {}
 
@@ -24,7 +24,14 @@ final class GoogleAuthManager {
     func restorePreviousSignIn() async {
         do {
             let user = try await GIDSignIn.sharedInstance.restorePreviousSignIn()
-            await MainActor.run { self.currentUser = user }
+            let grantedScopes = user.grantedScopes ?? []
+            print("[GoogleAuth] Restored session. Granted scopes: \(grantedScopes)")
+            if !grantedScopes.contains(Self.driveScope) {
+                print("[GoogleAuth] Drive scope missing, will require re-sign-in")
+                await MainActor.run { self.currentUser = nil }
+            } else {
+                await MainActor.run { self.currentUser = user }
+            }
         } catch {
             await MainActor.run { self.currentUser = nil }
         }
@@ -56,6 +63,8 @@ final class GoogleAuthManager {
         let refreshedUser = try await user.refreshTokensIfNeeded()
         await MainActor.run { self.currentUser = refreshedUser }
         let token = refreshedUser.accessToken.tokenString
+        let grantedScopes = refreshedUser.grantedScopes ?? []
+        print("[GoogleAuth] Token refreshed. Granted scopes: \(grantedScopes)")
         return token
     }
 }
@@ -66,8 +75,8 @@ enum GoogleAuthError: LocalizedError {
 
     var errorDescription: String? {
         switch self {
-        case .notSignedIn: return "No hay sesion de Google activa"
-        case .noAccessToken: return "No se pudo obtener el token de acceso"
+        case .notSignedIn: return "No active Google session"
+        case .noAccessToken: return "Could not obtain access token"
         }
     }
 }

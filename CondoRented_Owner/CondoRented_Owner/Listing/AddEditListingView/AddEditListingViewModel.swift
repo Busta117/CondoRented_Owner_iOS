@@ -6,7 +6,6 @@
 //
 
 import Foundation
-import UIKit
 import Combine
 
 @Observable
@@ -36,7 +35,7 @@ final class AddEditListingViewModel {
     var allListings: [Listing] = []
     var allTransactions: [Transaction] = []
     var showExpensePicker = false
-    var showDriveFolderPicker = false
+    var driveFolderInput = ""
 
     init(dataSource: AppDataSourceProtocol, listing: Listing, output: @escaping (Output) -> Void) {
         self.listing = listing.copy()
@@ -48,6 +47,8 @@ final class AddEditListingViewModel {
             .sink { [weak self] in
                 self?.performSave()
             }
+
+        self.driveFolderInput = listing.driveFolderId ?? ""
 
         registerListeners()
         fetchInitialData()
@@ -96,21 +97,22 @@ final class AddEditListingViewModel {
             .map { (type: $0.key, count: $0.value) }
     }
 
-    func selectDriveFolder() {
-        if GoogleAuthManager.shared.isSignedIn {
-            showDriveFolderPicker = true
-        } else {
-            Task { @MainActor in
-                guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-                      let rootVC = windowScene.windows.first?.rootViewController else { return }
-                do {
-                    try await GoogleAuthManager.shared.signIn(presenting: rootVC)
-                    showDriveFolderPicker = true
-                } catch {
-                    // Sign-in cancelled or failed
-                }
-            }
+    func parseDriveFolderInput(_ input: String) {
+        let folderId = extractFolderId(from: input)
+        listing.driveFolderId = folderId
+        listing.driveFolderName = folderId.isEmpty ? nil : folderId
+        triggerSave()
+    }
+
+    private func extractFolderId(from input: String) -> String {
+        let trimmed = input.trimmingCharacters(in: .whitespacesAndNewlines)
+        if let url = URL(string: trimmed),
+           url.host?.contains("drive.google.com") == true,
+           let foldersRange = url.pathComponents.firstIndex(of: "folders"),
+           foldersRange + 1 < url.pathComponents.count {
+            return url.pathComponents[foldersRange + 1]
         }
+        return trimmed
     }
 
     func admin(forId id: String) -> Admin? {

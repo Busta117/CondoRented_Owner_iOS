@@ -41,13 +41,13 @@ struct ProfileView: View {
             Section("Google Drive") {
                 if googleAuth.isSignedIn {
                     if let email = googleAuth.userEmail {
-                        LabeledContent("Conectado como", value: email)
+                        LabeledContent("Connected as", value: email)
                     }
-                    Button("Desconectar Google Drive", role: .destructive) {
+                    Button("Disconnect Google Drive", role: .destructive) {
                         googleAuth.signOut()
                     }
                 } else {
-                    Button("Conectar Google Drive") {
+                    Button("Connect Google Drive") {
                         Task { @MainActor in
                             guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
                                   let rootVC = windowScene.windows.first?.rootViewController else { return }

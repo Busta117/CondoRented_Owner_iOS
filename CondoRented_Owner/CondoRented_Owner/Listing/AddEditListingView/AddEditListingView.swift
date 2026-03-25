@@ -149,22 +149,19 @@ struct AddEditListingView: View {
                 }
 
                 Section {
-                    if let folderName = viewModel.listing.driveFolderName {
-                        HStack {
-                            Label(folderName, systemImage: "folder")
-                            Spacer()
-                            Button("Cambiar") {
-                                viewModel.selectDriveFolder()
-                            }
+                    TextField("Paste Google Drive folder link or ID", text: $viewModel.driveFolderInput)
+                        .textInputAutocapitalization(.never)
+                        .autocorrectionDisabled()
+                        .onChange(of: viewModel.driveFolderInput) { _, newValue in
+                            viewModel.parseDriveFolderInput(newValue)
+                        }
+                    if let folderId = viewModel.listing.driveFolderId, !folderId.isEmpty {
+                        Label(folderId, systemImage: "checkmark.circle")
                             .font(.caption)
-                        }
-                    } else {
-                        Button("Seleccionar carpeta") {
-                            viewModel.selectDriveFolder()
-                        }
+                            .foregroundStyle(.green)
                     }
                 } header: {
-                    Text("Carpeta de Drive")
+                    Text("Drive Folder")
                 }
 
                 RecipientEmailsView(
@@ -195,13 +192,6 @@ struct AddEditListingView: View {
                     viewModel.addExpenseType(type)
                 }
             )
-        }
-        .sheet(isPresented: $viewModel.showDriveFolderPicker) {
-            DriveFolderPickerView { folderId, folderName in
-                viewModel.listing.driveFolderId = folderId
-                viewModel.listing.driveFolderName = folderName
-                viewModel.triggerSave()
-            }
         }
     }
 }

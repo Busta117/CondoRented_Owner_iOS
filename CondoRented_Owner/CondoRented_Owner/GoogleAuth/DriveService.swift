@@ -12,6 +12,11 @@ final class DriveService {
     private let uploadURL = "https://www.googleapis.com/upload/drive/v3"
     private let authManager = GoogleAuthManager.shared
 
+    /// Cache of year folder IDs keyed by "parentId/year" to prevent duplicate creation
+    private var yearFolderCache: [String: String] = [:]
+    /// In-flight folder creation tasks to serialize concurrent requests
+    private var yearFolderTasks: [String: Task<String, Error>] = [:]
+
     private init() {}
 
     // MARK: - Folder Operations
@@ -28,10 +33,75 @@ final class DriveService {
         request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
 
         let (data, response) = try await URLSession.shared.data(for: request)
-        try validateResponse(response)
+        try validateResponse(response, data: data)
 
         let result = try JSONDecoder().decode(DriveFileList.self, from: data)
         return result.files
+    }
+
+    func findOrCreateYearFolder(year: String, parentId: String) async throws -> String {
+        let cacheKey = "\(parentId)/\(year)"
+
+        // Return cached result if available
+        if let cached = yearFolderCache[cacheKey] {
+            return cached
+        }
+
+        // If there's already an in-flight task for this key, await it instead of duplicating
+        if let existingTask = yearFolderTasks[cacheKey] {
+            return try await existingTask.value
+        }
+
+        let task = Task<String, Error> {
+            let folderId = try await _findOrCreateYearFolder(year: year, parentId: parentId)
+            yearFolderCache[cacheKey] = folderId
+            yearFolderTasks[cacheKey] = nil
+            return folderId
+        }
+        yearFolderTasks[cacheKey] = task
+        return try await task.value
+    }
+
+    private func _findOrCreateYearFolder(year: String, parentId: String) async throws -> String {
+        let token = try await authManager.validAccessToken()
+        let query = "'\(parentId)' in parents and name='\(year)' and mimeType='application/vnd.google-apps.folder' and trashed=false"
+        let encodedQuery = query.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
+        let urlString = "\(baseURL)/files?q=\(encodedQuery)&fields=files(id,name)&pageSize=1"
+
+        guard let url = URL(string: urlString) else { throw DriveError.invalidURL }
+
+        var request = URLRequest(url: url)
+        request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+
+        let (data, response) = try await URLSession.shared.data(for: request)
+        try validateResponse(response, data: data)
+
+        let result = try JSONDecoder().decode(DriveFileList.self, from: data)
+        if let existing = result.files.first {
+            print("[DriveService] Found year folder '\(year)' -> \(existing.id)")
+            return existing.id
+        }
+
+        // Create the year folder
+        let createURL = URL(string: "\(baseURL)/files")!
+        var createRequest = URLRequest(url: createURL)
+        createRequest.httpMethod = "POST"
+        createRequest.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        createRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
+
+        let metadata: [String: Any] = [
+            "name": year,
+            "mimeType": "application/vnd.google-apps.folder",
+            "parents": [parentId]
+        ]
+        createRequest.httpBody = try JSONSerialization.data(withJSONObject: metadata)
+
+        let (createData, createResponse) = try await URLSession.shared.data(for: createRequest)
+        try validateResponse(createResponse, data: createData)
+
+        let folder = try JSONDecoder().decode(DriveFile.self, from: createData)
+        print("[DriveService] Created year folder '\(year)' -> \(folder.id)")
+        return folder.id
     }
 
     // MARK: - File Operations
@@ -49,7 +119,7 @@ final class DriveService {
         request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
 
         let (data, response) = try await URLSession.shared.data(for: request)
-        try validateResponse(response)
+        try validateResponse(response, data: data)
 
         let result = try JSONDecoder().decode(DriveFileList.self, from: data)
         return result.files.first
@@ -82,7 +152,7 @@ final class DriveService {
         request.httpBody = body
 
         let (data, response) = try await URLSession.shared.data(for: request)
-        try validateResponse(response)
+        try validateResponse(response, data: data)
 
         return try JSONDecoder().decode(DriveFile.self, from: data)
     }
@@ -97,7 +167,7 @@ final class DriveService {
         request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
 
         let (data, response) = try await URLSession.shared.data(for: request)
-        try validateResponse(response)
+        try validateResponse(response, data: data)
 
         return data
     }
@@ -120,11 +190,14 @@ final class DriveService {
 
     // MARK: - Helpers
 
-    private func validateResponse(_ response: URLResponse) throws {
+    private func validateResponse(_ response: URLResponse, data: Data) throws {
         guard let httpResponse = response as? HTTPURLResponse else {
             throw DriveError.invalidResponse
         }
         guard (200...299).contains(httpResponse.statusCode) else {
+            let bodyString = String(data: data, encoding: .utf8) ?? "(no body)"
+            print("[DriveService] ❌ HTTP \(httpResponse.statusCode) - URL: \(httpResponse.url?.absoluteString ?? "?")")
+            print("[DriveService] ❌ Response body: \(bodyString)")
             throw DriveError.requestFailed(statusCode: httpResponse.statusCode)
         }
     }
@@ -150,9 +223,9 @@ enum DriveError: LocalizedError {
 
     var errorDescription: String? {
         switch self {
-        case .invalidURL: return "URL invalida"
-        case .invalidResponse: return "Respuesta invalida del servidor"
-        case .requestFailed(let code): return "Error del servidor (codigo \(code))"
+        case .invalidURL: return "Invalid URL"
+        case .invalidResponse: return "Invalid server response"
+        case .requestFailed(let code): return "Server error (code \(code))"
         }
     }
 }
