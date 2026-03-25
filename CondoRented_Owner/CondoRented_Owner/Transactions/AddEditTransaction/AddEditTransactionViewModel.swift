@@ -56,11 +56,6 @@ final class AddEditTransactionViewModel {
     var existingDriveFileId: String?
     var receiptLoading = false
     var receiptError: String?
-    var showPhotosPicker = false
-    var showDocumentPicker = false
-    var showReceiptActionSheet = false
-    var showMailComposer = false
-    var showFullScreenReceipt = false
 
     var isCoOwnershipFee: Bool {
         type?.title == "Co-Ownership Fees"
@@ -74,6 +69,11 @@ final class AddEditTransactionViewModel {
         hasReceipt && existingDriveFileId != nil
         && MFMailComposeViewController.canSendMail()
         && !(listing?.recipientEmails.isEmpty ?? true)
+    }
+
+    var driveFileName: String? {
+        guard let listing = listing, let ext = receiptFileName?.components(separatedBy: ".").last else { return nil }
+        return receiptFileNameForDrive(for: listing, date: date, ext: ext)
     }
 
     init(transaction: Transaction? = nil,
@@ -195,23 +195,25 @@ final class AddEditTransactionViewModel {
             // Upload receipt to Drive if present
             if let receiptData = self.receiptData,
                let listing = self.listing,
-               let folderId = listing.driveFolderId,
+               let rootFolderId = listing.driveFolderId,
                self.isCoOwnershipFee {
 
                 let ext = self.receiptFileName?.components(separatedBy: ".").last ?? "png"
                 let name = self.receiptFileNameForDrive(for: listing, date: self.date, ext: ext)
                 let mime = self.receiptMimeType ?? "image/png"
+                let year = self.yearString(from: self.date)
 
                 do {
+                    let yearFolderId = try await DriveService.shared.findOrCreateYearFolder(year: year, parentId: rootFolderId)
                     let uploaded = try await DriveService.shared.uploadFile(
-                        data: receiptData, name: name, mimeType: mime, folderId: folderId
+                        data: receiptData, name: name, mimeType: mime, folderId: yearFolderId
                     )
                     if let oldId = self.existingDriveFileId, oldId != uploaded.id {
                         try? await DriveService.shared.deleteFile(fileId: oldId)
                     }
                 } catch {
                     await MainActor.run {
-                        self.receiptError = "Transaccion guardada pero fallo la subida del comprobante a Drive"
+                        self.receiptError = "Transaction saved but receipt upload to Drive failed"
                         self.loading = false
                     }
                     return
@@ -256,7 +258,7 @@ final class AddEditTransactionViewModel {
     }
 
     func loadExistingReceipt() {
-        guard let listing = listing, let folderId = listing.driveFolderId else { return }
+        guard let listing = listing, let rootFolderId = listing.driveFolderId else { return }
         guard isCoOwnershipFee else { return }
 
         receiptLoading = true
@@ -264,8 +266,10 @@ final class AddEditTransactionViewModel {
 
         Task {
             do {
+                let year = yearString(from: date)
+                let yearFolderId = try await DriveService.shared.findOrCreateYearFolder(year: year, parentId: rootFolderId)
                 let prefix = receiptNamePrefix(for: listing, date: date)
-                guard let file = try await DriveService.shared.findFile(namePrefix: prefix, folderId: folderId) else {
+                guard let file = try await DriveService.shared.findFile(namePrefix: prefix, folderId: yearFolderId) else {
                     await MainActor.run {
                         receiptLoading = false
                     }
@@ -285,7 +289,7 @@ final class AddEditTransactionViewModel {
                 }
             } catch {
                 await MainActor.run {
-                    self.receiptError = "No se pudo cargar el comprobante"
+                    self.receiptError = "Could not load receipt"
                     self.receiptLoading = false
                 }
             }
@@ -293,22 +297,40 @@ final class AddEditTransactionViewModel {
     }
 
     func setReceiptFile(data: Data, fileName: String, mimeType: String) {
-        self.receiptData = data
-        self.receiptFileName = fileName
-        self.receiptMimeType = mimeType
-        if mimeType.hasPrefix("image") {
-            self.receiptImage = UIImage(data: data)
+        if mimeType.hasPrefix("image"), let image = UIImage(data: data) {
+            let pdfData = convertImageToPDF(image)
+            let pdfFileName = fileName.replacingOccurrences(
+                of: "\\.[^.]+$",
+                with: ".pdf",
+                options: .regularExpression
+            )
+            self.receiptData = pdfData
+            self.receiptFileName = pdfFileName
+            self.receiptMimeType = "application/pdf"
+            self.receiptImage = image
         } else {
+            self.receiptData = data
+            self.receiptFileName = fileName
+            self.receiptMimeType = mimeType
             self.receiptImage = nil
         }
     }
 
+    private func convertImageToPDF(_ image: UIImage) -> Data {
+        let pageRect = CGRect(origin: .zero, size: image.size)
+        let renderer = UIGraphicsPDFRenderer(bounds: pageRect)
+        return renderer.pdfData { context in
+            context.beginPage()
+            image.draw(in: pageRect)
+        }
+    }
+
     var emailSubject: String {
-        "Pago Administracion \(spanishMonth(from: date)) \(yearString(from: date))"
+        "Pago Administración \(spanishMonth(from: date)) \(yearString(from: date))"
     }
 
     var emailBody: String {
-        "Hola,\n\nAdjunto comprobante de pago de la administracion correspondiente al mes \(spanishMonth(from: date)), \(listing?.title ?? "")"
+        "Hola,<br><br>Adjunto comprobante de pago de la administración correspondiente al mes <b>\(spanishMonth(from: date)) \(yearString(from: date))</b>.<br><b>\(listing?.title ?? "")</b>"
     }
 
     var emailRecipients: [String] {

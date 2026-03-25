@@ -4,151 +4,209 @@
 //
 
 import SwiftUI
-import PhotosUI
+import PDFKit
 import UniformTypeIdentifiers
+
+enum ReceiptSheet: String, Identifiable {
+    case documentPicker
+    case mailComposer
+    case fullScreenReceipt
+
+    var id: String { rawValue }
+}
 
 struct ReceiptSectionView: View {
     @Bindable var viewModel: AddEditTransactionViewModel
 
-    @State private var selectedPhoto: PhotosPickerItem?
+    // Presentation state lives in the PARENT view (AddEditTransactionView)
+    // so it survives re-draws of this conditional subview.
+    @Binding var showPhotosPicker: Bool
+    @Binding var activeSheet: ReceiptSheet?
 
     var body: some View {
         Section {
             if viewModel.receiptLoading {
                 HStack {
                     Spacer()
-                    ProgressView("Cargando comprobante...")
+                    ProgressView("Loading receipt...")
                     Spacer()
                 }
             } else if let error = viewModel.receiptError, viewModel.receiptData == nil {
-                VStack {
+                VStack(spacing: 8) {
                     Text(error)
                         .foregroundStyle(.red)
                         .font(.caption)
-                    Button("Reintentar") {
+                    Button("Retry") {
                         viewModel.loadExistingReceipt()
                     }
                     .font(.caption)
                 }
             } else if viewModel.hasReceipt {
-                VStack(alignment: .leading, spacing: 8) {
-                    if let image = viewModel.receiptImage {
-                        Image(uiImage: image)
-                            .resizable()
-                            .scaledToFit()
-                            .frame(maxHeight: 200)
-                            .clipShape(RoundedRectangle(cornerRadius: 8))
-                            .onTapGesture {
-                                viewModel.showFullScreenReceipt = true
-                            }
-                    } else {
-                        HStack {
-                            Image(systemName: "doc.fill")
-                                .font(.title)
-                                .foregroundStyle(.red)
-                            Text(viewModel.receiptFileName ?? "Documento")
-                                .font(.caption)
-                        }
-                        .onTapGesture {
-                            viewModel.showFullScreenReceipt = true
-                        }
-                    }
-
-                    HStack {
-                        Button("Reemplazar") {
-                            attachReceipt()
-                        }
-                        .font(.caption)
-
-                        if viewModel.canSendEmail {
-                            Spacer()
-                            Button("Enviar por correo") {
-                                viewModel.showMailComposer = true
-                            }
-                            .font(.caption)
-                        }
-                    }
-                }
+                receiptPreview
+                receiptActions
             } else {
-                Button("Adjuntar comprobante") {
-                    attachReceipt()
-                }
+                sourceButtons
             }
         } header: {
-            Text("Comprobante")
-        }
-        .confirmationDialog("Adjuntar comprobante", isPresented: $viewModel.showReceiptActionSheet) {
-            Button("Elegir foto") {
-                viewModel.showPhotosPicker = true
-            }
-            Button("Elegir archivo") {
-                viewModel.showDocumentPicker = true
-            }
-            Button("Cancelar", role: .cancel) {}
-        }
-        .photosPicker(isPresented: $viewModel.showPhotosPicker, selection: $selectedPhoto, matching: .images)
-        .onChange(of: selectedPhoto) { _, newItem in
-            guard let item = newItem else { return }
-            Task {
-                if let data = try? await item.loadTransferable(type: Data.self) {
-                    let (mimeType, ext): (String, String) = {
-                        if data.count >= 4 {
-                            let header = [UInt8](data.prefix(4))
-                            if header[0] == 0x89, header[1] == 0x50 { return ("image/png", "png") }
-                            if header[0] == 0x25, header[1] == 0x50 { return ("application/pdf", "pdf") }
-                        }
-                        return ("image/jpeg", "jpg")
-                    }()
-                    let fileName = "receipt.\(ext)"
-                    await MainActor.run {
-                        viewModel.setReceiptFile(data: data, fileName: fileName, mimeType: mimeType)
-                    }
-                }
-                selectedPhoto = nil
-            }
-        }
-        .sheet(isPresented: $viewModel.showDocumentPicker) {
-            DocumentPickerView(
-                contentTypes: [.image, .pdf],
-                onPick: { url in
-                    guard let data = try? Data(contentsOf: url) else { return }
-                    let ext = url.pathExtension.lowercased()
-                    let mimeType = ext == "pdf" ? "application/pdf" : "image/\(ext)"
-                    let fileName = url.lastPathComponent
-                    viewModel.setReceiptFile(data: data, fileName: fileName, mimeType: mimeType)
-                }
-            )
-        }
-        .sheet(isPresented: $viewModel.showMailComposer) {
-            MailComposeView(
-                recipients: viewModel.emailRecipients,
-                subject: viewModel.emailSubject,
-                body: viewModel.emailBody,
-                attachmentData: viewModel.receiptData,
-                attachmentMimeType: viewModel.receiptMimeType,
-                attachmentFileName: viewModel.receiptFileName,
-                onDismiss: { viewModel.showMailComposer = false }
-            )
-        }
-        .fullScreenCover(isPresented: $viewModel.showFullScreenReceipt) {
-            ReceiptFullScreenView(
-                imageData: viewModel.receiptData,
-                isImage: viewModel.receiptImage != nil,
-                fileName: viewModel.receiptFileName
-            )
+            Text("Receipt")
         }
     }
 
-    private func attachReceipt() {
+    // MARK: - Source Buttons (no receipt yet)
+
+    private var sourceButtons: some View {
+        VStack(spacing: 12) {
+            RoundedRectangle(cornerRadius: 8)
+                .strokeBorder(style: StrokeStyle(lineWidth: 1, dash: [6]))
+                .foregroundStyle(.tertiary)
+                .frame(height: 100)
+                .overlay {
+                    VStack(spacing: 6) {
+                        Image(systemName: "paperclip")
+                            .font(.title2)
+                            .foregroundStyle(.secondary)
+                        Text("No receipt attached")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+                }
+
+            HStack(spacing: 16) {
+                Button {
+                    ensureSignedIn { showPhotosPicker = true }
+                } label: {
+                    Label("Photo", systemImage: "photo")
+                        .font(.caption)
+                        .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.bordered)
+                .controlSize(.small)
+
+                Button {
+                    ensureSignedIn { activeSheet = .documentPicker }
+                } label: {
+                    Label("File", systemImage: "doc")
+                        .font(.caption)
+                        .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.bordered)
+                .controlSize(.small)
+            }
+        }
+    }
+
+    // MARK: - Receipt Preview
+
+    @ViewBuilder
+    private var receiptPreview: some View {
+        if let image = viewModel.receiptImage {
+            Image(uiImage: image)
+                .resizable()
+                .scaledToFit()
+                .frame(maxHeight: 180)
+                .frame(maxWidth: .infinity)
+                .clipShape(RoundedRectangle(cornerRadius: 8))
+                .contentShape(Rectangle())
+                .onTapGesture {
+                    activeSheet = .fullScreenReceipt
+                }
+        } else if let data = viewModel.receiptData, let pdfThumbnail = pdfThumbnail(from: data) {
+            Image(uiImage: pdfThumbnail)
+                .resizable()
+                .scaledToFit()
+                .frame(maxHeight: 180)
+                .frame(maxWidth: .infinity)
+                .clipShape(RoundedRectangle(cornerRadius: 8))
+                .contentShape(Rectangle())
+                .onTapGesture {
+                    activeSheet = .fullScreenReceipt
+                }
+        } else {
+            HStack {
+                Image(systemName: "doc.fill")
+                    .font(.title2)
+                    .foregroundStyle(.red)
+                Text(viewModel.receiptFileName ?? "Document")
+                    .font(.subheadline)
+                Spacer()
+            }
+            .contentShape(Rectangle())
+            .onTapGesture {
+                activeSheet = .fullScreenReceipt
+            }
+        }
+    }
+
+    private func pdfThumbnail(from data: Data) -> UIImage? {
+        guard let document = PDFDocument(data: data),
+              let page = document.page(at: 0) else { return nil }
+        let bounds = page.bounds(for: .mediaBox)
+        let scale: CGFloat = 300 / bounds.width
+        let size = CGSize(width: bounds.width * scale, height: bounds.height * scale)
+        return page.thumbnail(of: size, for: .mediaBox)
+    }
+
+    // MARK: - Receipt Actions Row
+
+    private var receiptActions: some View {
+        HStack {
+            Text(viewModel.driveFileName ?? viewModel.receiptFileName ?? "")
+                .font(.caption2)
+                .foregroundStyle(.secondary)
+                .lineLimit(1)
+
+            Spacer()
+
+            Menu {
+                Button {
+                    deferToNextRunLoop { ensureSignedIn { showPhotosPicker = true } }
+                } label: {
+                    Label("Replace from photos", systemImage: "photo")
+                }
+
+                Button {
+                    deferToNextRunLoop { ensureSignedIn { activeSheet = .documentPicker } }
+                } label: {
+                    Label("Replace from files", systemImage: "doc")
+                }
+
+                if viewModel.canSendEmail {
+                    Divider()
+                    Button {
+                        deferToNextRunLoop { activeSheet = .mailComposer }
+                    } label: {
+                        Label("Send by email", systemImage: "envelope")
+                    }
+                }
+            } label: {
+                Image(systemName: "ellipsis.circle")
+                    .font(.body)
+                    .foregroundStyle(.secondary)
+            }
+        }
+    }
+
+    /// Defers execution to the next run loop iteration.
+    /// Required when presenting from Menu items — Menu uses UIContextMenuInteraction
+    /// which is still dismissing its own presentation when the button action fires.
+    private func deferToNextRunLoop(_ action: @escaping () -> Void) {
+        DispatchQueue.main.async {
+            action()
+        }
+    }
+
+    // MARK: - Auth Helper
+
+    private func ensureSignedIn(then action: @escaping () -> Void) {
         if GoogleAuthManager.shared.isSignedIn {
-            viewModel.showReceiptActionSheet = true
+            action()
         } else {
             Task { @MainActor in
                 guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
                       let rootVC = windowScene.windows.first?.rootViewController else { return }
                 do {
                     try await GoogleAuthManager.shared.signIn(presenting: rootVC)
-                    viewModel.showReceiptActionSheet = true
+                    action()
                 } catch {}
             }
         }
@@ -185,6 +243,21 @@ struct DocumentPickerView: UIViewControllerRepresentable {
     }
 }
 
+// MARK: - PDFKitView
+
+struct PDFKitView: UIViewRepresentable {
+    let data: Data
+
+    func makeUIView(context: Context) -> PDFView {
+        let pdfView = PDFView()
+        pdfView.autoScales = true
+        pdfView.document = PDFDocument(data: data)
+        return pdfView
+    }
+
+    func updateUIView(_ uiView: PDFView, context: Context) {}
+}
+
 // MARK: - ReceiptFullScreenView
 
 struct ReceiptFullScreenView: View {
@@ -196,26 +269,25 @@ struct ReceiptFullScreenView: View {
     var body: some View {
         NavigationStack {
             Group {
-                if isImage, let data = imageData, let uiImage = UIImage(data: data) {
-                    ScrollView {
-                        Image(uiImage: uiImage)
-                            .resizable()
-                            .scaledToFit()
+                if let data = imageData {
+                    if isImage, let uiImage = UIImage(data: data) {
+                        ScrollView {
+                            Image(uiImage: uiImage)
+                                .resizable()
+                                .scaledToFit()
+                        }
+                    } else {
+                        PDFKitView(data: data)
                     }
                 } else {
-                    VStack {
-                        Image(systemName: "doc.fill")
-                            .font(.system(size: 80))
-                            .foregroundStyle(.red)
-                        Text(fileName ?? "Documento PDF")
-                    }
+                    ContentUnavailableView("No receipt data", systemImage: "doc.questionmark")
                 }
             }
-            .navigationTitle("Comprobante")
+            .navigationTitle("Receipt")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("Cerrar") { dismiss() }
+                    Button("Close") { dismiss() }
                 }
             }
         }

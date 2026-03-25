@@ -20,7 +20,7 @@ struct MailComposeView: UIViewControllerRepresentable {
         vc.mailComposeDelegate = context.coordinator
         vc.setToRecipients(recipients)
         vc.setSubject(subject)
-        vc.setMessageBody(body, isHTML: false)
+        vc.setMessageBody(body, isHTML: true)
         if let data = attachmentData, let mime = attachmentMimeType, let name = attachmentFileName {
             vc.addAttachmentData(data, mimeType: mime, fileName: name)
         }

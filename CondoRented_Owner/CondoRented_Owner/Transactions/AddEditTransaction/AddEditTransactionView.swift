@@ -6,13 +6,17 @@
 //
 
 import SwiftUI
+import PhotosUI
 
 
 struct AddEditTransactionView: View {
-    
+
     @Bindable var viewModel: AddEditTransactionViewModel
-    
+
     @FocusState private var textfieldIsFocused: Bool
+    @State private var selectedPhoto: PhotosPickerItem?
+    @State private var showPhotosPicker = false
+    @State private var activeSheet: ReceiptSheet?
     
     var body: some View {
         VStack {
@@ -37,7 +41,11 @@ struct AddEditTransactionView: View {
                     dateSection
                     typeSection
                     if viewModel.isCoOwnershipFee {
-                        ReceiptSectionView(viewModel: viewModel)
+                        ReceiptSectionView(
+                            viewModel: viewModel,
+                            showPhotosPicker: $showPhotosPicker,
+                            activeSheet: $activeSheet
+                        )
                     }
                     saveButtonSection
                 }
@@ -56,6 +64,58 @@ struct AddEditTransactionView: View {
         .scrollDismissesKeyboard(.immediately)
         .navigationTitle(viewModel.navigationTitle)
         .navigationBarTitleDisplayMode(.large)
+        .photosPicker(isPresented: $showPhotosPicker, selection: $selectedPhoto, matching: .images)
+        .onChange(of: selectedPhoto) { _, newItem in
+            guard let item = newItem else { return }
+            Task {
+                if let data = try? await item.loadTransferable(type: Data.self) {
+                    let (mimeType, ext): (String, String) = {
+                        if data.count >= 4 {
+                            let header = [UInt8](data.prefix(4))
+                            if header[0] == 0x89, header[1] == 0x50 { return ("image/png", "png") }
+                            if header[0] == 0x25, header[1] == 0x50 { return ("application/pdf", "pdf") }
+                        }
+                        return ("image/jpeg", "jpg")
+                    }()
+                    let fileName = "receipt.\(ext)"
+                    await MainActor.run {
+                        viewModel.setReceiptFile(data: data, fileName: fileName, mimeType: mimeType)
+                    }
+                }
+                selectedPhoto = nil
+            }
+        }
+        .sheet(item: $activeSheet) { sheet in
+            switch sheet {
+            case .documentPicker:
+                DocumentPickerView(
+                    contentTypes: [.image, .pdf],
+                    onPick: { url in
+                        guard let data = try? Data(contentsOf: url) else { return }
+                        let ext = url.pathExtension.lowercased()
+                        let mimeType = ext == "pdf" ? "application/pdf" : "image/\(ext)"
+                        let fileName = url.lastPathComponent
+                        viewModel.setReceiptFile(data: data, fileName: fileName, mimeType: mimeType)
+                    }
+                )
+            case .mailComposer:
+                MailComposeView(
+                    recipients: viewModel.emailRecipients,
+                    subject: viewModel.emailSubject,
+                    body: viewModel.emailBody,
+                    attachmentData: viewModel.receiptData,
+                    attachmentMimeType: viewModel.receiptMimeType,
+                    attachmentFileName: viewModel.receiptFileName,
+                    onDismiss: { activeSheet = nil }
+                )
+            case .fullScreenReceipt:
+                ReceiptFullScreenView(
+                    imageData: viewModel.receiptData,
+                    isImage: viewModel.receiptImage != nil,
+                    fileName: viewModel.receiptFileName
+                )
+            }
+        }
     }
     
     private var amountSection: some View {
