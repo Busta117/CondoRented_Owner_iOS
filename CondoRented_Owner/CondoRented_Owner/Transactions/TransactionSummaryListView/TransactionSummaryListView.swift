@@ -50,7 +50,7 @@ struct TransactionSummaryListView: View {
                             TransactionSummaryListMonth(
                                 transactions: transactions,
                                 adminFees: viewModel.allAdminFees,
-                                missingExpensesCount: TransactionHelper.missingExpensesCount(for: transactions, listings: viewModel.allListings)
+                                missingExpensesCount: viewModel.missingExpensesCount(for: transactions)
                             )
                             .contentShape(Rectangle())
                         })

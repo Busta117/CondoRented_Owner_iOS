@@ -142,7 +142,18 @@ final class AddEditTransactionViewModel {
     var canSave: Bool {
         isAmountCorrect && listing != nil && type != nil
     }
-    
+
+    var availableListings: [Listing] {
+        allListing.filter { !$0.isDisabled(on: date) }
+    }
+
+    func dateChanged(_ newDate: Date) {
+        self.date = newDate
+        if let current = listing, current.isDisabled(on: newDate) {
+            listing = nil
+        }
+    }
+
     func input(_ input: Input) {
         switch input {
         case .saveTapped:

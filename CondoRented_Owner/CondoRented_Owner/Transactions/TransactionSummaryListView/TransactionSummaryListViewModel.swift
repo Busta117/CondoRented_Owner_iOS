@@ -87,23 +87,15 @@ class TransactionSummaryListViewModel {
     }
     
     private func registerListeners() {
-        // Observa transacciones
         dataSource.transactionDataSource.transactionsPublisher
             .receive(on: DispatchQueue.main)
             .sink { [weak self] transactions in
-                guard let self = self else { return }
-                
-                if let selectedListingId = self.selectedListingId {
-                    self.allTransactions = transactions.filter { $0.listingId == selectedListingId }
-                } else {
-                    self.allTransactions = transactions
-                }
-                
-                self.transactionPerMonth = TransactionHelper().splitByMonths(transactions: self.allTransactions)
+                guard let self else { return }
+                self.allTransactions = transactions
+                self.recomputeTransactionsPerMonth()
             }
             .store(in: &cancellables)
-        
-        // Observa admin fees
+
         dataSource.adminFeeDataSource.adminFeesPublisher
             .receive(on: DispatchQueue.main)
             .sink { [weak self] fees in
@@ -111,15 +103,35 @@ class TransactionSummaryListViewModel {
             }
             .store(in: &cancellables)
 
-        // Observa listings
         dataSource.listingDataSource.listingsPublisher
             .receive(on: DispatchQueue.main)
             .sink { [weak self] listings in
                 guard let self else { return }
                 self.allListings = listings
                 self.listingsVersion = UUID()
+                self.recomputeTransactionsPerMonth()
             }
             .store(in: &cancellables)
+    }
+
+    private func recomputeTransactionsPerMonth() {
+        var transactions = allTransactions
+        if let selectedListingId = self.selectedListingId {
+            transactions = transactions.filter { $0.listingId == selectedListingId }
+        }
+        let active = TransactionHelper.filterActive(transactions: transactions, listings: allListings)
+        self.transactionPerMonth = TransactionHelper().splitByMonths(transactions: active)
+    }
+
+    func missingExpensesCount(for transactions: [Transaction]) -> Int {
+        let scopedListings: [Listing]
+        if let selectedListingId,
+           let listing = allListings.first(where: { $0.id == selectedListingId }) {
+            scopedListings = [listing]
+        } else {
+            scopedListings = allListings
+        }
+        return TransactionHelper.missingExpensesCount(for: transactions, listings: scopedListings)
     }
     
     // MARK: - global summary methods

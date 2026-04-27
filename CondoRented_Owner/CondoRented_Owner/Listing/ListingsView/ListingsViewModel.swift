@@ -24,7 +24,19 @@ final class ListingsViewModel {
     
     var listingList: [Listing] = []
     var listingsVersion = UUID()
-    
+
+    var activeListings: [Listing] {
+        listingList
+            .filter { !$0.isDisabled(on: .now) }
+            .sorted { $0.title < $1.title }
+    }
+
+    var disabledListings: [Listing] {
+        listingList
+            .filter { $0.isDisabled(on: .now) }
+            .sorted { ($0.disabledDate ?? .distantPast) > ($1.disabledDate ?? .distantPast) }
+    }
+
     init(dataSource: AppDataSourceProtocol, output: @escaping (Output) -> Void) {
         self.dataSource = dataSource
         self.output = output

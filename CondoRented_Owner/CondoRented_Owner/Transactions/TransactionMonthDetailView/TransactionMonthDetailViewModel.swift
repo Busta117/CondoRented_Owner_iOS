@@ -43,6 +43,20 @@ final class TransactionMonthDetailViewModel {
     var allListings: [Listing] = []
     var allAdminFees: [AdminFee] = []
 
+    private var activeTransactions: [Transaction] {
+        TransactionHelper.filterActive(transactions: transactions, listings: allListings)
+    }
+
+    private var activeTransactionsByListing: [Listing: [Transaction]] {
+        TransactionHelper.splitByListing(transactions: activeTransactions, listings: allListings)
+    }
+
+    private var startOfReferenceMonth: Date {
+        Calendar.current.date(
+            from: Calendar.current.dateComponents([.year, .month], from: transactionDateMonthReference)
+        ) ?? transactionDateMonthReference
+    }
+
     var listings: [Listing] {
         Array(transactionsByListing.keys).sorted { $0.title < $1.title }
     }
@@ -77,7 +91,10 @@ final class TransactionMonthDetailViewModel {
     }
 
     private func updateTransactionsByListing() {
-        transactionsByListing = TransactionHelper.splitByListing(transactions: transactions, listings: allListings)
+        transactionsByListing = TransactionHelper.splitByListing(
+            transactions: activeTransactions,
+            listings: allListings
+        )
     }
 
     private func registerListeners() {
@@ -144,12 +161,16 @@ final class TransactionMonthDetailViewModel {
         allListings.first { $0.id == id }
     }
 
+    func isActive(_ transaction: Transaction) -> Bool {
+        TransactionHelper.isActive(transaction: transaction, listings: allListings)
+    }
+
     func expectingValue(for listing: Listing) -> (Double, Currency) {
-        TransactionHelper.getExpectingValue(for: transactionsByListing[listing] ?? [])
+        TransactionHelper.getExpectingValue(for: activeTransactionsByListing[listing] ?? [])
     }
 
     func percentFee(for listing: Listing) -> Double {
-        let relevantFees = transactions.compactMap { transaction in
+        let relevantFees = activeTransactions.compactMap { transaction in
             allAdminFees.first {
                 $0.listingId == listing.id &&
                 $0.dateStart <= transaction.date &&
@@ -161,14 +182,14 @@ final class TransactionMonthDetailViewModel {
 
     func feesToPayValue(for listing: Listing) -> (Double, Currency) {
         TransactionHelper.getFeesToPayValue(
-            for: transactionsByListing[listing] ?? [],
+            for: activeTransactionsByListing[listing] ?? [],
             includesExpenses: false,
             adminFees: allAdminFees
         )
     }
 
     func expensesPayedByAdmin(for listing: Listing) -> [Transaction] {
-        guard let byListing = transactionsByListing[listing] else { return [] }
+        guard let byListing = activeTransactionsByListing[listing] else { return [] }
         return byListing.filter {
             if case .expense = $0.type,
                let paidByOwner = $0.expensePaidByOwner,
@@ -180,16 +201,20 @@ final class TransactionMonthDetailViewModel {
     }
 
     var missingExpensesByListing: [(listing: Listing, type: TransactionType)] {
+        let startOfMonth = startOfReferenceMonth
+
         let relevantListings: [Listing] = {
             if let selectedListingId, let listing = allListings.first(where: { $0.id == selectedListingId }) {
-                return [listing]
+                return listing.isDisabled(on: startOfMonth) ? [] : [listing]
             }
-            return allListings.sorted { $0.title < $1.title }
+            return allListings
+                .filter { !$0.isDisabled(on: startOfMonth) }
+                .sorted { $0.title < $1.title }
         }()
 
         var result: [(listing: Listing, type: TransactionType)] = []
         for listing in relevantListings {
-            let listingTransactions = transactionsByListing[listing] ?? []
+            let listingTransactions = activeTransactionsByListing[listing] ?? []
             let existingTitles = Set(listingTransactions.compactMap { transaction -> String? in
                 if case .expense(let title) = transaction.type { return title }
                 return nil
@@ -206,7 +231,7 @@ final class TransactionMonthDetailViewModel {
 
     func totalFeesToPayValue() -> (Double, Currency) {
         TransactionHelper.getFeesToPayValue(
-            for: transactions,
+            for: activeTransactions,
             includesExpenses: true,
             adminFees: allAdminFees
         )

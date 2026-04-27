@@ -9,7 +9,7 @@ import Foundation
 
 class Listing: CodableAndIdentifiable, Equatable, Hashable {
     private(set) var collectionId = "Listing"
-    
+
     static func == (lhs: Listing, rhs: Listing) -> Bool {
         lhs.id == rhs.id
         && lhs.title == rhs.title
@@ -19,12 +19,13 @@ class Listing: CodableAndIdentifiable, Equatable, Hashable {
         && lhs.driveFolderId == rhs.driveFolderId
         && lhs.driveFolderName == rhs.driveFolderName
         && lhs.recipientEmails == rhs.recipientEmails
+        && lhs.disabledDate == rhs.disabledDate
     }
 
     func hash(into hasher: inout Hasher) {
         hasher.combine(id)
     }
-    
+
     var id: String
     var title: String
     var link: URL?
@@ -36,6 +37,7 @@ class Listing: CodableAndIdentifiable, Equatable, Hashable {
     var driveFolderId: String?
     var driveFolderName: String?
     var recipientEmails: [String] = []
+    var disabledDate: Date?
 
     var shortCode: String {
         title.split(separator: " ")
@@ -53,7 +55,8 @@ class Listing: CodableAndIdentifiable, Equatable, Hashable {
          expectedMonthlyExpenseTypes: [String] = [],
          driveFolderId: String? = nil,
          driveFolderName: String? = nil,
-         recipientEmails: [String] = []) {
+         recipientEmails: [String] = [],
+         disabledDate: Date? = nil) {
 
         self.id = id
         self.title = title
@@ -65,6 +68,7 @@ class Listing: CodableAndIdentifiable, Equatable, Hashable {
         self.driveFolderId = driveFolderId
         self.driveFolderName = driveFolderName
         self.recipientEmails = recipientEmails
+        self.disabledDate = disabledDate
     }
 
     enum CodingKeys: String, CodingKey {
@@ -78,6 +82,7 @@ class Listing: CodableAndIdentifiable, Equatable, Hashable {
         case driveFolderId
         case driveFolderName
         case recipientEmails
+        case disabledDate
     }
 
     required init(from decoder: Decoder) throws {
@@ -91,6 +96,7 @@ class Listing: CodableAndIdentifiable, Equatable, Hashable {
         driveFolderId = try container.decodeIfPresent(String.self, forKey: .driveFolderId)
         driveFolderName = try container.decodeIfPresent(String.self, forKey: .driveFolderName)
         recipientEmails = try container.decodeIfPresent([String].self, forKey: .recipientEmails) ?? []
+        disabledDate = try container.decodeIfPresent(Date.self, forKey: .disabledDate)
     }
 
     func copy() -> Listing {
@@ -104,7 +110,8 @@ class Listing: CodableAndIdentifiable, Equatable, Hashable {
             expectedMonthlyExpenseTypes: expectedMonthlyExpenseTypes,
             driveFolderId: driveFolderId,
             driveFolderName: driveFolderName,
-            recipientEmails: recipientEmails
+            recipientEmails: recipientEmails,
+            disabledDate: disabledDate
         )
     }
 
@@ -119,5 +126,11 @@ class Listing: CodableAndIdentifiable, Equatable, Hashable {
         try container.encodeIfPresent(driveFolderId, forKey: .driveFolderId)
         try container.encodeIfPresent(driveFolderName, forKey: .driveFolderName)
         try container.encode(recipientEmails, forKey: .recipientEmails)
+        try container.encodeIfPresent(disabledDate, forKey: .disabledDate)
+    }
+
+    func isDisabled(on date: Date = .now) -> Bool {
+        guard let disabledDate else { return false }
+        return date >= disabledDate
     }
 }

@@ -8,105 +8,63 @@
 import SwiftUI
 
 struct ListingsView: View {
-    
+
     @Bindable var viewModel: ListingsViewModel
-    
+
     @State private var scrollOffset: CGFloat = 0
-    
-//    @State private var path = NavigationPath()
-    
+
     var body: some View {
-        
         VStack(spacing: 0) {
             NavigatorBar(title: "Listings")
-            // Barra de navegación
-//            CustomNavigationBar(
-//                title: "Mi Título",
-//                scrollOffset: scrollOffset,
-//                leadingAction: { print("Volver") },
-//                trailingAction: { print("Configuración") }
-//            )
-            
-            // Contenido desplazable
-//            ScrollableContentView(scrollOffset: $scrollOffset) {
-                List {
-                    ForEach(viewModel.listingList) { item in
+            List {
+                Section {
+                    ForEach(viewModel.activeListings) { item in
                         Button {
                             viewModel.didSelectListing(item)
                         } label: {
-                            HStack(alignment: .center) {
-                                Image(systemName: "house")
-                                    .imageScale(.large)
-                                    .foregroundStyle(.primary.opacity(0.5))
-                                    .frame(width: 70, height: 70, alignment: .center)
-                                    .background(Color.gray.opacity(0.2))
-                                Text(item.title)
-                                    .font(.headline)
-                            }
-                            .contentShape(Rectangle())
+                            listingRow(for: item, disabled: false)
                         }
                         .buttonStyle(PlainButtonStyle())
                     }
-//                }
+                }
+
+                if !viewModel.disabledListings.isEmpty {
+                    Section("Disabled") {
+                        ForEach(viewModel.disabledListings) { item in
+                            Button {
+                                viewModel.didSelectListing(item)
+                            } label: {
+                                listingRow(for: item, disabled: true)
+                            }
+                            .buttonStyle(PlainButtonStyle())
+                        }
+                    }
+                }
             }
             .id(viewModel.listingsVersion)
         }
-        
-        
-        
-//        NavigationStack(path: $path) {
-//        VStack {
-////            CustomNavigationBar(scrollOffset: .constant(0), title: "hola sexy", leadingAction: nil, trailingAction: nil)
-////            NavigatorBar(title: "Listings")
-//            List {
-//                ForEach(viewModel.listingList) { item in
-//                    Button {
-//                        viewModel.output(.detail(listing: item))
-//                    } label: {
-//                        Image(systemName: "house")
-//                            .imageScale(.large)
-//                            .foregroundStyle(.primary.opacity(0.5))
-//                            .frame(width: 70, height: 70, alignment: .center)
-//                            .background(Color.gray.opacity(0.2))
-//                        Text(item.title)
-//                            .font(.headline)
-//                    }
-//                }
-////                .onDelete(perform: deleteItems)
-//            }
-//            //            .navigationDestination(for: Listing.self) { listing in
-//            //                let vm = AddEditListingViewModel(dataSource: viewModel.dataSource, listing: listing)
-//            //                AddEditListingView(path: $path, viewModel: vm)
-//            //            }
-//            
-//        }
-////        .navigatorTitle("Listing2")
-//        .toolbar {
-//            ToolbarItem(placement: .topBarTrailing) {
-//                Button(action: addItem) {
-//                    Label("Add Item", systemImage: "plus")
-//                }
-//            }
-//        }
     }
 
-    private func addItem() {
-//        withAnimation {
-//            path.append(Listing(title: ""))
-//        }
-    }
+    @ViewBuilder
+    private func listingRow(for item: Listing, disabled: Bool) -> some View {
+        HStack(alignment: .center) {
+            Image(systemName: "house")
+                .imageScale(.large)
+                .foregroundStyle(.primary.opacity(disabled ? 0.3 : 0.5))
+                .frame(width: 70, height: 70, alignment: .center)
+                .background(Color.gray.opacity(0.2))
 
-    private func deleteItems(offsets: IndexSet) {
-        withAnimation {
-            for index in offsets {
-//                modelContext.delete(viewModel.listingList[index])
+            VStack(alignment: .leading, spacing: 2) {
+                Text(item.title)
+                    .font(.headline)
+                    .foregroundStyle(disabled ? .secondary : .primary)
+                if disabled, let date = item.disabledDate {
+                    Text("Sold \(date.formatted(.dateTime.day().month(.abbreviated).year()))")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
             }
         }
+        .contentShape(Rectangle())
     }
 }
-
-//#Preview {
-//    let container = ModelContainer.sharedInMemoryModelContainer
-//    return ListingsView(container: container)
-//        .modelContainer(container)
-//}

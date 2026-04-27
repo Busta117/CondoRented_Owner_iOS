@@ -158,7 +158,7 @@ struct AddEditTransactionView: View {
                     Text("Select a listing")
                         .tag(nil as Listing?)
                 }
-                ForEach(viewModel.allListing, id: \.self) { listing in
+                ForEach(viewModel.availableListings, id: \.self) { listing in
                     Text(listing.title)
                         .tag(listing as Listing?)
                 }
@@ -173,7 +173,10 @@ struct AddEditTransactionView: View {
     
     private var dateSection: some View {
         Section {
-            DatePicker("", selection: $viewModel.date, displayedComponents: [.date])
+            DatePicker("", selection: Binding(
+                get: { viewModel.date },
+                set: { viewModel.dateChanged($0) }
+            ), displayedComponents: [.date])
         } header: {
             Text("Payable Date")
         }

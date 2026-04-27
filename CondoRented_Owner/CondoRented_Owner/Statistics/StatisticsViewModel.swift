@@ -86,6 +86,10 @@ class StatisticsViewModel {
     var allAdminFees: [AdminFee] = []
     private var allTransactions: [Transaction] = []
 
+    private var activeTransactions: [Transaction] {
+        TransactionHelper.filterActive(transactions: allTransactions, listings: allListings)
+    }
+
     // MARK: - Loading
 
     var isLoading = false
@@ -193,7 +197,7 @@ class StatisticsViewModel {
     // MARK: - Filtered Transactions
 
     var filteredTransactions: [Transaction] {
-        allTransactions.filter { transaction in
+        activeTransactions.filter { transaction in
             let inPeriod = transaction.date >= periodStart && transaction.date <= periodEnd
             if let listingId = selectedListingId {
                 return inPeriod && transaction.listingId == listingId
@@ -209,7 +213,7 @@ class StatisticsViewModel {
             to: periodStart
         ) ?? periodStart
 
-        return allTransactions.filter { transaction in
+        return activeTransactions.filter { transaction in
             let inPeriod = transaction.date >= previousPeriodStart && transaction.date <= previousEnd
             if let listingId = selectedListingId {
                 return inPeriod && transaction.listingId == listingId
@@ -266,10 +270,13 @@ class StatisticsViewModel {
         let totalPropertyValue: Double
         if let listingId = selectedListingId {
             guard let listing = allListings.first(where: { $0.id == listingId }),
+                  !listing.isDisabled(on: periodEnd),
                   let value = listing.propertyValue, value > 0 else { return nil }
             totalPropertyValue = value
         } else {
-            let values = allListings.compactMap { $0.propertyValue }
+            let values = allListings
+                .filter { !$0.isDisabled(on: periodEnd) }
+                .compactMap { $0.propertyValue }
             guard !values.isEmpty else { return nil }
             totalPropertyValue = values.reduce(0, +)
         }
@@ -281,7 +288,7 @@ class StatisticsViewModel {
             return nil
         }
 
-        var last12 = allTransactions.filter { $0.date >= startDate && $0.date <= endDate }
+        var last12 = activeTransactions.filter { $0.date >= startDate && $0.date <= endDate }
         if let listingId = selectedListingId {
             last12 = last12.filter { $0.listingId == listingId }
         }

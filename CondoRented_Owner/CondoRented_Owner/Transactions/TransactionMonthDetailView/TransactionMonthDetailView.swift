@@ -169,11 +169,13 @@ struct TransactionMonthDetailView: View {
                 .buttonStyle(PlainButtonStyle())
             }
             ForEach(viewModel.transactions) { transaction in
+                let isActive = viewModel.isActive(transaction)
                 Button {
                     viewModel.input(.editTransaction(transaction))
                 } label: {
-                    transactionsListElement(for: transaction)
+                    transactionsListElement(for: transaction, isActive: isActive)
                         .contentShape(Rectangle())
+                        .opacity(isActive ? 1.0 : 0.5)
                 }
                 .buttonStyle(PlainButtonStyle())
             }
@@ -205,12 +207,23 @@ struct TransactionMonthDetailView: View {
         .opacity(0.6)
     }
     
-    private func transactionsListElement(for transaction: Transaction) -> some View {
+    private func transactionsListElement(for transaction: Transaction, isActive: Bool) -> some View {
         VStack {
             HStack {
                 Text(viewModel.listing(forId: transaction.listingId)?.title ?? "-")
                     .font(.caption)
                     .bold()
+                if !isActive {
+                    Text("post-sale")
+                        .font(.caption2)
+                        .foregroundStyle(.orange)
+                        .padding(.horizontal, 6)
+                        .padding(.vertical, 1)
+                        .background(
+                            RoundedRectangle(cornerRadius: 4)
+                                .stroke(.orange, lineWidth: 0.5)
+                        )
+                }
                 Spacer()
                 Text(transaction.date, format: .dateTime.day().month())
                     .font(.caption2)

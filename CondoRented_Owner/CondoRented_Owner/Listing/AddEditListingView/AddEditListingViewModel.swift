@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import SwiftUI
 import Combine
 
 @Observable
@@ -117,6 +118,30 @@ final class AddEditListingViewModel {
 
     func admin(forId id: String) -> Admin? {
         admins.first(where: { $0.id == id })
+    }
+
+    var isDisabledBinding: Binding<Bool> {
+        Binding(
+            get: { self.listing.disabledDate != nil },
+            set: { newValue in
+                let copy = self.listing.copy()
+                copy.disabledDate = newValue ? (self.listing.disabledDate ?? .now) : nil
+                self.listing = copy
+                self.triggerSave()
+            }
+        )
+    }
+
+    var disabledDateBinding: Binding<Date> {
+        Binding(
+            get: { self.listing.disabledDate ?? .now },
+            set: { newDate in
+                let copy = self.listing.copy()
+                copy.disabledDate = newDate
+                self.listing = copy
+                self.triggerSave()
+            }
+        )
     }
 
     private func performSave() {

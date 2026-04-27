@@ -171,6 +171,19 @@ struct AddEditListingView: View {
                     ),
                     onChanged: { viewModel.triggerSave() }
                 )
+
+                Section {
+                    Toggle("Disabled", isOn: viewModel.isDisabledBinding)
+                    if viewModel.isDisabledBinding.wrappedValue {
+                        DatePicker(
+                            "Sold on",
+                            selection: viewModel.disabledDateBinding,
+                            displayedComponents: [.date]
+                        )
+                    }
+                } header: {
+                    Text("Status")
+                }
             }
             .toolbar {
                 ToolbarItemGroup(placement: .keyboard) {

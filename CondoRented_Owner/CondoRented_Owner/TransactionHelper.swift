@@ -29,7 +29,7 @@ struct TransactionHelper: TransactionHelperProtocol {
         for transaction in transactions {
             if let listing = listings.first(where: {$0.id == transaction.listingId}) {
                 if ret[listing] != nil {
-                    
+
                     ret[listing]?.append(transaction)
                 } else {
                     ret[listing] = [transaction]
@@ -38,7 +38,18 @@ struct TransactionHelper: TransactionHelperProtocol {
         }
         return ret
     }
-    
+
+    static func isActive(transaction: Transaction, listings: [Listing]) -> Bool {
+        guard let listing = listings.first(where: { $0.id == transaction.listingId }) else {
+            return true
+        }
+        return !listing.isDisabled(on: transaction.date)
+    }
+
+    static func filterActive(transactions: [Transaction], listings: [Listing]) -> [Transaction] {
+        transactions.filter { isActive(transaction: $0, listings: listings) }
+    }
+
     // TODO: busta fix this
     static func splitByType(transactions: [Transaction]) -> [TransactionType: [Transaction]] {
         var ret: [TransactionType: [Transaction]] = [:]
@@ -154,9 +165,15 @@ struct TransactionHelper: TransactionHelperProtocol {
     }
 
     static func missingExpensesCount(for transactions: [Transaction], listings: [Listing]) -> Int {
-        let transactionsByListing = splitByListing(transactions: transactions, listings: listings)
+        guard let anyDate = transactions.first?.date else { return 0 }
+        let startOfMonth = Calendar.current.date(
+            from: Calendar.current.dateComponents([.year, .month], from: anyDate)
+        ) ?? anyDate
+        let activeListings = listings.filter { !$0.isDisabled(on: startOfMonth) }
+
+        let transactionsByListing = splitByListing(transactions: transactions, listings: activeListings)
         var count = 0
-        for listing in listings {
+        for listing in activeListings {
             let listingTransactions = transactionsByListing[listing] ?? []
             let existingTitles = Set(listingTransactions.compactMap { transaction -> String? in
                 if case .expense(let title) = transaction.type { return title }
